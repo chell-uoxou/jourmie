@@ -11,14 +11,16 @@ import { DBGroup } from "~/lib/firestore/schemas";
 
 export const AppTopBar = () => {
   const [groups, setGroups] = useState<DBGroup[] | null | "loading">("loading");
-  const { getGroupsByAccount } = useCurrentAccount();
+  const { currentDBAccount, getGroupsByAccount } = useCurrentAccount();
 
   useEffect(() => {
-    getGroupsByAccount().then((groups) => {
+    if (currentDBAccount === "loading" || currentDBAccount === null) return;
+
+    getGroupsByAccount(currentDBAccount).then((groups) => {
       console.log(groups);
       setGroups(groups);
     });
-  }, [getGroupsByAccount]);
+  }, [currentDBAccount, getGroupsByAccount]);
 
   return (
     <div className="flex justify-between items-center h-14 px-6 py-2 border-b border-brand-border-color absolute w-screen">

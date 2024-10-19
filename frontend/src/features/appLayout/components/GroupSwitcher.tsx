@@ -20,10 +20,7 @@ import { Settings } from "lucide-react";
 import { CirclePlus } from "lucide-react";
 import { List } from "lucide-react";
 import { UserRound } from "lucide-react";
-import { DBAccount, DBGroup, DBGroupMember } from "~/lib/firestore/schemas";
-import { doc } from "firebase/firestore";
-import { db } from "~/lib/firebase";
-import { defaultConverter } from "~/lib/firestore/firestore";
+import { DBGroup } from "~/lib/firestore/schemas";
 
 type Props = {
   current_icon_url?: string;
@@ -42,65 +39,6 @@ export function GroupSwitcher({
   const [selectedGroup, setSelectedGroup] = React.useState<DBGroup | null>(
     null
   );
-
-  const dummyGroup1: DBGroup = {
-    uid: "1",
-    name: "グループ1",
-    description: "グループ1の説明",
-    icon_url: "/images/defaultIcon.png",
-    created_by_account: doc(db, "accounts", "1").withConverter(
-      defaultConverter<DBAccount>()
-    ),
-    created_by_member: doc(db, "members", "1").withConverter(
-      defaultConverter<DBGroupMember>()
-    ),
-  };
-  const dummyGroup2: DBGroup = {
-    uid: "2",
-    name: "グループ2",
-    description: "グループ2の説明",
-    icon_url: "/images/defaultIcon.png",
-    created_by_account: doc(db, "accounts", "1").withConverter(
-      defaultConverter<DBAccount>()
-    ),
-    created_by_member: doc(db, "members", "1").withConverter(
-      defaultConverter<DBGroupMember>()
-    ),
-  };
-
-  const dummyGroup3: DBGroup = {
-    uid: "3",
-    name: "グループ3",
-    description: "グループ3の説明",
-    icon_url: "/images/defaultIcon.png",
-    created_by_account: doc(db, "accounts", "1").withConverter(
-      defaultConverter<DBAccount>()
-    ),
-    created_by_member: doc(db, "members", "1").withConverter(
-      defaultConverter<DBGroupMember>()
-    ),
-  };
-
-  const dummyGroup4: DBGroup = {
-    uid: "4",
-    name: "グループ4",
-    description: "グループ4の説明",
-    icon_url: "/images/defaultIcon.png",
-    created_by_account: doc(db, "accounts", "1").withConverter(
-      defaultConverter<DBAccount>()
-    ),
-    created_by_member: doc(db, "members", "1").withConverter(
-      defaultConverter<DBGroupMember>()
-    ),
-  };
-
-  const allGroups = [
-    ...groups,
-    dummyGroup1,
-    dummyGroup2,
-    dummyGroup3,
-    dummyGroup4,
-  ]; // ここ後々消す
 
   return (
     <DropdownMenu open={openGroupSwitcher} onOpenChange={setOpenGroupSwitcher}>
@@ -161,12 +99,12 @@ export function GroupSwitcher({
           </DropdownMenuItem>
           <DropdownMenuSeparator className="border" />
           <DropdownMenuLabel>参加中のグループ</DropdownMenuLabel>
-          {allGroups.length === 0 ? (
+          {groups.length === 0 ? (
             <DropdownMenuItem disabled>
               まだグループに参加していません。
             </DropdownMenuItem>
           ) : (
-            allGroups.map(
+            groups.map(
               //TODO:allGroupsをgroupsに変更
               (group) => (
                 <DropdownMenuItem

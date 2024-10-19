@@ -1,12 +1,5 @@
 import { useFirestoreCollection } from "./useFirestoreCollection";
-import {
-  collection,
-  doc,
-  DocumentReference,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, doc, DocumentReference, getDoc } from "firebase/firestore";
 import { db } from "~/lib/firebase";
 import useAuthUser from "./useAuthUser";
 import { useCallback, useEffect, useState } from "react";
@@ -93,15 +86,14 @@ export default function useCurrentAccount() {
     addMemberToGroup,
   ]);
 
-  const getGroupsByAccount = useCallback(async () => {
-    const snapshot = await getDocs(
-      query(
-        collection(db, "groups"),
-        where("members", "array-contains", currentDBAccount)
-      )
+  const getGroupsByAccount = useCallback(async (account: DBAccount) => {
+    return await Promise.all(
+      account.groups.map(async (groupRef) => {
+        const doc = await getDoc(groupRef);
+        return doc.data() as DBGroup;
+      })
     );
-    return snapshot.docs.map((doc) => doc.data()) as DBGroup[];
-  }, [currentDBAccount]);
+  }, []);
 
   return { currentDBAccount, getGroupsByAccount };
 }
