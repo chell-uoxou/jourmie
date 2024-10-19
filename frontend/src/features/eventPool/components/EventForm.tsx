@@ -146,6 +146,7 @@ function EventForm() {
             label="所要時間(分)"
             name="time"
             id="time"
+            type="number"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
           />

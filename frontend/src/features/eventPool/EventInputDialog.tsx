@@ -5,7 +5,7 @@ import {
   DialogDescription,
 } from "~/components/ui/dialog";
 import { DialogHeader } from "~/components/ui/dialog";
-import EventForm from "./components/EventForm";
+import EventForm from "./components/EventFormProt";
 import { ScrollArea } from "~/components/ui/scroll-area";
 
 interface EventInputDialogProps {
