@@ -14,6 +14,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { InputWithLabel } from "~/components/common/InputWithLabel";
 import { WithLabel } from "~/components/common/WithLabel";
 import { BudgetMode } from "~/models/types/common";
+import { ja } from "date-fns/locale";
 
 interface EventFormComponentsProps {
   name: string;
@@ -96,16 +97,18 @@ export default function EventFormComponents({
           <DateTimePicker
             value={startDateTime}
             onChange={(e) => e && setStartDateTime(e)}
-            displayFormat={{ hour24: "yyyy/MM/dd(eee)hh:mm" }}
+            displayFormat={{ hour24: "MM/dd（eee）hh:mm" }}
             className="flex1"
+            locale={ja}
           />
         </WithLabel>
         <WithLabel label="終了日時">
           <DateTimePicker
             value={endDateTime}
             onChange={(e) => e && setEndDateTime(e)}
-            displayFormat={{ hour24: "yyyy/MM/dd(eee)hh:mm" }}
+            displayFormat={{ hour24: "MM/dd（eee）hh:mm" }}
             className="flex1"
+            locale={ja}
           />
         </WithLabel>
       </div>
