@@ -1,7 +1,7 @@
 import React from "react";
 
-function page() {
+function Page() {
   return <div>グループの予定メモ</div>;
 }
 
-export default page;
+export default Page;

@@ -1,7 +1,7 @@
 import React from "react";
 
-function page() {
+function Page() {
   return <div>あなたが所属しているグループ</div>;
 }
 
-export default page;
+export default Page;
