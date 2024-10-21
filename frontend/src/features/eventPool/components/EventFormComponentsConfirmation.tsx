@@ -39,7 +39,6 @@ export default function EventFormComponentsConfirmation({
   const [isTitle, setIsTitle] = useState(false);
 
   useEffect(() => {
-    // 名前が空の場合はfalse
     setIsTitle(!!name);
   }, [name]);
 

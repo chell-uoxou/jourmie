@@ -46,7 +46,7 @@ function EventForm() {
       title: name,
       description: description,
       location_text: location,
-      location_coordinates: null, // TODO: 位置情報の取得
+      location_coordinates: null,
       attached_image: "",
       available_times: [
         {
@@ -70,7 +70,7 @@ function EventForm() {
       await add(sendData);
       alert("イベントが正常に追加されました！");
       resetForm();
-      setIsConfirmation(false); // 確認画面を閉じる
+      setIsConfirmation(false);
     } catch (error) {
       console.error("Error adding event: ", error);
     }
