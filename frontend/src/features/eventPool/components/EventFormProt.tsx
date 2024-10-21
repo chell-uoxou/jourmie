@@ -32,7 +32,7 @@ function EventForm() {
   const [participants, setParticipants] = useState("");
   const [memo, setMemo] = useState("");
 
-  const [isConfirmation, setIsConfirmation] = useState(false); // 確認画面の表示状態
+  const [isConfirmation, setIsConfirmation] = useState(false);
 
   // 送信処理
   const handleSubmit: FormEventHandler = async (e) => {
@@ -119,39 +119,37 @@ function EventForm() {
         </form>
       ) : (
         <form onSubmit={handleSubmit} className="w-96 p-2">
-          <div className="w-full">
-            <div className="flex flex-col gap-4">
-              <EventFormComponents
-                name={name}
-                setName={setName}
-                description={description}
-                setDescription={setDescription}
-                location={location}
-                setLocation={setLocation}
-                startDateTime={startDateTime}
-                setStartDateTime={setStartDateTime}
-                endDateTime={endDateTime}
-                setEndDateTime={setEndDateTime}
-                duration={duration}
-                setDuration={setDuration}
-                budgetType={budgetType}
-                setBudgetType={setBudgetType}
-                budget={budget}
-                setBudget={setBudget}
-                isPreparationChecked={isPreparationChecked}
-                setIsPreparationChecked={setIsPreparationChecked}
-                preparationDetails={preparationDetails}
-                setPreparationDetails={setPreparationDetails}
-                participants={participants}
-                setParticipants={setParticipants}
-                memo={memo}
-                setMemo={setMemo}
-              />
-              <div className="flex flex-row-reverse">
-                <Button type="submit" className="flex w-full">
-                  確認
-                </Button>
-              </div>
+          <div className="flex flex-col w-full gap-6">
+            <EventFormComponents
+              name={name}
+              setName={setName}
+              description={description}
+              setDescription={setDescription}
+              location={location}
+              setLocation={setLocation}
+              startDateTime={startDateTime}
+              setStartDateTime={setStartDateTime}
+              endDateTime={endDateTime}
+              setEndDateTime={setEndDateTime}
+              duration={duration}
+              setDuration={setDuration}
+              budgetType={budgetType}
+              setBudgetType={setBudgetType}
+              budget={budget}
+              setBudget={setBudget}
+              isPreparationChecked={isPreparationChecked}
+              setIsPreparationChecked={setIsPreparationChecked}
+              preparationDetails={preparationDetails}
+              setPreparationDetails={setPreparationDetails}
+              participants={participants}
+              setParticipants={setParticipants}
+              memo={memo}
+              setMemo={setMemo}
+            />
+            <div className="flex ">
+              <Button type="submit" className="flex w-full">
+                確認
+              </Button>
             </div>
           </div>
         </form>

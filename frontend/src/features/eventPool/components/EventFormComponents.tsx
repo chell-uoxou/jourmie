@@ -69,7 +69,7 @@ export default function EventFormComponents({
   setMemo,
 }: EventFormComponentsProps) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-4">
       <InputWithLabel
         name="name"
         id="name"
@@ -91,7 +91,6 @@ export default function EventFormComponents({
         value={location}
         onChange={(e) => setLocation(e.target.value)}
       />
-      <p className="font-bold text-lg mt-2">参加できる時間</p>
       <WithLabel label="開始日時">
         <DateTimePicker
           value={startDateTime}
