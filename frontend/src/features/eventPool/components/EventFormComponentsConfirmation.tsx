@@ -45,41 +45,39 @@ export default function EventFormComponentsConfirmation({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         <FormConfirmationItem title="名前" text={name} />
         <FormConfirmationItem title="説明" text={description} />
         <FormConfirmationItem title="場所" text={location} />
-
         <div className="flex flex-row gap-4">
           <FormConfirmationItem
             title="開始日時"
             text={startDateTime.toLocaleString()}
-            classNames="flex-1"
+            className="flex-1"
           />
           <FormConfirmationItem
             title="終了日時"
             text={endDateTime.toLocaleString()}
-            classNames="flex-1"
+            className="flex-1"
           />
         </div>
-
         <FormConfirmationItem title="所要時間(分)" text={duration} />
         <FormConfirmationItem
-          title="1人あたり/合算"
-          text={budgetType === "per_person" ? "1人あたり" : "合算"}
-        />
-        <FormConfirmationItem
           title="予算"
-          text={budget ? `${budget}円` : "未設定"}
+          text={
+            budget
+              ? `${
+                  budgetType === "per_person" ? "1人あたり" : "合算"
+                }  ${budget}円`
+              : "未設定"
+          }
         />
-
         {isPreparationChecked && (
           <FormConfirmationItem
             title="参加への準備タスク"
             text={preparationDetails}
           />
         )}
-
         <FormConfirmationItem title="最大人数" text={participants} />
         <FormConfirmationItem title="メモ" text={memo} />
       </div>
