@@ -91,18 +91,25 @@ export default function EventFormComponents({
         value={location}
         onChange={(e) => setLocation(e.target.value)}
       />
-      <WithLabel label="開始日時">
-        <DateTimePicker
-          value={startDateTime}
-          onChange={(e) => e && setStartDateTime(e)}
-        />
-      </WithLabel>
-      <WithLabel label="終了日時">
-        <DateTimePicker
-          value={endDateTime}
-          onChange={(e) => e && setEndDateTime(e)}
-        />
-      </WithLabel>
+      <div className="flex flex-row gap-4">
+        <WithLabel label="開始日時">
+          <DateTimePicker
+            value={startDateTime}
+            onChange={(e) => e && setStartDateTime(e)}
+            displayFormat={{ hour24: "yyyy/mm/dd" }}
+            className="flex1"
+          />
+        </WithLabel>
+        <WithLabel label="終了日時">
+          <DateTimePicker
+            value={endDateTime}
+            onChange={(e) => e && setEndDateTime(e)}
+            displayFormat={{ hour24: "yyyy/mm/dd" }}
+            className="flex1"
+          />
+        </WithLabel>
+      </div>
+
       <InputWithLabel
         label="所要時間(分)"
         name="time"
