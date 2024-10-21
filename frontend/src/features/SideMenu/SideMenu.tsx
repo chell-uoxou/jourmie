@@ -19,11 +19,11 @@ import useGroupRouter from "~/hooks/useGroupRouter";
 import { useRouter } from "next/navigation";
 
 function SideMenu() {
-  const { isInGroup, pushInGroup } = useGroupRouter();
+  const { isInGroup, pushInGroup, getPathInGroup } = useGroupRouter();
   const { push } = useRouter();
   const dbGroup = useCurrentGroup();
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {isInGroup && (
         <>
           {dbGroup === "loading" ? (
@@ -37,6 +37,7 @@ function SideMenu() {
             onClick={() => {
               pushInGroup("/");
             }}
+            isSelected={getPathInGroup() === "/"}
           />
           <SideMenuItemWithIcon
             icon={<UsersRound className="size-5" />}
@@ -44,6 +45,7 @@ function SideMenu() {
             onClick={() => {
               pushInGroup("/member");
             }}
+            isSelected={getPathInGroup() === "/member"}
           />
           <SideMenuItemWithIcon
             icon={<SquareCheckBig className="size-5" />}
@@ -51,6 +53,7 @@ function SideMenu() {
             onClick={() => {
               pushInGroup("/tasks");
             }}
+            isSelected={getPathInGroup() === "/tasks"}
           />
           <SideMenuItemWithIcon
             icon={<PiggyBank className="size-5" />}
@@ -58,6 +61,7 @@ function SideMenu() {
             onClick={() => {
               pushInGroup("/budget");
             }}
+            isSelected={getPathInGroup() === "/budget"}
           />
           <Border />
         </>
@@ -73,6 +77,7 @@ function SideMenu() {
         onClick={() => {
           pushInGroup("/event_pool");
         }}
+        isSelected={getPathInGroup() === "/event_pool"}
       />
       <SideMenuItemWithIcon
         icon={<Calendar className="size-5" />}
@@ -80,6 +85,7 @@ function SideMenu() {
         onClick={() => {
           pushInGroup("/calendar");
         }}
+        isSelected={getPathInGroup() === "/calendar"}
       />
       <SideMenuItemWithIcon
         icon={<StickyNote className="size-5" />}
@@ -87,6 +93,7 @@ function SideMenu() {
         onClick={() => {
           pushInGroup("/schedule_notes");
         }}
+        isSelected={getPathInGroup() === "/schedule_notes"}
       />
       <Border />
       <Heading title="あなた" />
@@ -96,6 +103,7 @@ function SideMenu() {
         onClick={() => {
           push("/calendar");
         }}
+        isSelected={getPathInGroup() === "/calendar"}
       />
       <SideMenuItemWithIcon
         icon={<List className="size-5" />}
@@ -103,6 +111,7 @@ function SideMenu() {
         onClick={() => {
           push("/groups");
         }}
+        isSelected={getPathInGroup() === "/groups"}
       />
     </div>
   );
