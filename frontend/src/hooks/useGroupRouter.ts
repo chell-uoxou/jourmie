@@ -126,6 +126,11 @@ export default function useGroupRouter() {
     [extractPathInGroup, nextRouter, pathname]
   );
 
+  const getPathInGroup = useCallback(
+    () => extractPathInGroup(pathname),
+    [extractPathInGroup, pathname]
+  );
+
   return {
     isInGroup,
     groupId,
@@ -133,5 +138,6 @@ export default function useGroupRouter() {
     pushInGroup,
     replaceInGroup,
     pushToChangeGroup,
+    getPathInGroup,
   };
 }
