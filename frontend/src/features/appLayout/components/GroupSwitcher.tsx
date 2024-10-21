@@ -1,5 +1,4 @@
 "use client";
-import * as React from "react";
 import MenuItemWithIcon from "./MenuItemWithIcon";
 import { ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
@@ -21,6 +20,7 @@ import { CirclePlus } from "lucide-react";
 import { List } from "lucide-react";
 import { UserRound } from "lucide-react";
 import { DBGroup } from "~/lib/firestore/schemas";
+import { useState } from "react";
 
 type Props = {
   currentGroupId: string | "personal" | null;
@@ -29,7 +29,7 @@ type Props = {
 };
 
 export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
-  const [openGroupSwitcher, setOpenGroupSwitcher] = React.useState(false);
+  const [openGroupSwitcher, setOpenGroupSwitcher] = useState(false);
 
   const selectedGroup =
     groups === "loading" || groups === null || currentGroupId === null
