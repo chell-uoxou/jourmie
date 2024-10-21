@@ -12,7 +12,17 @@ export default function useGroupRouter() {
   const groupRegex = useMemo(() => /^\/g\/([^/]+)(\/|$)/, []);
   const pathInGroupRegex = useMemo(() => /^\/g\/[^/]+(\/.*)/, []);
 
-  const isInGroup = groupRegex.test(pathname);
+  /**
+   * 現在グループ内にいるかどうか
+   * @type {boolean}
+   *
+   * @example
+   * `/g/xxxxx` => true
+   * `/g/xxxxx/` => true
+   * `/g/xxxxx/abc` => true
+   * `/calendar` => false
+   */
+  const isInGroup: boolean = groupRegex.test(pathname);
 
   const extractId = useCallback(
     (path: string) => {
@@ -30,8 +40,24 @@ export default function useGroupRouter() {
     [pathInGroupRegex]
   );
 
-  const groupId = extractId(pathname);
+  /**
+   * 現在アクセス中のグループID
+   * @type {string | null}
+   */
+  const groupId: string | null = extractId(pathname);
 
+  /**
+   * グループ内のパスを取得する
+   * @param {string} href /から始まるパス
+   * @param {string} [groupIdOverride] グループIDをオーバーライドする
+   * @returns {string} グループ内のパス
+   *
+   * @example
+   * getGroupPath("/calendar", "yyyyy") => "/g/yyyyy/calendar"
+   * getGroupPath("/calendar", "personal") => "/calendar"
+   * getGroupPath("/preferences") => "g/xxxxx/somewhere" -> "/g/xxxxx/preferences"
+   * getGroupPath("/preferences", "yyyyy") => "/g/yyyyy/preferences"
+   */
   const getGroupPath = useCallback(
     (href: string, groupIdOverride?: string) => {
       const gid = groupIdOverride || groupId;
@@ -40,6 +66,19 @@ export default function useGroupRouter() {
     [groupId]
   );
 
+  /**
+   * グループ内に遷移する
+   *
+   * @param {string} href /から始まるパス
+   * @param {NavigateOptions} [options] オプション
+   * @param {string} [groupId] グループIDをオーバーライドする
+   *
+   * @example
+   * pushInGroup("/calendar") => "/g/xxxxx/calendar"
+   * pushInGroup("/calendar", { replace: true }) => "/g/xxxxx/calendar"
+   * pushInGroup("/calendar", undefined, "yyyyy") => "/g/yyyyy/calendar"
+   * pushInGroup("/calendar", { replace: true }, "yyyyy") => "/g/yyyyy/calendar"
+   */
   const pushInGroup = useCallback(
     (href: string, options?: NavigateOptions, groupId?: string) => {
       if (!isInGroup && !groupId) {
@@ -63,6 +102,16 @@ export default function useGroupRouter() {
     [getGroupPath, isInGroup, nextRouter]
   );
 
+  /**
+   * グループを変更して遷移する
+   *
+   * @param {string | "personal"} groupId グループID
+   * @param {NavigateOptions} [options] オプション
+   *
+   * @example
+   * pushToChangeGroup("xxxxx")    // "/calendar" => "/xxxxx/calendar"
+   * pushToChangeGroup("personal") // "/g/xxxxx/calendar" => "/calendar"
+   */
   const pushToChangeGroup = useCallback(
     (groupId: string | "personal", options?: NavigateOptions) => {
       const realPath =
