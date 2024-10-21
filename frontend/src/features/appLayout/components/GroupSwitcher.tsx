@@ -50,20 +50,23 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
           ) : groups === null || selectedGroup === null ? null : (
             <>
               <div className="flex items-center">
-                <Image
-                  src={
-                    currentGroupId === "personal"
-                      ? "/images/defaulticon.png"
-                      : selectedGroup?.icon_url ?? "/images/defaulticon.png"
-                  }
-                  alt="Selected Icon"
-                  width={24}
-                  height={24}
-                  className="mr-2"
-                />
-                {currentGroupId === "personal"
-                  ? "個人のカレンダー"
-                  : selectedGroup?.name}
+                {currentGroupId === "personal" ? (
+                  <>
+                    <UserRound className="h-6 w-6 mr-2" />
+                    <div className="font-bold">あなた</div>
+                  </>
+                ) : (
+                  <>
+                    <Image
+                      src={selectedGroup?.icon_url ?? "/images/defaulticon.png"}
+                      alt={"group icon"}
+                      width={24}
+                      height={24}
+                      className="mr-2"
+                    />
+                    <div>{selectedGroup?.name}</div>
+                  </>
+                )}
               </div>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </>
@@ -97,7 +100,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
             className="font-bold"
           >
             <UserRound className="mr-2 h-4 w-4" />
-            個人のカレンダー
+            あなた
           </DropdownMenuItem>
           <DropdownMenuSeparator className="border" />
           <DropdownMenuLabel>参加中のグループ</DropdownMenuLabel>
