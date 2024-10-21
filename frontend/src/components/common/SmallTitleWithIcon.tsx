@@ -9,7 +9,7 @@ interface SmallTitleWithIconProps {
 
 const SmallTitleWithIcon = (props: SmallTitleWithIconProps) => {
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex gap-2 items-center w-full">
       {props.icon ? <div className="size-6">{props.icon}</div> : null}
       <h2 className="text-xl font-bold">{props.title}</h2>
       {props.isLoading && <LoadingSpinner className="size-6" />}
