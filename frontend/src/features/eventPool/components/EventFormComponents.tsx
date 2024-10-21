@@ -108,6 +108,7 @@ export default function EventFormComponents({
         label="所要時間(分)"
         name="time"
         id="time"
+        type="number"
         value={duration}
         onChange={(e) => setDuration(e.target.value)}
       />
@@ -127,6 +128,7 @@ export default function EventFormComponents({
           label="予算(円)"
           name="value"
           id="value"
+          type="number"
           value={budget}
           onChange={(e) => setBudget(e.target.value)}
         />
@@ -159,6 +161,7 @@ export default function EventFormComponents({
         label="最大人数"
         name="participants"
         id="participants"
+        type="number"
         value={participants}
         onChange={(e) => setParticipants(e.target.value)}
       />

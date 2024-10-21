@@ -95,22 +95,28 @@ function EventForm() {
   return (
     <div>
       {isConfirmation ? (
-        <EventFormComponentsConfirmation
-          name={name}
-          description={description}
-          location={location}
-          startDateTime={startDateTime}
-          endDateTime={endDateTime}
-          duration={duration}
-          budgetType={budgetType}
-          budget={budget}
-          isPreparationChecked={isPreparationChecked}
-          preparationDetails={preparationDetails}
-          participants={participants}
-          memo={memo}
-          onEdit={() => setIsConfirmation(false)}
-          onSubmit={handleFinalSubmit}
-        />
+        <form onSubmit={handleSubmit} className="w-96 p-2">
+          <div className="w-full">
+            <div className="flex flex-col gap-4">
+              <EventFormComponentsConfirmation
+                name={name}
+                description={description}
+                location={location}
+                startDateTime={startDateTime}
+                endDateTime={endDateTime}
+                duration={duration}
+                budgetType={budgetType}
+                budget={budget}
+                isPreparationChecked={isPreparationChecked}
+                preparationDetails={preparationDetails}
+                participants={participants}
+                memo={memo}
+                onEdit={() => setIsConfirmation(false)}
+                onSubmit={handleFinalSubmit}
+              />
+            </div>
+          </div>
+        </form>
       ) : (
         <form onSubmit={handleSubmit} className="w-96 p-2">
           <div className="w-full">
@@ -142,8 +148,8 @@ function EventForm() {
                 setMemo={setMemo}
               />
               <div className="flex flex-row-reverse">
-                <Button type="submit" className="" size={"lg"}>
-                  追加
+                <Button type="submit" className="flex w-full">
+                  確認
                 </Button>
               </div>
             </div>
