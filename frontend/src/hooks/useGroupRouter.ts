@@ -10,6 +10,7 @@ export default function useGroupRouter() {
   const nextRouter = useRouter();
   const pathname = usePathname();
   const groupRegex = useMemo(() => /^\/g\/([^/]+)(\/|$)/, []);
+  const pathInGroupRegex = useMemo(() => /^\/g\/[^/]+(\/.*)/, []);
 
   const isInGroup = groupRegex.test(pathname);
 
@@ -21,36 +22,58 @@ export default function useGroupRouter() {
     [groupRegex]
   );
 
+  const extractPathInGroup = useCallback(
+    (pathname: string) => {
+      const match = pathname.match(pathInGroupRegex);
+      return match ? match[1] : pathname;
+    },
+    [pathInGroupRegex]
+  );
+
   const groupId = extractId(pathname);
 
   const getGroupPath = useCallback(
-    (href: string) => {
-      return groupId ? `/g/${groupId}${href}` : href;
+    (href: string, groupIdOverride?: string) => {
+      const gid = groupIdOverride || groupId;
+      return gid ? `/g/${gid}${href}` : href;
     },
     [groupId]
   );
 
   const pushInGroup = useCallback(
-    (href: string, options?: NavigateOptions) => {
-      if (!isInGroup) {
-        console.error("You are not in a group");
+    (href: string, options?: NavigateOptions, groupId?: string) => {
+      if (!isInGroup && !groupId) {
+        nextRouter.push(href, options);
         return;
       }
-      const realHref = getGroupPath(href);
-      nextRouter.push(realHref, options);
+
+      nextRouter.push(getGroupPath(href, groupId), options);
     },
     [getGroupPath, isInGroup, nextRouter]
   );
 
   const replaceInGroup = useCallback(
-    (href: string, options?: NavigateOptions) => {
-      if (!isInGroup) {
-        console.error("You are not in a group");
+    (href: string, options?: NavigateOptions, groupId?: string) => {
+      if (!isInGroup && !groupId) {
+        console.error("You are not in a group. Please specify groupId.");
         return;
       }
-      nextRouter.replace(getGroupPath(href), options);
+      nextRouter.replace(getGroupPath(href, groupId), options);
     },
     [getGroupPath, isInGroup, nextRouter]
+  );
+
+  const pushToChangeGroup = useCallback(
+    (groupId: string | "personal", options?: NavigateOptions) => {
+      const realPath =
+        groupId === "personal"
+          ? extractPathInGroup(pathname)
+          : "/g/" + groupId + "/" + extractPathInGroup(pathname);
+      console.log("pushToChangeGroup!!!!!!!!!!!!!!!! ", realPath);
+
+      nextRouter.push(realPath, options);
+    },
+    [extractPathInGroup, nextRouter, pathname]
   );
 
   return {
@@ -59,5 +82,6 @@ export default function useGroupRouter() {
     getGroupPath,
     pushInGroup,
     replaceInGroup,
+    pushToChangeGroup,
   };
 }

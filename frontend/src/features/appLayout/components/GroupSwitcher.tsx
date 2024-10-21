@@ -23,22 +23,18 @@ import { UserRound } from "lucide-react";
 import { DBGroup } from "~/lib/firestore/schemas";
 
 type Props = {
-  current_icon_url?: string;
-  current_name?: string;
-  groups: DBGroup[];
-  isLoading: boolean;
+  currentGroupId: string | "personal" | null;
+  onChange: (groupId: string | "personal") => void;
+  groups: DBGroup[] | "loading" | null;
 };
 
-export function GroupSwitcher({
-  current_icon_url = "/images/defaultIcon.png",
-  current_name = "プライベート",
-  isLoading,
-  groups,
-}: Props) {
+export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
   const [openGroupSwitcher, setOpenGroupSwitcher] = React.useState(false);
-  const [selectedGroup, setSelectedGroup] = React.useState<DBGroup | null>(
-    null
-  );
+
+  const selectedGroup =
+    groups === "loading" || groups === null || currentGroupId === null
+      ? null
+      : groups.find((group) => group.uid === currentGroupId);
 
   return (
     <DropdownMenu open={openGroupSwitcher} onOpenChange={setOpenGroupSwitcher}>
@@ -49,19 +45,25 @@ export function GroupSwitcher({
           aria-expanded={openGroupSwitcher}
           className="w-[200px] justify-between rounded-full"
         >
-          {isLoading ? (
+          {groups === "loading" ? (
             <LoadingSpinner />
-          ) : (
+          ) : groups === null || selectedGroup === null ? null : (
             <>
               <div className="flex items-center">
                 <Image
-                  src={selectedGroup?.icon_url || current_icon_url}
+                  src={
+                    currentGroupId === "personal"
+                      ? "/images/defaulticon.png"
+                      : selectedGroup?.icon_url ?? "/images/defaulticon.png"
+                  }
                   alt="Selected Icon"
                   width={24}
                   height={24}
                   className="mr-2"
                 />
-                {selectedGroup ? selectedGroup.name : current_name}
+                {currentGroupId === "personal"
+                  ? "個人のカレンダー"
+                  : selectedGroup?.name}
               </div>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </>
@@ -89,8 +91,8 @@ export function GroupSwitcher({
         <DropdownMenuGroup>
           <DropdownMenuItem
             onSelect={() => {
-              setSelectedGroup(null);
               setOpenGroupSwitcher(false);
+              onChange("personal");
             }}
             className="font-bold"
           >
@@ -99,33 +101,32 @@ export function GroupSwitcher({
           </DropdownMenuItem>
           <DropdownMenuSeparator className="border" />
           <DropdownMenuLabel>参加中のグループ</DropdownMenuLabel>
-          {groups.length === 0 ? (
+          {groups === null || groups === "loading" ? null : groups.length ===
+            0 ? (
             <DropdownMenuItem disabled>
               まだグループに参加していません。
             </DropdownMenuItem>
           ) : (
-            groups.map(
-              //TODO:allGroupsをgroupsに変更
-              (group) => (
-                <DropdownMenuItem
-                  key={group.uid}
-                  onSelect={() => {
-                    setSelectedGroup(group);
-                    setOpenGroupSwitcher(false);
-                  }}
-                  className="flex"
-                >
-                  <Image
-                    src={group.icon_url}
-                    alt={group.name}
-                    width={24}
-                    height={24}
-                    className="flex mr-2"
-                  />
-                  {group.name}
-                </DropdownMenuItem>
-              )
-            )
+            groups.map((group) => (
+              <DropdownMenuItem
+                key={group.uid}
+                onSelect={() => {
+                  console.log("selected", group);
+                  setOpenGroupSwitcher(false);
+                  onChange(group.uid);
+                }}
+                className="flex"
+              >
+                <Image
+                  src={group.icon_url}
+                  alt={group.name}
+                  width={24}
+                  height={24}
+                  className="flex mr-2"
+                />
+                {group.name}
+              </DropdownMenuItem>
+            ))
           )}
         </DropdownMenuGroup>
         <MenuItemWithIcon

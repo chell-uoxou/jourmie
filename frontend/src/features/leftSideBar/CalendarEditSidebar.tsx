@@ -12,10 +12,10 @@ import { ViewTitle } from "~/components/common/ViewTitle";
 import SmallTitleWithIcon from "~/components/common/SmallTitleWithIcon";
 import { Blocks } from "lucide-react";
 import BackButton from "~/components/common/BackButton";
-import { useRouter } from "next/navigation";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import EventPoolListSkeleton from "../eventPool/EventPoolListSkeleton";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
+import useGroupRouter from "~/hooks/useGroupRouter";
 
 export default function CalendarEditSidebar({
   events,
@@ -31,7 +31,7 @@ export default function CalendarEditSidebar({
       : null
   );
   const [openDialog, setOpenDialog] = useState(false);
-  const router = useRouter();
+  const router = useGroupRouter();
 
   useEffect(() => {
     if (listEventPool) {
@@ -49,7 +49,7 @@ export default function CalendarEditSidebar({
   return (
     <div className="p-6 flex flex-col gap-4 h-full border-r border-brand-border-color w-[402px]">
       <div className="flex flex-col gap-1">
-        <BackButton onClick={() => router.back()} />
+        <BackButton onClick={() => router.pushInGroup("/calendar")} />
         <ViewTitle title="予定を編集" subTitle="あなたのカレンダー"></ViewTitle>
       </div>
       <div className="flex justify-between items-center">

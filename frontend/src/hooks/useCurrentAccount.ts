@@ -5,6 +5,7 @@ import useAuthUser from "./useAuthUser";
 import { useCallback, useEffect, useState } from "react";
 import useDBGroup, { getGroupDocRef } from "./useDBGroup";
 import { DBAccount, DBGroup } from "~/lib/firestore/schemas";
+import { defaultConverter } from "~/lib/firestore/firestore";
 
 const undefinedDefaultName = "名無しさん";
 const temporaryGroupIdForDemo = "YqPvZW6JKURIcTjCR9FA"; // デモ用に新規登録したアカウントを放り込むグループのID
@@ -89,8 +90,10 @@ export default function useCurrentAccount() {
   const getGroupsByAccount = useCallback(async (account: DBAccount) => {
     return await Promise.all(
       account.groups.map(async (groupRef) => {
-        const doc = await getDoc(groupRef);
-        return doc.data() as DBGroup;
+        const snapshot = await getDoc(
+          doc(db, groupRef.path).withConverter(defaultConverter<DBGroup>())
+        );
+        return snapshot.data() as DBGroup;
       })
     );
   }, []);
