@@ -23,7 +23,7 @@ function SideMenu() {
   const { push } = useRouter();
   const dbGroup = useCurrentGroup();
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 w-52">
       {isInGroup && (
         <>
           {dbGroup === "loading" ? (
