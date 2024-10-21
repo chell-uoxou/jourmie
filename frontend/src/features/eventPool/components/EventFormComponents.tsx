@@ -96,7 +96,7 @@ export default function EventFormComponents({
           <DateTimePicker
             value={startDateTime}
             onChange={(e) => e && setStartDateTime(e)}
-            displayFormat={{ hour24: "yyyy/mm/dd" }}
+            displayFormat={{ hour24: "yyyy/MM/dd(eee)hh:mm" }}
             className="flex1"
           />
         </WithLabel>
@@ -104,7 +104,7 @@ export default function EventFormComponents({
           <DateTimePicker
             value={endDateTime}
             onChange={(e) => e && setEndDateTime(e)}
-            displayFormat={{ hour24: "yyyy/mm/dd" }}
+            displayFormat={{ hour24: "yyyy/MM/dd(eee)hh:mm" }}
             className="flex1"
           />
         </WithLabel>
