@@ -10,7 +10,7 @@ const SideMenuItemWithIcon = (props: SideMenuItemWithIconProps) => {
   return (
     <Button variant="ghost" className="flex p-2 gap-2 justify-start w-full">
       <div>{props.icon}</div>
-      <h2 className=" text-sm">{props.title}</h2>
+      <h2 className="text-sm">{props.title}</h2>
     </Button>
   );
 };

@@ -46,29 +46,31 @@ function SideMenu() {
             title="予算"
           />
           <Border />
-          <Heading title="グループの予定" />
-          <SideMenuItemWithIcon
-            icon={<Blocks className="size-5" />}
-            title="イベント候補"
-          />
-          <SideMenuItemWithIcon
-            icon={<Calendar className="size-5" />}
-            title="カレンダー"
-          />
-          <SideMenuItemWithIcon
-            icon={<StickyNote className="size-5" />}
-            title="予定メモ"
-          />
-          <Border />
         </>
       )}
-
+      {isInGroup ? (
+        <Heading title="グループの予定" />
+      ) : (
+        <Heading title="あなたの予定" />
+      )}
+      <SideMenuItemWithIcon
+        icon={<Blocks className="size-5" />}
+        title="イベント候補"
+      />
+      <SideMenuItemWithIcon
+        icon={<Calendar className="size-5" />}
+        title="カレンダー"
+      />
+      <SideMenuItemWithIcon
+        icon={<StickyNote className="size-5" />}
+        title="予定メモ"
+      />
+      <Border />
       <Heading title="あなた" />
       <SideMenuItemWithIcon
         icon={<UserRound className="size-5" />}
         title="個人のカレンダー"
       />
-
       <SideMenuItemWithIcon
         icon={<List className="size-5" />}
         title="参加しているグループ"
