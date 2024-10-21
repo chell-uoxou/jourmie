@@ -56,7 +56,6 @@ export default function EventFormComponents({
   setEndDateTime,
   duration,
   setDuration,
-  //   budgetType, //利用されてない
   setBudgetType,
   budget,
   setBudget,

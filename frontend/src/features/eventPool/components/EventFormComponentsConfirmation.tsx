@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { BudgetMode } from "~/models/types/common";
 import FormConfirmationItem from "./FormConfirmationItem";
@@ -17,8 +17,8 @@ interface EventFormComponentsConfirmationProps {
   preparationDetails: string;
   participants: string;
   memo: string;
-  onEdit: () => void;
-  onSubmit: () => void;
+  onClickBack: () => void;
+  onClickRegister: () => void;
 }
 
 export default function EventFormComponentsConfirmation({
@@ -34,14 +34,12 @@ export default function EventFormComponentsConfirmation({
   preparationDetails,
   participants,
   memo,
-  onEdit,
-  onSubmit,
+  onClickBack: onEdit,
+  onClickRegister: onSubmit,
 }: EventFormComponentsConfirmationProps) {
-  const [isTitle, setIsTitle] = useState(false);
+  const [isTitleValid, setIsTitleValid] = useState(false);
 
-  useEffect(() => {
-    setIsTitle(!!name);
-  }, [name]);
+  setIsTitleValid(!!name);
 
   return (
     <div className="flex flex-col gap-6">
@@ -87,9 +85,9 @@ export default function EventFormComponentsConfirmation({
           編集
         </Button>
         <Button
-          onClick={isTitle ? onSubmit : undefined}
-          disabled={!isTitle}
-          variant={isTitle ? "default" : "secondary"}
+          onClick={isTitleValid ? onSubmit : undefined}
+          disabled={!isTitleValid}
+          variant={isTitleValid ? "default" : "secondary"}
           className="flex w-full"
         >
           追加
