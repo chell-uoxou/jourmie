@@ -1,5 +1,5 @@
 "use client";
-import { ViewerLeftSideBar } from "~/features/leftSidebar/ViewerLeftSidebar";
+import { ViewerLeftSideBar } from "~/features/leftSidebar2/ViewerLeftSidebar";
 
 export default function Page() {
   return (
