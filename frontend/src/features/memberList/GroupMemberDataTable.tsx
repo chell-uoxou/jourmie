@@ -90,6 +90,30 @@ export const columns: ColumnDef<DBGroupMember>[] = [
     ),
   },
   {
+    accessorKey: "email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          メールアドレス
+          <ArrowUp
+            className={clsx(
+              "transition-transform",
+              column.getIsSorted()
+                ? column.getIsSorted() === "asc"
+                  ? "rotate-180"
+                  : ""
+                : "opacity-0"
+            )}
+          />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="font-mono">{row.getValue("email")}</div>,
+  },
+  {
     accessorKey: "editing_permission_scopes",
     header: ({ column }) => {
       return (
@@ -162,6 +186,7 @@ export function DataTableDemo() {
 
   useEffect(() => {
     list().then((members) => {
+      console.log("members!!!!!!!!!!!!!", members);
       setData(members ?? []);
     });
   }, [list]);
