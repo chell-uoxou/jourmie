@@ -9,7 +9,7 @@ import { useState } from "react";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
 import { DayTimelineEvent } from "~/features/dayTimeline/DayTimelineEvent";
 import PrivateScheduleDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
-import CalendarEditSidebar from "~/features/leftSidebar2/CalendarEditSidebar";
+import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 
 export default function Page() {

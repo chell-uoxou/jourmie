@@ -1,6 +1,6 @@
 "use client";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
-import { ViewerLeftSideBar } from "~/features/leftSidebar2/ViewerLeftSidebar";
+import { ViewerLeftSideBar } from "~/features/leftSidebar/ViewerLeftSidebar";
 
 export default function Page() {
   return (
