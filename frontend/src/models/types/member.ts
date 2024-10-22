@@ -19,4 +19,6 @@ export interface Member {
   display_name: string;
   editing_permission_scopes: EditingPermissionScope[];
   notes: string;
+  email: string;
+  avatar_url: string;
 }
