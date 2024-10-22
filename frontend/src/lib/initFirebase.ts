@@ -3,9 +3,9 @@ import { initializeApp, FirebaseApp, getApp, FirebaseOptions } from 'firebase/ap
 export default function initFirebase(config: FirebaseOptions): FirebaseApp {
   let app
   try {
-    app = getApp()
-  } catch (e) {
-    app = initializeApp(config)
+    app = getApp();
+  } catch {
+    app = initializeApp(config);
   }
   return app
 }
