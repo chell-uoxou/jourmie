@@ -7,7 +7,7 @@ import {
 } from "@dnd-kit/core";
 import { useState } from "react";
 import { DayTimelineEvent } from "~/features/dayTimeline/DayTimelineEvent";
-import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
+import CalendarEditSidebar from "~/features/leftSidebar2/CalendarEditSidebar";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 
 export default function Page() {
