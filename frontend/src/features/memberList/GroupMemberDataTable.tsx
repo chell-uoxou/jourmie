@@ -10,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUp, ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -32,49 +32,15 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useFirestoreCollection } from "~/hooks/useFirestoreCollection";
+import useGroupRouter from "~/hooks/useGroupRouter";
+import { collection, doc } from "firebase/firestore";
+import { db } from "~/lib/firebase";
+import { DBGroupMember } from "~/lib/firestore/schemas";
+import clsx from "clsx";
 
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-];
-
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<DBGroupMember>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -98,48 +64,64 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
+    accessorKey: "display_name",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          名前
+          <ArrowUp
+            className={clsx(
+              "transition-transform",
+              column.getIsSorted()
+                ? column.getIsSorted() === "asc"
+                  ? "rotate-180"
+                  : ""
+                : "opacity-0"
+            )}
+          />
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("display_name")}</div>
+    ),
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
+    accessorKey: "editing_permission_scopes",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          権限
+          <ArrowUp
+            className={clsx(
+              "transition-transform",
+              column.getIsSorted()
+                ? column.getIsSorted() === "asc"
+                  ? "rotate-180"
+                  : ""
+                : "opacity-0"
+            )}
+          />
+        </Button>
+      );
     },
+    cell: ({ row }) => (
+      <div className="lowercase">
+        {row.getValue("editing_permission_scopes")}
+      </div>
+    ),
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
-
+      // const rowMember = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -149,15 +131,15 @@ export const columns: ColumnDef<Payment>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
+            <DropdownMenuLabel>
+              {row.getValue("display_name")}
+            </DropdownMenuLabel>
+            <DropdownMenuItem>詳細を表示</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>権限を編集</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive focus:text-destructive">
+              グループから削除
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -170,6 +152,19 @@ export function DataTableDemo() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+
+  const { groupId } = useGroupRouter();
+  const { list } = useFirestoreCollection<DBGroupMember>(
+    groupId ? collection(doc(db, "groups", groupId), "members") : null
+  );
+
+  const [data, setData] = useState<DBGroupMember[]>([]);
+
+  useEffect(() => {
+    list().then((members) => {
+      setData(members ?? []);
+    });
+  }, [list]);
 
   const table = useReactTable({
     data,
@@ -194,12 +189,12 @@ export function DataTableDemo() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
+          placeholder="メールアドレスを検索"
           value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
+          onChange={(event) => {
+            table.getColumn("email")?.setFilterValue(event.target.value);
+          }}
+          className="max-w-sm h-8"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
