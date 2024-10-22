@@ -318,12 +318,12 @@ function Calendar({
           ) : (
             <ChevronRight className="h-4 w-4" />
           ),
-        MonthCaption: ({ calendarMonth }) => {
+        MonthCaption: ({ calendarMonth }: { calendarMonth: any }) => {
           return (
             <div className="inline-flex gap-2">
               <Select
                 defaultValue={calendarMonth.date.getMonth().toString()}
-                onValueChange={(value) => {
+                onValueChange={(value: string) => {
                   const newDate = new Date(calendarMonth.date);
                   newDate.setMonth(Number.parseInt(value, 10));
                   props.onMonthChange?.(newDate);
@@ -345,7 +345,7 @@ function Calendar({
               </Select>
               <Select
                 defaultValue={calendarMonth.date.getFullYear().toString()}
-                onValueChange={(value) => {
+                onValueChange={(value: string) => {
                   const newDate = new Date(calendarMonth.date);
                   newDate.setFullYear(Number.parseInt(value, 10));
                   props.onMonthChange?.(newDate);
@@ -540,13 +540,13 @@ const TimePickerInput = React.forwardRef<
           className
         )}
         value={value || calculatedValue}
-        onChange={(e) => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           e.preventDefault();
           onChange?.(e);
         }}
         type={type}
         inputMode="decimal"
-        onKeyDown={(e) => {
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
           onKeyDown?.(e);
           handleKeyDown(e);
         }}
@@ -799,7 +799,7 @@ const DateTimePicker = React.forwardRef<
             mode="single"
             selected={value}
             month={month}
-            onSelect={(d) => handleSelect(d)}
+            onSelect={(d: Date | undefined) => handleSelect(d!)}
             onMonthChange={handleSelect}
             yearRange={yearRange}
             locale={locale}
