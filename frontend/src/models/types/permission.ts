@@ -26,3 +26,19 @@ export const groupMemberPermissionPreset: Record<
 
 export type GroupMemberPermissionPreset =
   keyof typeof groupMemberPermissionPreset;
+
+export const getScopesByPreset = (preset: GroupMemberPermissionPreset) => {
+  if (preset in groupMemberPermissionPreset) {
+    return groupMemberPermissionPreset[preset];
+  } else {
+    return null;
+  }
+};
+
+export const isScopeEnabled = (
+  scope: GroupMemberPermissionScope,
+  preset: GroupMemberPermissionPreset
+) => {
+  const scopes = getScopesByPreset(preset);
+  return scopes?.includes(scope) ?? false;
+};
