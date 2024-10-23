@@ -1,7 +1,7 @@
 "use client";
 
 import { Blend, Eye, Shapes, ShieldCheck } from "lucide-react";
-import { FormEventHandler, ReactNode } from "react";
+import { FormEventHandler, ReactNode, useState } from "react";
 import { InputWithLabel } from "~/components/common/InputWithLabel";
 import { WithLabel } from "~/components/common/WithLabel";
 import { Button } from "~/components/ui/button";
@@ -21,8 +21,8 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import useCurrentGroup from "~/hooks/useCurrentGroup";
-import { PermissionIcons } from "./PermissionIcons";
 import { GroupMemberPermissionPreset } from "~/models/types/permission";
+import { PermissionDescriptions } from "./PermissionDescriptions";
 
 interface InviteMemberDialogContentProps {
   group: ReturnType<typeof useCurrentGroup>;
@@ -35,6 +35,9 @@ export const InviteMemberDialogContent = ({
     e.preventDefault();
     // ここに招待処理を書く
   };
+  const [permPreset, setPermPreset] = useState<GroupMemberPermissionPreset>(
+    "can-edit-all-schedule"
+  );
 
   return (
     <DialogContent>
@@ -47,8 +50,8 @@ export const InviteMemberDialogContent = ({
       </DialogHeader>
       <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
         <InputWithLabel label="メールアドレス" type="email" required />
-        <WithLabel label="編集権限">
-          <Select defaultValue="can-edit-all-schedule">
+        <WithLabel label="権限">
+          <Select value={permPreset} onValueChange={setPermPreset}>
             <SelectTrigger>
               <SelectValue placeholder="権限設定を選択" />
             </SelectTrigger>
@@ -76,6 +79,7 @@ export const InviteMemberDialogContent = ({
             </SelectContent>
           </Select>
         </WithLabel>
+        <PermissionDescriptions presetName={permPreset} />
         <div className="flex justify-end">
           <Button type="submit">招待</Button>
         </div>
@@ -95,8 +99,8 @@ const PermissionSelectItem = (props: PermissionSelectItemProps) => {
     <SelectItem value={props.presetName}>
       <div className="flex gap-2.5 items-center w-full justify-between">
         <div className="flex gap-3.5 items-center">
-          {/* {props.icon ? props.icon : null} */}
-          <PermissionIcons permissionPreset={props.presetName} />
+          {props.icon ? props.icon : null}
+          {/* <PermissionIcons permissionPreset={props.presetName} /> */}
           {props.label}
         </div>
       </div>
