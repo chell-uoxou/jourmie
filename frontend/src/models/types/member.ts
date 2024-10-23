@@ -1,4 +1,4 @@
-import { EditingPermissionScope } from "./common";
+import { GroupMemberPermissionScope } from "./permission";
 import { DocumentReference } from "firebase/firestore";
 import { DBAccount } from "~/lib/firestore/schemas";
 
@@ -17,7 +17,7 @@ import { DBAccount } from "~/lib/firestore/schemas";
 export interface Member {
   account_reference: DocumentReference<DBAccount>;
   display_name: string;
-  editing_permission_scopes: EditingPermissionScope[];
+  editing_permission_scopes: GroupMemberPermissionScope[];
   notes: string;
   email: string;
   avatar_url: string;

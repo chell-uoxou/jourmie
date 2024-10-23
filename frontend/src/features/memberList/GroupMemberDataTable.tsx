@@ -10,13 +10,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUp, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUp, MoreHorizontal, Plus } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -39,6 +38,9 @@ import { collection, doc } from "firebase/firestore";
 import { db } from "~/lib/firebase";
 import { DBGroupMember } from "~/lib/firestore/schemas";
 import clsx from "clsx";
+import { Dialog, DialogTrigger } from "~/components/ui/dialog";
+import useCurrentGroup from "~/hooks/useCurrentGroup";
+import { InviteMemberDialogContent } from "./components/InviteMemberDialogContent";
 
 export const columns: ColumnDef<DBGroupMember>[] = [
   {
@@ -171,13 +173,14 @@ export const columns: ColumnDef<DBGroupMember>[] = [
   },
 ];
 
-export function DataTableDemo() {
+export function GroupMemberDataTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
   const { groupId } = useGroupRouter();
+  const group = useCurrentGroup();
   const { list } = useFirestoreCollection<DBGroupMember>(
     groupId ? collection(doc(db, "groups", groupId), "members") : null
   );
@@ -211,42 +214,24 @@ export function DataTableDemo() {
   });
 
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
+    <div className="w-full flex flex-col gap-3">
+      <div className="flex items-center">
         <Input
           placeholder="メールアドレスを検索"
           value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
             table.getColumn("email")?.setFilterValue(event.target.value);
           }}
-          className="max-w-sm h-8"
+          className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="ml-auto">
+              招待 <Plus className=" h-4 w-4" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </DialogTrigger>
+          <InviteMemberDialogContent group={group} />
+        </Dialog>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -298,12 +283,12 @@ export function DataTableDemo() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-3">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        <div className="space-x-3">
           <Button
             variant="outline"
             size="sm"
