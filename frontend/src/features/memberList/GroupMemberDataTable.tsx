@@ -30,7 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFirestoreCollection } from "~/hooks/useFirestoreCollection";
 import useGroupRouter from "~/hooks/useGroupRouter";
 import { collection, doc } from "firebase/firestore";
