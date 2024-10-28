@@ -74,6 +74,7 @@ export default function EventFormComponents({
   return (
     <div className="flex flex-col gap-4">
       <InputWithLabel
+        label="名前"
         name="name"
         id="name"
         value={name}
@@ -81,15 +82,14 @@ export default function EventFormComponents({
         onBlur={(e) => validate("title", e.target.value)}
         onFocus={() => disableError("title")}
         className={isValid("title") ? "" : "border-red-500"}
-        label="名前"
         errorText={isValid("title") ? "" : "必須項目です。"}
       />
       <InputWithLabel
+        label="説明"
         name="description"
         id="description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        label="説明"
       />
       <InputWithLabel
         label="場所"
@@ -120,6 +120,7 @@ export default function EventFormComponents({
       </div>
 
       <InputWithLabel
+        label="所要時間(分)"
         name="time"
         id="time"
         type="number"
@@ -128,7 +129,6 @@ export default function EventFormComponents({
         onBlur={(e) => validate("default_duration", e.target.value)}
         onFocus={() => disableError("default_duration")}
         className={isValid("default_duration") ? "" : "border-red-500"}
-        label="所要時間(分)"
         errorText={
           isValid("default_duration") ? "" : "負でない整数のみ入力できます"
         }
@@ -152,6 +152,12 @@ export default function EventFormComponents({
           type="number"
           value={budget}
           onChange={(e) => setBudget(e.target.value)}
+          onBlur={(e) => validate("default_budget", e.target.value)}
+          onFocus={() => disableError("default_budget")}
+          className={isValid("default_budget") ? "" : "border-red-500"}
+          errorText={
+            isValid("default_budget") ? "" : "負でない整数のみ入力できます"
+          }
         />
       </div>
       <div className="flex items-center gap-2 mt-4">
@@ -185,6 +191,11 @@ export default function EventFormComponents({
         type="number"
         value={participants}
         onChange={(e) => setParticipants(e.target.value)}
+        onFocus={() => disableError("max_participants")}
+        className={isValid("max_participants") ? "" : "border-red-500"}
+        errorText={
+          isValid("max_participants") ? "" : "負でない整数のみ入力できます"
+        }
       />
       <WithLabel label="メモ">
         <Textarea

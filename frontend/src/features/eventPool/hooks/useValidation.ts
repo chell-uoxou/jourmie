@@ -15,14 +15,25 @@ const createValidation = <T extends keyof DBEventPoolItem>(
 };
 
 export const useValidation = () => {
-  const [validFields, setValidFields] = useState<(keyof DBEventPoolItem)[]>([]);
+  const [validFields, setValidFields] = useState<(keyof DBEventPoolItem)[]>([
+    "title",
+    "default_duration",
+    "default_budget",
+    "max_participants",
+  ]);
 
   const validations = [
-    createValidation("title", (value: string) => {
+    createValidation("title", (value) => {
       return value.length > 0;
     }),
-    createValidation("default_duration", (value: number) => {
-      return value >= 0 && Number.isInteger(value);
+    createValidation("default_duration", (value) => {
+      return Number(value) >= 0 && Number.isInteger(Number(value));
+    }),
+    createValidation("default_budget", (value) => {
+      return Number(value) >= 0 && Number.isInteger(Number(value));
+    }),
+    createValidation("max_participants", (value) => {
+      return Number(value) >= 0 && Number.isInteger(Number(value));
     }),
   ];
 
@@ -43,7 +54,6 @@ export const useValidation = () => {
     if (!validation) {
       return false;
     }
-
     setValidFields((prev) =>
       validation.validator(value as any)
         ? prev.includes(key)
