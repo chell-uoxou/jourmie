@@ -34,10 +34,10 @@ function EventForm() {
 
   const [isConfirmation, setIsConfirmation] = useState(false);
 
-  // 送信処理
+  // submit時の処理(確認画面に遷移)
   const handleSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
-    setIsConfirmation(true); // 確認画面に切り替え
+    setIsConfirmation(true);
   };
 
   // 確認画面からの実際のデータ送信
