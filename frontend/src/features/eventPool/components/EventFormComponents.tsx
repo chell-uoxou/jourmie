@@ -211,6 +211,11 @@ export default function EventFormComponents({
       </WithLabel>
       <div className="flex ">
         <Button onClick={onConfirm} className="flex w-full">
+          {/* 入力のオブジェクト化が終わったらコメントと変更 */}
+          {/* <Button
+          onClick={validateAll(EventPoolList) ? onConfirm}
+          disabled={!validateAll(EventPoolList) }
+          variant={validateAll(EventPoolList)  ? "default" : "secondary"} */}
           確認
         </Button>
       </div>
