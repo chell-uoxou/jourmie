@@ -1,39 +1,28 @@
 import clsx from "clsx";
 import { Blend, Blocks, Shapes, Wrench } from "lucide-react";
-import {
-  GroupMemberPermissionPreset,
-  groupMemberPermissionPreset,
-  GroupMemberPermissionScope,
-} from "~/models/types/permission";
+import { GroupMemberPermissionScope } from "~/models/types/permission";
 
 interface PermissionIconsProps {
-  permissionPreset: GroupMemberPermissionPreset;
+  permissionScopes: GroupMemberPermissionScope[];
+  showContainer?: boolean;
 }
 
-export const PermissionIcons = ({ permissionPreset }: PermissionIconsProps) => {
-  const getScopesByPreset = (preset: typeof permissionPreset) => {
-    if (preset in groupMemberPermissionPreset) {
-      return groupMemberPermissionPreset[preset];
-    } else {
-      return null;
-    }
-  };
-
-  const isScopeEnabled = (
-    scope: GroupMemberPermissionScope,
-    preset: typeof permissionPreset
-  ) => {
-    const scopes = getScopesByPreset(preset);
-    return scopes?.includes(scope) ?? false;
-  };
-
+export const PermissionIcons = ({
+  permissionScopes,
+  showContainer,
+}: PermissionIconsProps) => {
   return (
-    <div className="flex gap-2.5 rounded-md bg-gray-50 border py-1 px-2">
+    <div
+      className={clsx(
+        "flex gap-2.5",
+        showContainer ? "rounded-md bg-gray-50 border py-1 px-2" : ""
+      )}
+    >
       <Shapes
         className={clsx(
           "size-4",
 
-          isScopeEnabled("open_schedules", permissionPreset)
+          permissionScopes.includes("open_schedules")
             ? "stroke-emerald-400"
             : "opacity-30 stroke-gray-900"
         )}
@@ -42,7 +31,7 @@ export const PermissionIcons = ({ permissionPreset }: PermissionIconsProps) => {
         className={clsx(
           "size-4",
 
-          isScopeEnabled("event_pool", permissionPreset)
+          permissionScopes.includes("common_schedules")
             ? "stroke-emerald-400"
             : "opacity-30 stroke-gray-900"
         )}
@@ -51,7 +40,7 @@ export const PermissionIcons = ({ permissionPreset }: PermissionIconsProps) => {
         className={clsx(
           "size-4",
 
-          isScopeEnabled("common_schedules", permissionPreset)
+          permissionScopes.includes("event_pool")
             ? "stroke-emerald-400"
             : "opacity-30 stroke-gray-900"
         )}
@@ -60,7 +49,7 @@ export const PermissionIcons = ({ permissionPreset }: PermissionIconsProps) => {
         className={clsx(
           "size-4",
 
-          isScopeEnabled("group_settings", permissionPreset)
+          permissionScopes.includes("group_settings")
             ? "stroke-emerald-400"
             : "opacity-30 stroke-gray-900"
         )}
