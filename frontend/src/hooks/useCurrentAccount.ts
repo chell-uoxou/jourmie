@@ -68,6 +68,8 @@ export default function useCurrentAccount() {
               addMemberToGroup(accountRef, {
                 display_name: currentAuthUser.displayName ?? "",
                 notes: "自動追加されました",
+                email: currentAuthUser.email ?? "",
+                avatar_url: currentAuthUser.photoURL ?? "",
               });
             } else {
               console.log(
