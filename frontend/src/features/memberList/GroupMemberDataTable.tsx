@@ -19,7 +19,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
@@ -31,7 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFirestoreCollection } from "~/hooks/useFirestoreCollection";
 import useGroupRouter from "~/hooks/useGroupRouter";
 import { collection, doc } from "firebase/firestore";
@@ -42,119 +41,7 @@ import { Dialog, DialogTrigger } from "~/components/ui/dialog";
 import useCurrentGroup from "~/hooks/useCurrentGroup";
 import { InviteMemberDialogContent } from "./components/InviteMemberDialogContent";
 import { PermissionIcons } from "./components/PermissionIcons";
-
-export const columns: ColumnDef<DBGroupMember>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "display_name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          名前
-          <ArrowUp
-            className={clsx(
-              "transition-transform",
-              column.getIsSorted()
-                ? column.getIsSorted() === "asc"
-                  ? "rotate-180"
-                  : ""
-                : "opacity-0"
-            )}
-          />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("display_name")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          メールアドレス
-          <ArrowUp
-            className={clsx(
-              "transition-transform",
-              column.getIsSorted()
-                ? column.getIsSorted() === "asc"
-                  ? "rotate-180"
-                  : ""
-                : "opacity-0"
-            )}
-          />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="font-mono">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "editing_permission_scopes",
-    header: "権限",
-
-    cell: ({ row }) => (
-      <PermissionIcons
-        permissionScopes={row.getValue("editing_permission_scopes")}
-      />
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      // const rowMember = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>
-              {row.getValue("display_name")}
-            </DropdownMenuLabel>
-            <DropdownMenuItem>詳細を表示</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>権限を編集</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
-              グループから削除
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+import EditMemberDialog from "./components/EditMemberDialog";
 
 export function GroupMemberDataTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -170,12 +57,146 @@ export function GroupMemberDataTable() {
 
   const [data, setData] = useState<DBGroupMember[]>([]);
 
+  // EditMemberDialog
+  const [isEMBOpen, setIsEMBOpen] = useState(false);
+  const [EMBSelectedMember, setEMBSelectedMember] =
+    useState<DBGroupMember | null>(null);
+
   useEffect(() => {
     list().then((members) => {
       console.log("members!!!!!!!!!!!!!", members);
       setData(members ?? []);
     });
   }, [list]);
+
+  const columns: ColumnDef<DBGroupMember>[] = useMemo(
+    () => [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+            aria-label="Select all"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      },
+      {
+        accessorKey: "display_name",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              名前
+              <ArrowUp
+                className={clsx(
+                  "transition-transform",
+                  column.getIsSorted()
+                    ? column.getIsSorted() === "asc"
+                      ? "rotate-180"
+                      : ""
+                    : "opacity-0"
+                )}
+              />
+            </Button>
+          );
+        },
+        cell: ({ row }) => (
+          <div className="capitalize">{row.getValue("display_name")}</div>
+        ),
+      },
+      {
+        accessorKey: "email",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              メールアドレス
+              <ArrowUp
+                className={clsx(
+                  "transition-transform",
+                  column.getIsSorted()
+                    ? column.getIsSorted() === "asc"
+                      ? "rotate-180"
+                      : ""
+                    : "opacity-0"
+                )}
+              />
+            </Button>
+          );
+        },
+        cell: ({ row }) => (
+          <div className="font-mono">{row.getValue("email")}</div>
+        ),
+      },
+      {
+        accessorKey: "editing_permission_scopes",
+        header: "権限",
+
+        cell: ({ row }) => (
+          <PermissionIcons
+            permissionScopes={row.getValue("editing_permission_scopes")}
+          />
+        ),
+      },
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          // const rowMember = row.original;
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  {row.getValue("display_name")}
+                </DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setEMBSelectedMember(row.original);
+                    setIsEMBOpen(true);
+                  }}
+                >
+                  メンバーを編集
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                  グループから削除
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      },
+    ],
+    []
+  );
 
   const table = useReactTable({
     data,
@@ -290,6 +311,11 @@ export function GroupMemberDataTable() {
           </Button>
         </div>
       </div>
+      <EditMemberDialog
+        member={EMBSelectedMember}
+        open={isEMBOpen}
+        onOpenChange={setIsEMBOpen}
+      />
     </div>
   );
 }

@@ -35,6 +35,19 @@ export const getScopesByPreset = (preset: GroupMemberPermissionPreset) => {
   }
 };
 
+export const getPresetByScopes = (
+  scopes: GroupMemberPermissionScope[]
+): GroupMemberPermissionPreset | null => {
+  const result = Object.keys(groupMemberPermissionPreset).find((preset) => {
+    const presetScopes = groupMemberPermissionPreset[preset];
+    return (
+      scopes.every((scope) => presetScopes.includes(scope)) &&
+      presetScopes.length === scopes.length
+    );
+  }) as GroupMemberPermissionPreset | null;
+  return result;
+};
+
 export const isScopeEnabled = (
   scope: GroupMemberPermissionScope,
   preset: GroupMemberPermissionPreset
