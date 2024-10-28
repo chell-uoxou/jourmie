@@ -11,7 +11,6 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import useCurrentGroup from "~/hooks/useCurrentGroup";
-import useCurrentAccount from "~/hooks/useCurrentAccount";
 import {
   getScopesByPreset,
   GroupMemberPermissionPreset,
@@ -40,8 +39,9 @@ export const InviteMemberDialogContent = ({
   group,
 }: InviteMemberDialogContentProps) => {
   const { groupId } = useGroupRouter();
-  const { addMemberToGroup } = useDBGroup(getGroupDocRef(groupId!));
-  const { currentDBAccount } = useCurrentAccount();
+  const { addMemberToGroup, existAccount } = useDBGroup(
+    getGroupDocRef(groupId!)
+  );
   const firestore = getFirestore();
   const AccountsCollectionRef = collection(firestore, "accounts");
 
@@ -61,27 +61,28 @@ export const InviteMemberDialogContent = ({
 
     const querySnapshot = await getDocs(q);
     if (querySnapshot.size === 0) {
-      console.log("No matching documents.");
-      // エラーメッセージを表示するなどの処理を追加
+      alert("そのメールアドレスのユーザは存在しません");
       return;
     }
 
-    querySnapshot.forEach((snapshot) => {
+    querySnapshot.forEach(async (snapshot) => {
       const matchedAccount = snapshot.data();
-      // グループにアカウントを追加
-      if (group !== "loading" && group) {
-        addMemberToGroup(
-          doc(db, "accounts", snapshot.id).withConverter(
-            createConverter<DBAccount>()
-          ),
-          {
-            display_name: matchedAccount.default_display_name ?? "",
-            notes: "自動追加されました",
-            email: matchedAccount.email ?? "",
-            avatar_url: matchedAccount.avatar_url ?? "",
-            editing_permission_scopes: getScopesByPreset(permPreset) ?? [],
-          }
-        );
+      const accountRef = doc(db, "accounts", snapshot.id).withConverter(
+        createConverter<DBAccount>()
+      );
+
+      if (await existAccount(accountRef)) {
+        alert("そのユーザはすでにグループに所属しています");
+        return;
+      }
+      if (group != "loading" && group) {
+        addMemberToGroup(accountRef, {
+          display_name: matchedAccount.default_display_name ?? "",
+          notes: "自動追加されました",
+          email: matchedAccount.email ?? "",
+          avatar_url: matchedAccount.avatar_url ?? "",
+          editing_permission_scopes: getScopesByPreset(permPreset) ?? [],
+        });
       }
     });
 
