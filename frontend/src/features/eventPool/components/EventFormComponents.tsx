@@ -16,6 +16,7 @@ import { WithLabel } from "~/components/common/WithLabel";
 import { BudgetMode } from "~/models/types/common";
 import { ja } from "date-fns/locale";
 import { useValidation } from "../hooks/useValidation";
+import { Button } from "~/components/ui/button";
 
 interface EventFormComponentsProps {
   name: string;
@@ -42,6 +43,7 @@ interface EventFormComponentsProps {
   setParticipants: React.Dispatch<React.SetStateAction<string>>;
   memo: string;
   setMemo: React.Dispatch<React.SetStateAction<string>>;
+  onClickConfirm: () => void;
 }
 
 export default function EventFormComponents({
@@ -68,6 +70,7 @@ export default function EventFormComponents({
   setParticipants,
   memo,
   setMemo,
+  onClickConfirm: onConfirm,
 }: EventFormComponentsProps) {
   const { isValid, validate, disableError } = useValidation();
 
@@ -206,6 +209,11 @@ export default function EventFormComponents({
           onChange={(e) => setMemo(e.target.value)}
         />
       </WithLabel>
+      <div className="flex ">
+        <Button onClick={onConfirm} className="flex w-full">
+          確認
+        </Button>
+      </div>
     </div>
   );
 }

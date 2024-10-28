@@ -1,6 +1,5 @@
 "use client";
-import React, { FormEventHandler, useState } from "react";
-import { Button } from "~/components/ui/button";
+import React, { useState } from "react";
 import { collection, Timestamp } from "firebase/firestore";
 import { db } from "~/lib/firebase";
 import { useFirestoreCollection } from "~/hooks/useFirestoreCollection";
@@ -33,12 +32,6 @@ function EventForm() {
   const [memo, setMemo] = useState("");
 
   const [isConfirmation, setIsConfirmation] = useState(false);
-
-  // submit時の処理(確認画面に遷移)
-  const handleSubmit: FormEventHandler = async (e) => {
-    e.preventDefault();
-    setIsConfirmation(true);
-  };
 
   // 確認画面からの実際のデータ送信
   const handleFinalSubmit = async () => {
@@ -95,7 +88,7 @@ function EventForm() {
   return (
     <div>
       {isConfirmation ? (
-        <form onSubmit={handleSubmit} className="w-96 p-2">
+        <form className="w-96 p-2">
           <div className="w-full">
             <div className="flex flex-col gap-4">
               <EventFormComponentsConfirmation
@@ -118,7 +111,7 @@ function EventForm() {
           </div>
         </form>
       ) : (
-        <form onSubmit={handleSubmit} className="w-96 p-2">
+        <form className="w-96 p-2">
           <div className="flex flex-col w-full gap-6">
             <EventFormComponents
               name={name}
@@ -145,12 +138,8 @@ function EventForm() {
               setParticipants={setParticipants}
               memo={memo}
               setMemo={setMemo}
+              onClickConfirm={() => setIsConfirmation(true)}
             />
-            <div className="flex ">
-              <Button type="submit" className="flex w-full">
-                確認
-              </Button>
-            </div>
           </div>
         </form>
       )}
