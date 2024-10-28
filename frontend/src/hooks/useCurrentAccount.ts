@@ -1,5 +1,5 @@
 import { useFirestoreCollection } from "./useFirestoreCollection";
-import { collection, doc, DocumentReference, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc } from "firebase/firestore";
 import { db } from "~/lib/firebase";
 import useAuthUser from "./useAuthUser";
 import { useCallback, useEffect, useState } from "react";
@@ -59,7 +59,7 @@ export default function useCurrentAccount() {
             db,
             "accounts",
             currentAuthUser.uid
-          ) as DocumentReference<DBAccount>;
+          ).withConverter(defaultConverter<DBAccount>());
           existAccount(accountRef).then((exists) => {
             if (!exists) {
               console.log(
@@ -70,6 +70,12 @@ export default function useCurrentAccount() {
                 notes: "自動追加されました",
                 email: currentAuthUser.email ?? "",
                 avatar_url: currentAuthUser.photoURL ?? "",
+                editing_permission_scopes: [
+                  "common_schedules",
+                  "event_pool",
+                  "group_settings",
+                  "open_schedules",
+                ],
               });
             } else {
               console.log(
