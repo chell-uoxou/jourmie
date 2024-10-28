@@ -3,15 +3,13 @@
 import {
   defaultDropAnimationSideEffects,
   DndContext,
-  DragOverEvent,
   DragOverlay,
-  DragStartEvent,
   Modifier,
   useDroppable,
 } from "@dnd-kit/core";
 import clsx from "clsx";
 import { doc, GeoPoint, Timestamp } from "firebase/firestore";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { DayTimelineEvent } from "~/features/dayTimeline/DayTimelineEvent";
 import EventPoolListItem from "~/features/eventPool/EventsPoolListItem";
@@ -21,6 +19,7 @@ import { db } from "~/lib/firebase";
 import { defaultConverter } from "~/lib/firestore/firestore";
 import { DBAccount, DBGroupMember } from "~/lib/firestore/schemas";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
+import { useDndTimeline } from "./useDndTimeline";
 
 const Droppable = () => {
   const { timelineSettings } = useTimelineSettings();
@@ -39,19 +38,9 @@ const Droppable = () => {
 };
 
 export default function Page() {
-  const [activeId, setActiveId] = useState<string | number | null>(null);
-  const [isOverDraggable, setIsOverDraggable] = useState(false);
   const [modifier, setModifier] = useState<Parameters<Modifier>[0] | null>(
     null
   );
-  const modifierRef = useRef<Parameters<Modifier>[0] | null>(null);
-  const topInDayTimeline = useRef<number | null>(null);
-  const scrollTopInDayTimeline = useRef<number | null>(null);
-  const minutesFromMidnight = useRef<number | null>(null);
-  const quantizedMinutesFromMidnight = useRef<number | null>(null);
-
-  const { timelineSettings } = useTimelineSettings();
-
   const dummyEventPool1: DBEventPoolItem = {
     uid: "1",
     title: "京都国立博物館",
@@ -121,33 +110,22 @@ export default function Page() {
     schedule_instances: [],
   };
 
+  const {
+    handleStartDrag,
+    handleDragEnd,
+    handleDragOver,
+    handleDragCancel,
+    eventItemModifier,
+    modifierRef,
+    scrollTopInDayTimeline,
+    isOverDraggable,
+    minutesFromMidnight,
+    topInDayTimeline,
+    quantizedMinutesFromMidnight,
+    activeId,
+  } = useDndTimeline();
+
   const events = [dummyEventPool1, dummyEventPool2];
-  const handleStartDrag = useCallback(
-    (event: DragStartEvent) => {
-      setActiveId(event.active.id);
-    },
-    [setActiveId]
-  );
-
-  const handleDragOver = useCallback((event: DragOverEvent) => {
-    console.log("drag over");
-    console.log(event);
-    if (event.over === null) {
-      setIsOverDraggable(false);
-    } else {
-      setIsOverDraggable(true);
-    }
-  }, []);
-
-  const handleDragCancel = () => {
-    console.log("drag cancel");
-    setIsOverDraggable(false);
-  };
-
-  const handleDragEnd = () => {
-    console.log("drag end");
-    setIsOverDraggable(false);
-  };
 
   const formatMinutes = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -155,45 +133,6 @@ export default function Page() {
     return `${hours.toString().padStart(2, "0")}:${minutesInHour
       .toString()
       .padStart(2, "0")}`;
-  };
-
-  const eventItemModifier: Modifier = (args) => {
-    let modifiedTransform = args.transform;
-
-    modifierRef.current = args;
-    if (args.over && args.over.id === "dnd-practice-droppable") {
-      topInDayTimeline.current =
-        (args.overlayNodeRect?.top ?? 0) +
-        args.transform.y +
-        (scrollTopInDayTimeline.current ?? 0);
-
-      minutesFromMidnight.current = Math.floor(
-        (topInDayTimeline.current / timelineSettings.gridHeight) *
-          timelineSettings.gridInterval *
-          60
-      );
-
-      minutesFromMidnight.current =
-        minutesFromMidnight.current <= 0
-          ? 0
-          : minutesFromMidnight.current >= 1440
-          ? 1440
-          : minutesFromMidnight.current;
-
-      quantizedMinutesFromMidnight.current =
-        Math.floor(minutesFromMidnight.current / 15) * 15;
-
-      modifiedTransform = {
-        ...modifiedTransform,
-        x: 450,
-        y:
-          (quantizedMinutesFromMidnight.current / 60) *
-            timelineSettings.gridHeight -
-          (scrollTopInDayTimeline.current ?? 0) -
-          (args.overlayNodeRect?.top ?? 0),
-      };
-    }
-    return modifiedTransform;
   };
 
   useEffect(() => {
