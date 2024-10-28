@@ -41,6 +41,7 @@ import clsx from "clsx";
 import { Dialog, DialogTrigger } from "~/components/ui/dialog";
 import useCurrentGroup from "~/hooks/useCurrentGroup";
 import { InviteMemberDialogContent } from "./components/InviteMemberDialogContent";
+import { PermissionIcons } from "./components/PermissionIcons";
 
 export const columns: ColumnDef<DBGroupMember>[] = [
   {
@@ -117,30 +118,12 @@ export const columns: ColumnDef<DBGroupMember>[] = [
   },
   {
     accessorKey: "editing_permission_scopes",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          権限
-          <ArrowUp
-            className={clsx(
-              "transition-transform",
-              column.getIsSorted()
-                ? column.getIsSorted() === "asc"
-                  ? "rotate-180"
-                  : ""
-                : "opacity-0"
-            )}
-          />
-        </Button>
-      );
-    },
+    header: "権限",
+
     cell: ({ row }) => (
-      <div className="lowercase">
-        {row.getValue("editing_permission_scopes")}
-      </div>
+      <PermissionIcons
+        permissionScopes={row.getValue("editing_permission_scopes")}
+      />
     ),
   },
   {
