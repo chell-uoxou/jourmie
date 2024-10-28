@@ -85,6 +85,7 @@ export const InviteMemberDialogContent = ({
             onClick: () => console.log("Undo"),
           },
         });
+        return;
       }
       if (group != "loading" && group) {
         addMemberToGroup(accountRef, {
