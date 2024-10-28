@@ -15,6 +15,7 @@ import { InputWithLabel } from "~/components/common/InputWithLabel";
 import { WithLabel } from "~/components/common/WithLabel";
 import { BudgetMode } from "~/models/types/common";
 import { ja } from "date-fns/locale";
+import { useValidation } from "../hooks/useValidation";
 
 interface EventFormComponentsProps {
   name: string;
@@ -68,6 +69,8 @@ export default function EventFormComponents({
   memo,
   setMemo,
 }: EventFormComponentsProps) {
+  const { isValid, validate, disableError } = useValidation();
+
   return (
     <div className="flex flex-col gap-4">
       <InputWithLabel
@@ -75,7 +78,11 @@ export default function EventFormComponents({
         id="name"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        onBlur={(e) => validate("title", e.target.value)}
+        onFocus={() => disableError("title")}
+        className={isValid("title") ? "" : "border-red-500"}
         label="名前"
+        errorText={isValid("title") ? "" : "必須項目です。"}
       />
       <InputWithLabel
         name="description"
@@ -113,12 +120,18 @@ export default function EventFormComponents({
       </div>
 
       <InputWithLabel
-        label="所要時間(分)"
         name="time"
         id="time"
         type="number"
         value={duration}
         onChange={(e) => setDuration(e.target.value)}
+        onBlur={(e) => validate("default_duration", e.target.value)}
+        onFocus={() => disableError("default_duration")}
+        className={isValid("default_duration") ? "" : "border-red-500"}
+        label="所要時間(分)"
+        errorText={
+          isValid("default_duration") ? "" : "負でない整数のみ入力できます"
+        }
       />
       <div className="flex w-full gap-2">
         <WithLabel label="1人あたり/合算">

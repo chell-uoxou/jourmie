@@ -1,5 +1,4 @@
 "use client";
-import React, { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { BudgetMode } from "~/models/types/common";
 import FormConfirmationItem from "./FormConfirmationItem";
@@ -37,10 +36,6 @@ export default function EventFormComponentsConfirmation({
   onClickBack: onEdit,
   onClickRegister: onSubmit,
 }: EventFormComponentsConfirmationProps) {
-  const [isTitleValid, setIsTitleValid] = useState(false);
-
-  setIsTitleValid(!!name);
-
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-6">
@@ -84,12 +79,7 @@ export default function EventFormComponentsConfirmation({
         <Button onClick={onEdit} className="flex w-full" variant="outline">
           編集
         </Button>
-        <Button
-          onClick={isTitleValid ? onSubmit : undefined}
-          disabled={!isTitleValid}
-          variant={isTitleValid ? "default" : "secondary"}
-          className="flex w-full"
-        >
+        <Button onClick={onSubmit} className="flex w-full">
           追加
         </Button>
       </div>

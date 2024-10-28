@@ -4,6 +4,7 @@ import { WithLabel } from "./WithLabel";
 
 interface InputWithLabelProps extends InputProps {
   label: string;
+  errorText?: string;
 }
 
 export const InputWithLabel = (props: InputWithLabelProps) => {
@@ -12,6 +13,9 @@ export const InputWithLabel = (props: InputWithLabelProps) => {
   return (
     <WithLabel label={label}>
       <Input {...rest} />
+      {props.errorText ? (
+        <div className="text-red-500 text-sm">{props.errorText}</div>
+      ) : null}
     </WithLabel>
   );
 };
