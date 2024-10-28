@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./tailwind.css";
 import Providers from "~/components/common/Providers";
+import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="ja">
       <body>
         <Providers>{children}</Providers>
+        <Toaster />
       </body>
     </html>
   );

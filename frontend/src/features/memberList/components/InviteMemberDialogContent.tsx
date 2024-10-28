@@ -4,6 +4,7 @@ import { FormEventHandler, useState } from "react";
 import { InputWithLabel } from "~/components/common/InputWithLabel";
 import { WithLabel } from "~/components/common/WithLabel";
 import { Button } from "~/components/ui/button";
+import { toast } from "sonner";
 import {
   DialogContent,
   DialogDescription,
@@ -61,8 +62,13 @@ export const InviteMemberDialogContent = ({
 
     const querySnapshot = await getDocs(q);
     if (querySnapshot.size === 0) {
-      alert("そのメールアドレスのユーザは存在しません");
-      return;
+      toast("そのメールアドレスのユーザは存在しません", {
+        description: "もう一度入力してください",
+        action: {
+          label: "おけ",
+          onClick: () => console.log("Undo"),
+        },
+      });
     }
 
     querySnapshot.forEach(async (snapshot) => {
@@ -72,8 +78,13 @@ export const InviteMemberDialogContent = ({
       );
 
       if (await existAccount(accountRef)) {
-        alert("そのユーザはすでにグループに所属しています");
-        return;
+        toast("そのユーザはすでにグループに所属しています", {
+          description: "もう一度入力してください",
+          action: {
+            label: "おけ",
+            onClick: () => console.log("Undo"),
+          },
+        });
       }
       if (group != "loading" && group) {
         addMemberToGroup(accountRef, {
