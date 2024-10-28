@@ -1,5 +1,5 @@
 import { DragOverEvent, DragStartEvent, Modifier } from "@dnd-kit/core";
-import { useCallback, useRef, useState } from "react";
+import { UIEventHandler, useCallback, useMemo, useRef, useState } from "react";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 
 export const useDndTimeline = () => {
@@ -39,55 +39,68 @@ export const useDndTimeline = () => {
     setIsOverDraggable(false);
   };
 
-  const eventItemModifier: Modifier = (args) => {
-    let modifiedTransform = args.transform;
+  const eventItemModifier: Modifier = useCallback(
+    (args) => {
+      let modifiedTransform = args.transform;
 
-    modifierRef.current = args;
-    if (args.over && args.over.id === "dnd-practice-droppable") {
-      topInDayTimeline.current =
-        (args.overlayNodeRect?.top ?? 0) +
-        args.transform.y +
-        (scrollTopInDayTimeline.current ?? 0);
+      modifierRef.current = args;
+      if (args.over && args.over.id === "dnd-practice-droppable") {
+        topInDayTimeline.current =
+          (args.overlayNodeRect?.top ?? 0) +
+          args.transform.y +
+          (scrollTopInDayTimeline.current ?? 0);
 
-      minutesFromMidnight.current = Math.floor(
-        (topInDayTimeline.current / timelineSettings.gridHeight) *
-          timelineSettings.gridInterval *
-          60
-      );
+        minutesFromMidnight.current = Math.floor(
+          (topInDayTimeline.current / timelineSettings.gridHeight) *
+            timelineSettings.gridInterval *
+            60
+        );
 
-      minutesFromMidnight.current =
-        minutesFromMidnight.current <= 0
-          ? 0
-          : minutesFromMidnight.current >= 1440
-          ? 1440
-          : minutesFromMidnight.current;
+        minutesFromMidnight.current =
+          minutesFromMidnight.current <= 0
+            ? 0
+            : minutesFromMidnight.current >= 1440
+            ? 1440
+            : minutesFromMidnight.current;
 
-      quantizedMinutesFromMidnight.current =
-        Math.floor(minutesFromMidnight.current / 15) * 15;
+        quantizedMinutesFromMidnight.current =
+          Math.floor(minutesFromMidnight.current / 15) * 15;
 
-      modifiedTransform = {
-        ...modifiedTransform,
-        x: 450,
-        y:
-          (quantizedMinutesFromMidnight.current / 60) *
-            timelineSettings.gridHeight -
-          (scrollTopInDayTimeline.current ?? 0) -
-          (args.overlayNodeRect?.top ?? 0),
-      };
-    }
-    return modifiedTransform;
-  };
+        modifiedTransform = {
+          ...modifiedTransform,
+          x: 450,
+          y:
+            (quantizedMinutesFromMidnight.current / 60) *
+              timelineSettings.gridHeight -
+            (scrollTopInDayTimeline.current ?? 0) -
+            (args.overlayNodeRect?.top ?? 0),
+        };
+      }
+      return modifiedTransform;
+    },
+    [timelineSettings.gridHeight, timelineSettings.gridInterval]
+  );
+
+  const dndContextProps = useMemo(() => {
+    return {
+      modifiers: [eventItemModifier],
+      onDragStart: handleStartDrag,
+      onDragOver: handleDragOver,
+      onDragCancel: handleDragCancel,
+      onDragEnd: handleDragEnd,
+    };
+  }, [eventItemModifier, handleStartDrag, handleDragOver]);
+
+  const onScrollDroppableArea: UIEventHandler = useCallback((e) => {
+    scrollTopInDayTimeline.current = e.currentTarget.scrollTop;
+  }, []);
 
   return {
-    handleStartDrag,
-    handleDragOver,
-    handleDragCancel,
-    handleDragEnd,
+    dndContextProps,
     activeId,
     isOverDraggable,
-    eventItemModifier,
     modifierRef,
-    scrollTopInDayTimeline,
+    onScrollDroppableArea,
     minutesFromMidnight,
     topInDayTimeline,
     quantizedMinutesFromMidnight,

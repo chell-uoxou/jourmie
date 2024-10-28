@@ -20,6 +20,7 @@ import { defaultConverter } from "~/lib/firestore/firestore";
 import { DBAccount, DBGroupMember } from "~/lib/firestore/schemas";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 import { useDndTimeline } from "./useDndTimeline";
+import Debug from "./components/Debug";
 
 const Droppable = () => {
   const { timelineSettings } = useTimelineSettings();
@@ -38,9 +39,9 @@ const Droppable = () => {
 };
 
 export default function Page() {
-  const [modifier, setModifier] = useState<Parameters<Modifier>[0] | null>(
-    null
-  );
+  const [modifierState, setModifierState] = useState<
+    Parameters<Modifier>[0] | null
+  >(null);
   const dummyEventPool1: DBEventPoolItem = {
     uid: "1",
     title: "京都国立博物館",
@@ -111,13 +112,9 @@ export default function Page() {
   };
 
   const {
-    handleStartDrag,
-    handleDragEnd,
-    handleDragOver,
-    handleDragCancel,
-    eventItemModifier,
+    dndContextProps,
     modifierRef,
-    scrollTopInDayTimeline,
+    onScrollDroppableArea,
     isOverDraggable,
     minutesFromMidnight,
     topInDayTimeline,
@@ -137,30 +134,19 @@ export default function Page() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setModifier(modifierRef.current);
+      setModifierState(modifierRef.current);
     }, 100);
     return () => clearInterval(interval);
   }, [modifierRef]);
 
   return (
-    <DndContext
-      onDragStart={handleStartDrag}
-      onDragEnd={handleDragEnd}
-      onDragOver={handleDragOver}
-      onDragCancel={handleDragCancel}
-      modifiers={[eventItemModifier]}
-    >
+    <DndContext {...dndContextProps}>
       <div className="flex h-svh">
         <div className="p-10 flex flex-col gap-4">
           <EventPoolListItem id="1" eventPool={dummyEventPool1} />
           <EventPoolListItem id="2" eventPool={dummyEventPool2} />
         </div>
-        <ScrollArea
-          className="size-full"
-          onScroll={(e) => {
-            scrollTopInDayTimeline.current = e.currentTarget.scrollTop;
-          }}
-        >
+        <ScrollArea className="size-full" onScroll={onScrollDroppableArea}>
           <Droppable />
         </ScrollArea>
       </div>
@@ -171,65 +157,13 @@ export default function Page() {
         }}
         className={clsx(isOverDraggable ? "cursor-copy" : "", "relative")}
       >
-        <div className="absolute flex flex-col translate-y-32">
-          {[
-            {
-              value: modifier?.active?.id,
-              key: "active.id",
-            },
-            {
-              value: modifier?.over?.id,
-              key: "over.id",
-            },
-            {
-              value: `${modifier?.activeNodeRect?.top}, ${modifier?.activeNodeRect?.left}, ${modifier?.activeNodeRect?.bottom}, ${modifier?.activeNodeRect?.right}`,
-              key: "activeNodeRect",
-            },
-            {
-              value: `${modifier?.overlayNodeRect?.top}, ${modifier?.overlayNodeRect?.left}, ${modifier?.overlayNodeRect?.bottom}, ${modifier?.overlayNodeRect?.right}`,
-              key: "overlayNodeRect",
-            },
-            {
-              value: `${modifier?.containerNodeRect?.top}, ${modifier?.containerNodeRect?.left}, ${modifier?.containerNodeRect?.bottom}, ${modifier?.containerNodeRect?.right}`,
-              key: "containerNodeRect",
-            },
-            {
-              value: `${modifier?.draggingNodeRect?.top}, ${modifier?.draggingNodeRect?.left}, ${modifier?.draggingNodeRect?.bottom}, ${modifier?.draggingNodeRect?.right}`,
-              key: "draggingNodeRect",
-            },
-            {
-              value: `${modifier?.windowRect?.top}, ${modifier?.windowRect?.left}`,
-              key: "windowRect",
-            },
-            {
-              value: `${modifier?.transform?.x}, ${modifier?.transform?.y}`,
-              key: "transform",
-            },
-            {
-              value: `${modifier?.scrollableAncestorRects
-                .map((rect) => `[${rect.top}, ${rect.left}]`)
-                .join(", ")}`,
-              key: "scrollableAncestorRects",
-            },
-            {
-              value: minutesFromMidnight.current,
-              key: "minutesFromMidnight",
-            },
-            {
-              value: topInDayTimeline.current,
-              key: "topInDayTimeline",
-            },
-            {
-              value: formatMinutes(quantizedMinutesFromMidnight.current ?? 0),
-              key: "quantizedMinutesFromMidnight",
-            },
-          ].map((item) => (
-            <div key={item.key} className="font-mono flex gap-2">
-              <span className="font-bold">{item.key}</span>
-              {item.value}
-            </div>
-          ))}
-        </div>
+        <Debug
+          modifierState={modifierState}
+          minutesFromMidnight={minutesFromMidnight}
+          topInDayTimeline={topInDayTimeline}
+          quantizedMinutesFromMidnight={quantizedMinutesFromMidnight}
+          formatMinutes={formatMinutes}
+        />
         {activeId ? (
           <DayTimelineEvent
             isDragging
