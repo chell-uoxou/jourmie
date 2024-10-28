@@ -42,6 +42,7 @@ import useCurrentGroup from "~/hooks/useCurrentGroup";
 import { InviteMemberDialogContent } from "./components/InviteMemberDialogContent";
 import { PermissionIcons } from "./components/PermissionIcons";
 import EditMemberDialog from "./components/EditMemberDialog";
+import RemoveMemberDialog from "./components/RemoveMemberDialog";
 
 export function GroupMemberDataTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -60,6 +61,11 @@ export function GroupMemberDataTable() {
   // EditMemberDialog
   const [isEMBOpen, setIsEMBOpen] = useState(false);
   const [EMBSelectedMember, setEMBSelectedMember] =
+    useState<DBGroupMember | null>(null);
+
+  // DeleteMemberDialog
+  const [isRMBOpen, setIsRMBOpen] = useState(false);
+  const [RMBSelectedMember, setRMBSelectedMember] =
     useState<DBGroupMember | null>(null);
 
   useEffect(() => {
@@ -186,7 +192,13 @@ export function GroupMemberDataTable() {
                 >
                   メンバーを編集
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                <DropdownMenuItem
+                  onClick={() => {
+                    setRMBSelectedMember(row.original);
+                    setIsRMBOpen(true);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
                   グループから削除
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -315,6 +327,11 @@ export function GroupMemberDataTable() {
         member={EMBSelectedMember}
         open={isEMBOpen}
         onOpenChange={setIsEMBOpen}
+      />
+      <RemoveMemberDialog
+        member={RMBSelectedMember}
+        open={isRMBOpen}
+        onOpenChange={setIsRMBOpen}
       />
     </div>
   );
