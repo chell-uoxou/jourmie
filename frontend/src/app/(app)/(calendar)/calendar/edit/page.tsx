@@ -8,7 +8,7 @@ import { doc, Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useDndTimeline } from "~/app/practice/test1/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
-import { DayTimelineEvent } from "~/features/dayTimeline/DayTimelineEvent";
+import { DayTimelineEvent } from "~/features/dayTimeline/components/DayTimelineEvent";
 import PrivateScheduleDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import useAuthUser from "~/hooks/useAuthUser";

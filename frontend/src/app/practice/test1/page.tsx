@@ -11,7 +11,7 @@ import clsx from "clsx";
 import { doc, GeoPoint, Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { DayTimelineEvent } from "~/features/dayTimeline/DayTimelineEvent";
+import { DayTimelineEvent } from "~/features/dayTimeline/components/DayTimelineEvent";
 import EventPoolListItem from "~/features/eventPool/EventsPoolListItem";
 import { Timeline } from "~/features/timeline/Timeline";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";

@@ -1,5 +1,5 @@
 import { Card, CardContent } from "~/components/ui/card";
-import { PropsWithIcon } from "./components/PropsWithIcon";
+import { PropsWithIcon } from "./PropsWithIcon";
 import { CalendarRange, Map } from "lucide-react";
 import clsx from "clsx";
 import { DBEventPoolItem } from "~/lib/firestore/utils";

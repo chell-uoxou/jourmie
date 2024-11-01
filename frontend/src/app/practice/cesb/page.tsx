@@ -6,7 +6,7 @@ import {
   defaultDropAnimationSideEffects,
 } from "@dnd-kit/core";
 import { useState } from "react";
-import { DayTimelineEvent } from "~/features/dayTimeline/DayTimelineEvent";
+import { DayTimelineEvent } from "~/features/dayTimeline/components/DayTimelineEvent";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 
