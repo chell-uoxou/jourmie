@@ -8,7 +8,16 @@ import { UIEventHandler, useCallback, useMemo, useRef, useState } from "react";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 
-export const useDndTimeline = () => {
+interface UseDndTimeLineOptions {
+  onDropNewSchedule?: (
+    startMinute: number,
+    eventPoolItem: DBEventPoolItem
+  ) => void;
+}
+
+export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
+  const { onDropNewSchedule } = options;
+
   const [activeId, setActiveId] = useState<string | number | null>(null);
   const [activeEventPoolItem, setActiveEventPoolItem] =
     useState<DBEventPoolItem | null>(null);
@@ -53,11 +62,14 @@ export const useDndTimeline = () => {
     const minute = quantizedMinutesFromMidnight.current;
     if (isOverDraggable && activeEventPoolItem) {
       console.log("Drag Ended: ", activeEventPoolItem?.title, minute, activeId);
+      if (onDropNewSchedule && minute !== null) {
+        onDropNewSchedule(minute, activeEventPoolItem);
+      }
     } else {
       console.log("Drag Ended without drop: ", activeId);
     }
     setIsOverDraggable(false);
-  }, [activeEventPoolItem, activeId, isOverDraggable]);
+  }, [activeEventPoolItem, activeId, isOverDraggable, onDropNewSchedule]);
 
   const setScrollAreaRef = useCallback((node: HTMLDivElement | null) => {
     scrollAreaRef.current = node;

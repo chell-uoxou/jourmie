@@ -4,12 +4,18 @@ import {
   DragOverlay,
   defaultDropAnimationSideEffects,
 } from "@dnd-kit/core";
-import { useState } from "react";
+import { doc, Timestamp } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useDndTimeline } from "~/app/practice/test1/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
 import { DayTimelineEvent } from "~/features/dayTimeline/DayTimelineEvent";
 import PrivateScheduleDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
+import useAuthUser from "~/hooks/useAuthUser";
+import { useCalendarSession } from "~/hooks/useCalendarSession";
+import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
+import { db } from "~/lib/firebase";
+import { defaultConverter } from "~/lib/firestore/firestore";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 
 export default function Page() {
@@ -26,8 +32,52 @@ export default function Page() {
   //     .padStart(2, "0")}`;
   // };
 
+  const authUser = useAuthUser();
+
+  const { optimisticSchedules, addOptimisticSchedule } =
+    useOptimisticSchedules();
+
+  const { calendarSession } = useCalendarSession();
+
   const { dndContextProps, onScrollDroppableArea, activeId, setScrollAreaRef } =
-    useDndTimeline();
+    useDndTimeline({
+      onDropNewSchedule: (startMinute, eventPoolItem) => {
+        console.log("Drop new schedule!", startMinute, eventPoolItem);
+
+        if (authUser === "loading" || authUser === null) return;
+
+        const eventReference = doc(
+          db,
+          "accounts",
+          authUser?.uid,
+          "event_pool",
+          eventPoolItem.uid
+        ).withConverter(defaultConverter<DBEventPoolItem>());
+        const startTime = new Date(
+          calendarSession.currentDate.setMinutes(startMinute)
+        );
+        const endTime = new Date(
+          calendarSession.currentDate.setMinutes(
+            startMinute + eventPoolItem.default_duration
+          )
+        );
+
+        addOptimisticSchedule(
+          {
+            event_reference: eventReference,
+            actual_budget: eventPoolItem.default_budget,
+            did_prepare: false,
+            start_time: Timestamp.fromDate(startTime),
+            end_time: Timestamp.fromDate(endTime),
+          },
+          "personal"
+        );
+      },
+    });
+
+  useEffect(() => {
+    console.log(optimisticSchedules);
+  }, [optimisticSchedules]);
 
   // useEffect(() => {
   //   const interval = setInterval(() => {
