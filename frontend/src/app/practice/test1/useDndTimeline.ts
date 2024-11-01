@@ -1,16 +1,23 @@
-import { DragOverEvent, DragStartEvent, Modifier } from "@dnd-kit/core";
+import {
+  ClientRect,
+  DragOverEvent,
+  DragStartEvent,
+  Modifier,
+} from "@dnd-kit/core";
 import { UIEventHandler, useCallback, useMemo, useRef, useState } from "react";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 
 export const useDndTimeline = () => {
   const [activeId, setActiveId] = useState<string | number | null>(null);
   const [isOverDraggable, setIsOverDraggable] = useState(false);
-  const modifierRef = useRef<Parameters<Modifier>[0] | null>(null);
+  const modifierRef = useRef<Parameters<Modifier>[0] | null>(null); // デバッグ用
   const { timelineSettings } = useTimelineSettings();
   const topInDayTimeline = useRef<number | null>(null);
   const scrollTopInDayTimeline = useRef<number | null>(null);
   const minutesFromMidnight = useRef<number | null>(null);
   const quantizedMinutesFromMidnight = useRef<number | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
+  const scrollAreaRect = useRef<ClientRect | null>(null);
 
   const handleStartDrag = useCallback(
     (event: DragStartEvent) => {
@@ -39,16 +46,27 @@ export const useDndTimeline = () => {
     setIsOverDraggable(false);
   };
 
+  const setScrollAreaRef = useCallback((node: HTMLDivElement | null) => {
+    scrollAreaRef.current = node;
+    console.log("setScrollAreaRef", node);
+    if (node) {
+      scrollAreaRect.current = node.getBoundingClientRect();
+    }
+  }, []);
+
   const eventItemModifier: Modifier = useCallback(
     (args) => {
       let modifiedTransform = args.transform;
 
       modifierRef.current = args;
-      if (args.over && args.over.id === "dnd-practice-droppable") {
+
+      if (args.over && args.over.id === "droppable-timeline") {
         topInDayTimeline.current =
-          (args.overlayNodeRect?.top ?? 0) +
-          args.transform.y +
-          (scrollTopInDayTimeline.current ?? 0);
+          (args.overlayNodeRect?.top ?? 0) + // ドラッグ前の小さいイベントブロックのtop位置
+          args.transform.y + // ドラッグ中のイベントブロックのyデルタ
+          (scrollTopInDayTimeline.current ?? 0) - // スクロールエリアのスクロール量
+          (scrollAreaRect.current?.top ?? 0) - // スクロールエリアのtop位置
+          24; // タイムライングリッドの上部の余白
 
         minutesFromMidnight.current = Math.floor(
           (topInDayTimeline.current / timelineSettings.gridHeight) *
@@ -68,12 +86,14 @@ export const useDndTimeline = () => {
 
         modifiedTransform = {
           ...modifiedTransform,
-          x: 450,
+          x: (scrollAreaRect.current?.left ?? 200) - 24 + 60,
           y:
             (quantizedMinutesFromMidnight.current / 60) *
               timelineSettings.gridHeight -
             (scrollTopInDayTimeline.current ?? 0) -
-            (args.overlayNodeRect?.top ?? 0),
+            (args.overlayNodeRect?.top ?? 0) +
+            (scrollAreaRect.current?.top ?? 0) +
+            24,
         };
       }
       return modifiedTransform;
@@ -104,5 +124,6 @@ export const useDndTimeline = () => {
     minutesFromMidnight,
     topInDayTimeline,
     quantizedMinutesFromMidnight,
+    setScrollAreaRef,
   };
 };
