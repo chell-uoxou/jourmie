@@ -10,11 +10,11 @@ import { DBEventPoolItem } from "~/lib/firestore/utils";
 
 type Props = {
   id: string;
-  eventPool: DBEventPoolItem;
+  eventPoolItem: DBEventPoolItem;
 } & HTMLAttributes<HTMLDivElement>;
 
 const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
-  { eventPool, ...rest }: Props,
+  { eventPoolItem: eventPoolItem, ...rest }: Props,
   ref
 ) {
   // TODO　現状は開始時間と終了時間から時間帯を表示しているが、今後は平日は何時やいつは何時と表形式にしたい。
@@ -52,15 +52,15 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
     <div className="relative w-[350px]" ref={ref} {...rest}>
       <Card className="w-[350px]">
         <CardContent>
-          <h1 className="text-xl font-bold mt-6 mb-4">{eventPool.title}</h1>
+          <h1 className="text-xl font-bold mt-6 mb-4">{eventPoolItem.title}</h1>
           <div className="col-auto flex flex-col gap-x-0 gap-y-3">
             <div className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-start justify-start gap-x-1 text-sm">
               <Hourglass className="w-3.5 h-3.5 mt-1" />
-              {formatTimes(eventPool.available_times)}
+              {formatTimes(eventPoolItem.available_times)}
             </div>
             <div className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center justify-start gap-x-1">
               <Map className="w-3.5 h-3.5" />
-              {eventPool.location_text}
+              {eventPoolItem.location_text}
             </div>
           </div>
         </CardContent>
@@ -72,6 +72,7 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
 export default function Draggable(props: Props) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: props.id,
+    data: { eventPoolItem: props.eventPoolItem },
   });
 
   return (

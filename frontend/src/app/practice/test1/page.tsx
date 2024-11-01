@@ -143,8 +143,8 @@ export default function Page() {
     <DndContext {...dndContextProps}>
       <div className="flex h-svh">
         <div className="p-10 flex flex-col gap-4">
-          <EventPoolListItem id="1" eventPool={dummyEventPool1} />
-          <EventPoolListItem id="2" eventPool={dummyEventPool2} />
+          <EventPoolListItem id="1" eventPoolItem={dummyEventPool1} />
+          <EventPoolListItem id="2" eventPoolItem={dummyEventPool2} />
         </div>
         <ScrollArea className="size-full" onScroll={onScrollDroppableArea}>
           <Droppable />

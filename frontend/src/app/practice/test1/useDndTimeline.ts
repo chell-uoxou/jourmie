@@ -6,9 +6,12 @@ import {
 } from "@dnd-kit/core";
 import { UIEventHandler, useCallback, useMemo, useRef, useState } from "react";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
+import { DBEventPoolItem } from "~/lib/firestore/utils";
 
 export const useDndTimeline = () => {
   const [activeId, setActiveId] = useState<string | number | null>(null);
+  const [activeEventPoolItem, setActiveEventPoolItem] =
+    useState<DBEventPoolItem | null>(null);
   const [isOverDraggable, setIsOverDraggable] = useState(false);
   const modifierRef = useRef<Parameters<Modifier>[0] | null>(null); // デバッグ用
   const { timelineSettings } = useTimelineSettings();
@@ -21,7 +24,12 @@ export const useDndTimeline = () => {
 
   const handleStartDrag = useCallback(
     (event: DragStartEvent) => {
+      console.log(
+        "Start dragging: ",
+        event.active.data.current?.eventPoolItem.title
+      );
       setActiveId(event.active.id);
+      setActiveEventPoolItem(event.active.data.current?.eventPoolItem);
     },
     [setActiveId]
   );
@@ -41,14 +49,18 @@ export const useDndTimeline = () => {
     setIsOverDraggable(false);
   };
 
-  const handleDragEnd = () => {
-    console.log("drag end");
+  const handleDragEnd = useCallback(() => {
+    const minute = quantizedMinutesFromMidnight.current;
+    if (isOverDraggable && activeEventPoolItem) {
+      console.log("Drag Ended: ", activeEventPoolItem?.title, minute, activeId);
+    } else {
+      console.log("Drag Ended without drop: ", activeId);
+    }
     setIsOverDraggable(false);
-  };
+  }, [activeEventPoolItem, activeId, isOverDraggable]);
 
   const setScrollAreaRef = useCallback((node: HTMLDivElement | null) => {
     scrollAreaRef.current = node;
-    console.log("setScrollAreaRef", node);
     if (node) {
       scrollAreaRect.current = node.getBoundingClientRect();
     }
@@ -109,7 +121,7 @@ export const useDndTimeline = () => {
       onDragCancel: handleDragCancel,
       onDragEnd: handleDragEnd,
     };
-  }, [eventItemModifier, handleStartDrag, handleDragOver]);
+  }, [eventItemModifier, handleStartDrag, handleDragOver, handleDragEnd]);
 
   const onScrollDroppableArea: UIEventHandler = useCallback((e) => {
     scrollTopInDayTimeline.current = e.currentTarget.scrollTop;
@@ -125,5 +137,6 @@ export const useDndTimeline = () => {
     topInDayTimeline,
     quantizedMinutesFromMidnight,
     setScrollAreaRef,
+    activeEventPoolItem,
   };
 };

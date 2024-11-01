@@ -10,7 +10,7 @@ export const EventPoolList = ({ events }: EventPoolProps) => {
   return (
     <div className="flex flex-col gap-4 w-full">
       {events.map((event: DBEventPoolItem) => (
-        <EventPoolItem id={event.uid} key={event.uid} eventPool={event} />
+        <EventPoolItem id={event.uid} key={event.uid} eventPoolItem={event} />
       ))}
     </div>
   );
