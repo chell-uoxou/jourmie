@@ -1,8 +1,8 @@
 "use client";
 
 import { FirebaseOptions, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,3 +17,15 @@ const firebaseConfig: FirebaseOptions = {
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const db = getFirestore(app);
+// export const storage = getStorage();
+
+const isEmulating =
+  process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST !== undefined;
+
+if (isEmulating) {
+  console.log("Using emulator!");
+
+  connectAuthEmulator(auth, "http://localhost:9099");
+  connectFirestoreEmulator(db, "localhost", 8080);
+  // connectStorageEmulator(storage, "localhost", 9199);
+}
