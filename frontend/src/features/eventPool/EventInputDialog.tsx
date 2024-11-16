@@ -19,7 +19,9 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
       <DialogContent className="w-[440px]">
         <DialogHeader>
           <DialogTitle>イベント候補 新規作成</DialogTitle>
-          <DialogDescription>イベント候補を新規作成します。</DialogDescription>
+          <DialogDescription>
+            行ってみたいイベントを追加してみましょう‼︎
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-96 ">
           <EventForm />
