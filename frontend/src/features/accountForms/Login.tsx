@@ -39,7 +39,7 @@ export const Login = () => {
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline">
-          <Link href="/">Cancel</Link>
+          <Link href="/account/register">Cancel</Link>
         </Button>
         <Button>Log In</Button>
       </CardFooter>
