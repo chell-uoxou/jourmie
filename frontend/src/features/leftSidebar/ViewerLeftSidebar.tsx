@@ -18,7 +18,7 @@ export const ViewerLeftSideBar = (props: ViewerSideBarProps) => {
       <div className="flex flex-col gap-3">
         <ButtonTile
           variant="outline"
-          href="/practice/test4"
+          href="/event_pool"
           icon={<Blocks className="size-5" />}
         >
           イベント候補一覧

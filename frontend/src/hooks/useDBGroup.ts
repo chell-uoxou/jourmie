@@ -39,10 +39,7 @@ export default function useDBGroup(groupRef: DocumentReference) {
   const addMemberToGroup = useCallback(
     async (
       accountRef: DocumentReference<DBAccount>,
-      memberInfo: Omit<
-        DBGroupMember,
-        "account_reference" | "editing_permission_scopes" | "uid"
-      >
+      memberInfo: Omit<DBGroupMember, "account_reference" | "uid">
     ) => {
       try {
         await runTransaction(db, async (transaction) => {
@@ -52,12 +49,6 @@ export default function useDBGroup(groupRef: DocumentReference) {
           ).withConverter(createConverter<DBGroupMember>());
           const newMemberData = {
             account_reference: accountRef,
-            editing_permission_scopes: [
-              "common_schedules",
-              "event_pool",
-              "group_settings",
-              "open_schedules",
-            ], // TODO: 権限設定を追加する時にちゃんとする
             ...memberInfo,
           };
           transaction.set(newMemberRef, newMemberData);
