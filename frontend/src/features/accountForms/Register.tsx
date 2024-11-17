@@ -70,7 +70,10 @@ export const Register = () => {
           Googleで登録
         </Button>
         <div className="flex justify-between w-full">
-          <Button variant="outline" onClick={() => navigate.push("/")}>
+          <Button
+            variant="outline"
+            onClick={() => navigate.push("/account/register")}
+          >
             Cancel
           </Button>
           <Button>

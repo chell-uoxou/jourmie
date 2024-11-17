@@ -4,11 +4,18 @@ import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 interface MenuItemWithIconProps {
   icon: React.ReactNode;
   title: string;
+  url?: string;
 }
 
-const MenuItemWithIcon = (props: MenuItemWithIconProps) => {
+const MenuItemWithIcon: React.FC<MenuItemWithIconProps> = (props) => {
+  const handleClick = () => {
+    if (props.url) {
+      window.location.href = props.url; // URLにジャンプ
+    }
+  };
+
   return (
-    <DropdownMenuItem className="font-bold">
+    <DropdownMenuItem className="font-bold" onClick={handleClick}>
       <div>{props.icon}</div>
       {props.title}
     </DropdownMenuItem>

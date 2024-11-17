@@ -83,10 +83,12 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
             <MenuItemWithIcon
               icon={<UsersRound className="mr-2 h-4 w-4" />}
               title="メンバーリスト"
+              url={`/g/${selectedGroup.uid}/member`}
             />
             <MenuItemWithIcon
               icon={<Settings className="mr-2 h-4 w-4" />}
               title="グループ設定"
+              url={`/g/${selectedGroup.uid}`}
             />
             <DropdownMenuSeparator className="border" />
           </>
@@ -132,10 +134,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
             ))
           )}
         </DropdownMenuGroup>
-        <MenuItemWithIcon
-          icon={<List className="mr-2 h-4 w-4" />}
-          title="グループ一覧"
-        />
+        <MenuItemWithIcon icon={<List className="mr-2 h-4 w-4" />} title="" />
         <MenuItemWithIcon
           // {/* TODO:新規作成の処理を追加 */}
           icon={<CirclePlus className="mr-2 h-4 w-4" />}
