@@ -3,4 +3,4 @@
 firestore-debug.log
 firebase-debug.log
 ui-debug.log
-firestore/emulator_database
+firebase/emulator_database
