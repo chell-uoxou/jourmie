@@ -1,2 +1,6 @@
 .env
 .DS_Store
+firestore-debug.log
+firebase-debug.log
+ui-debug.log
+firebase/emulator_database
