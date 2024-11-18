@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "start-firebase-emulator": "cd ../ && firebase emulators:start"
+    "start-firebase-emulator": "cd ../ && firebase emulators:start --import firestore/emulator_database --export-on-exit firestore/emulator_database",
+    "migrate-fb-emu": "cd ../ && ./firestore/migrate.sh"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
