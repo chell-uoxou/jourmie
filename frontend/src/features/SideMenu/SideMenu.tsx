@@ -35,7 +35,7 @@ function SideMenu() {
             icon={<Flower2 className="size-5" />}
             title="概要"
             onClick={() => {
-              pushInGroup("/");
+              pushInGroup("/preferences");
             }}
             isSelected={getPathInGroup() === "/"}
           />
