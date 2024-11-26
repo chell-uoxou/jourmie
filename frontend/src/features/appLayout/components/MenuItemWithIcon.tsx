@@ -10,7 +10,7 @@ interface MenuItemWithIconProps {
 const MenuItemWithIcon: React.FC<MenuItemWithIconProps> = (props) => {
   const handleClick = () => {
     if (props.url) {
-      window.location.href = props.url; // URLにジャンプ
+      window.location.href = props.url;
     }
   };
 
