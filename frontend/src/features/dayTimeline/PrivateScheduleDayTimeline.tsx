@@ -29,7 +29,10 @@ const PrivateScheduleDayTimeline = (props: PrivateScheduleDayTimelineProps) => {
         ref={props.setScrollAreaRef}
       >
         <div className="my-6 mr-3 relative" ref={setNodeRef}>
-          <TimelineSchedules schedules={optimisticSchedules} />
+          <TimelineSchedules
+            schedules={optimisticSchedules}
+            currentDate={calendarSession.currentDate}
+          />
           <Timeline
             itemHeight={timelineSettings.gridHeight}
             interval={timelineSettings.gridInterval}

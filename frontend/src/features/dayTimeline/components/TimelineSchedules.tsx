@@ -3,6 +3,7 @@ import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 
 interface TimelineSchedulesProps {
   schedules: ScheduleEvent[];
+  currentDate: Date;
 }
 
 const TimelineSchedules = (props: TimelineSchedulesProps) => {
@@ -17,27 +18,36 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
       timelineSettings.gridHeight *
       (minutesFromMidnight / (timelineSettings.gridInterval * 60));
     console.log(top);
-
     return top;
   };
 
   return (
     <div className="relative w-full h-ful">
-      {props.schedules.map((schedule) => {
-        return (
-          <div
-            key={schedule.schedule_uid}
-            className="absolute"
-            style={{
-              top: getTop(schedule),
-              left: 24 + 36,
-              width: "min(calc(100% - 76px), 400px)",
-            }}
-          >
-            <DayTimelineSchedule schedule={schedule} />
-          </div>
-        );
-      })}
+      {props.schedules
+        .filter((schedule) => {
+          const startDate = schedule.start_time.toDate();
+          const condition =
+            startDate.getDate() === props.currentDate.getDate() &&
+            startDate.getMonth() === props.currentDate.getMonth() &&
+            startDate.getFullYear() === props.currentDate.getFullYear();
+          return condition;
+        })
+        .map((schedule) => {
+          return (
+            <div
+              // TODO: schedule.schedule_uidをkeyとする
+              key={Math.random()}
+              className="absolute"
+              style={{
+                top: getTop(schedule),
+                left: 24 + 36,
+                width: "min(calc(100% - 76px), 400px)",
+              }}
+            >
+              <DayTimelineSchedule schedule={schedule} />
+            </div>
+          );
+        })}
     </div>
   );
 };
