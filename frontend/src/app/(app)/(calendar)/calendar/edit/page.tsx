@@ -6,7 +6,7 @@ import {
 } from "@dnd-kit/core";
 import { doc, Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useDndTimeline } from "~/app/practice/test1/useDndTimeline";
+import { useDndTimeline } from "~/hooks/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
 import { DayTimelineSchedule } from "~/features/dayTimeline/components/DayTimelineEvent";
 import PrivateScheduleDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
