@@ -11,7 +11,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  // DialogTrigger,
 } from "~/components/ui/dialog";
 import useCurrentGroup from "~/hooks/useCurrentGroup";
 import {
@@ -108,9 +107,6 @@ export const InviteMemberDialogContent = (
 
   return (
     <Dialog open={props.isOpen} onOpenChange={props.onOpenChange}>
-      {/* <DialogTrigger asChild>
-        
-      </DialogTrigger> */}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>メンバーを招待</DialogTitle>

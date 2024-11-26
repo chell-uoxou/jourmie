@@ -63,7 +63,6 @@ export function GroupMemberDataTable() {
   const [EMBSelectedMember, setEMBSelectedMember] =
     useState<DBGroupMember | null>(null);
 
-  // DeleteMemberDialog
   const [isRMBOpen, setIsRMBOpen] = useState(false);
   const [RMBSelectedMember, setRMBSelectedMember] =
     useState<DBGroupMember | null>(null);
