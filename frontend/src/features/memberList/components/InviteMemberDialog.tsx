@@ -89,14 +89,24 @@ export const InviteMemberDialog = (props: InviteMemberDialogContentProps) => {
         });
         return;
       }
-      if (props.group != "loading" && props.group) {
+      if (props.group !== "loading" && props.group) {
         addMemberToGroup(accountRef, {
           display_name: matchedAccount.default_display_name ?? "",
           notes: "自動追加されました",
           email: matchedAccount.email ?? "",
           avatar_url: matchedAccount.avatar_url ?? "",
           editing_permission_scopes: getScopesByPreset(permPreset) ?? [],
-        });
+        })
+          .then(() => {
+            toast("メンバーを追加しました", {
+              description:
+                matchedAccount.default_display_name + "さんをグループに追加",
+            });
+            setMailaddress("");
+          })
+          .catch((error) => {
+            console.error("エラーが発生しました: ", error);
+          });
       }
     });
 
