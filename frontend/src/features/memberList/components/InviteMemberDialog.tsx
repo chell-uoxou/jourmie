@@ -109,8 +109,6 @@ export const InviteMemberDialog = (props: InviteMemberDialogContentProps) => {
           });
       }
     });
-
-    // 成功メッセージを表示するなどの処理を追加
   };
 
   return (
