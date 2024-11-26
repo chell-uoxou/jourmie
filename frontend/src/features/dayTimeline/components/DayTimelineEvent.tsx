@@ -49,20 +49,19 @@ export const DayTimelineSchedule = ({
         <CardContent className="py-4 px-5">
           <div className="flex flex-col gap-2">
             <h1 className="text-sm font-bold">{schedule.title}</h1>
-            {(schedule.location_text !== "" || !isDragging) && (
-              <div className="flex flex-col gap-1.5 ">
-                {schedule.location_text !== "" && (
-                  <PropsWithIcon
-                    icon={<Map size={14} />}
-                    value={schedule.location_text}
-                  />
-                )}
+
+            <div className="flex flex-col gap-1.5 ">
+              {schedule.location_text !== "" && (
                 <PropsWithIcon
-                  icon={<Clock size={14} />}
-                  value={formatTime(schedule.start_time.toDate())}
+                  icon={<Map size={14} />}
+                  value={schedule.location_text}
                 />
-              </div>
-            )}
+              )}
+              <PropsWithIcon
+                icon={<Clock size={14} />}
+                value={formatTime(schedule.start_time.toDate())}
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
