@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { Schedule } from "~/models/types/schedule";
 import { EventPoolItem } from "~/models/types/event_pool_item";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
+import { forwardRef, HTMLAttributes } from "react";
 
 export type ScheduleEvent = Schedule &
   EventPoolItem & {
@@ -23,10 +24,17 @@ const formatTime = (date: Date) => {
   });
 };
 
-export const DayTimelineSchedule = ({
-  schedule,
-  isDragging,
-}: DayTimelineEventProps) => {
+export const DayTimelineSchedule = forwardRef<
+  HTMLDivElement,
+  DayTimelineEventProps
+>(function DayTimelineSchedule(
+  {
+    schedule,
+    isDragging,
+    ...rest
+  }: DayTimelineEventProps & HTMLAttributes<HTMLDivElement>,
+  ref
+) {
   const { timelineSettings } = useTimelineSettings();
 
   const duration =
@@ -38,7 +46,7 @@ export const DayTimelineSchedule = ({
     timelineSettings.gridHeight;
 
   return (
-    <div>
+    <div ref={ref} {...rest}>
       <Card
         className={clsx(isDragging && "shadow-lg")}
         style={{
@@ -67,4 +75,4 @@ export const DayTimelineSchedule = ({
       </Card>
     </div>
   );
-};
+});

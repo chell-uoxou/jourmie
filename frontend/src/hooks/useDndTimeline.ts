@@ -78,16 +78,13 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
     quantizedMinutesFromMidnight,
   ]);
 
-  const setScrollAreaRef = useCallback((node: HTMLDivElement | null) => {
-    scrollAreaRef.current = node;
-    if (node) {
-      scrollAreaRect.current = node.getBoundingClientRect();
-    }
-  }, []);
-
   const eventItemModifier: Modifier = useCallback(
     (args) => {
       let modifiedTransform = args.transform;
+
+      if (scrollAreaRef.current) {
+        scrollAreaRect.current = scrollAreaRef.current.getBoundingClientRect();
+      }
 
       modifierRef.current = args;
 
@@ -159,7 +156,7 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
     minutesFromMidnight,
     topInDayTimeline,
     quantizedMinutesFromMidnight,
-    setScrollAreaRef,
+    scrollAreaRef,
     activeEventPoolItem,
   };
 };

@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { ScheduleEvent } from "~/features/dayTimeline/components/DayTimelineEvent";
+import { ScheduleEvent } from "~/features/dayTimeline/components/DayTimelineSchedule";
 
 export type OptimisticSchedule = ScheduleEvent & {
   groupId: string;

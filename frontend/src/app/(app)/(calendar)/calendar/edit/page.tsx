@@ -8,7 +8,7 @@ import { doc, Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useDndTimeline } from "~/hooks/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
-import { DayTimelineSchedule } from "~/features/dayTimeline/components/DayTimelineEvent";
+import { DayTimelineSchedule } from "~/features/dayTimeline/components/DayTimelineSchedule";
 import PrivateScheduleDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import useAuthUser from "~/hooks/useAuthUser";
@@ -17,6 +17,17 @@ import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
 import { db } from "~/lib/firebase";
 import { defaultConverter } from "~/lib/firestore/firestore";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
+
+export const getEndDroppingDate = (
+  currentDate: Date,
+  startMinute: number,
+  duration: number
+) => {
+  const endMinutes = startMinute + duration;
+  const endTime = new Date(currentDate);
+  endTime.setHours(Math.floor(endMinutes / 60), endMinutes % 60);
+  return endTime;
+};
 
 export default function Page() {
   const [events, setEvents] = useState<DBEventPoolItem[]>([]);
@@ -28,7 +39,7 @@ export default function Page() {
     dndContextProps,
     onScrollDroppableArea,
     activeId,
-    setScrollAreaRef,
+    scrollAreaRef,
     activeEventPoolItem,
     quantizedMinutesFromMidnight,
   } = useDndTimeline({
@@ -66,18 +77,11 @@ export default function Page() {
     },
   });
 
-  const droppingDate = calendarSession.currentDate;
+  const droppingDate = new Date(calendarSession.currentDate);
   droppingDate.setHours(
     Math.floor(quantizedMinutesFromMidnight / 60),
     quantizedMinutesFromMidnight % 60
   );
-
-  const getEndDroppingDate = (startMinute: number, duration: number) => {
-    const endMinutes = startMinute + duration;
-    const endTime = new Date(droppingDate);
-    endTime.setHours(Math.floor(endMinutes / 60), endMinutes % 60);
-    return endTime;
-  };
 
   useEffect(() => {
     console.log(optimisticSchedules);
@@ -92,7 +96,7 @@ export default function Page() {
       >
         <PrivateScheduleDayTimeline
           onScroll={onScrollDroppableArea}
-          setScrollAreaRef={setScrollAreaRef}
+          scrollAreaRef={scrollAreaRef}
         />
       </CardBodyWithLeftSidebar>
       <DragOverlay
@@ -116,6 +120,7 @@ export default function Page() {
               start_time: Timestamp.fromDate(droppingDate),
               end_time: Timestamp.fromDate(
                 getEndDroppingDate(
+                  calendarSession.currentDate,
                   quantizedMinutesFromMidnight,
                   activeEventPoolItem!.default_duration
                 )
