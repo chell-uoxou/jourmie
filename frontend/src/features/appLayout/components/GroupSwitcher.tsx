@@ -140,6 +140,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
           title="グループ一覧"
         />
         <MenuItemWithIcon
+          // {/* TODO:新規作成の処理を追加 */}
           icon={<CirclePlus className="mr-2 h-4 w-4" />}
           title="新規作成"
         />

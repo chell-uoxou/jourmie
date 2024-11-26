@@ -40,9 +40,7 @@ interface InviteMemberDialogContentProps {
   onOpenChange: (isOpen: boolean) => void;
 }
 
-export const InviteMemberDialogContent = (
-  props: InviteMemberDialogContentProps
-) => {
+export const InviteMemberDialog = (props: InviteMemberDialogContentProps) => {
   const { groupId } = useGroupRouter();
   const { addMemberToGroup, existAccount } = useDBGroup(
     getGroupDocRef(groupId!)

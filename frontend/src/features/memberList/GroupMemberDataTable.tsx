@@ -39,7 +39,7 @@ import { db } from "~/lib/firebase";
 import { DBGroupMember } from "~/lib/firestore/schemas";
 import clsx from "clsx";
 import useCurrentGroup from "~/hooks/useCurrentGroup";
-import { InviteMemberDialogContent } from "./components/InviteMemberDialogContent";
+import { InviteMemberDialog } from "./components/InviteMemberDialog";
 import { PermissionIcons } from "./components/PermissionIcons";
 import EditMemberDialog from "./components/EditMemberDialog";
 import RemoveMemberDialog from "./components/RemoveMemberDialog";
@@ -250,7 +250,7 @@ export function GroupMemberDataTable() {
         >
           招待 <Plus className=" h-4 w-4" />
         </Button>
-        <InviteMemberDialogContent
+        <InviteMemberDialog
           group={group}
           isOpen={openDialog}
           onOpenChange={setOpenDialog}
