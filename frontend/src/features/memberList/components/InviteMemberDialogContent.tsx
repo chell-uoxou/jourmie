@@ -6,10 +6,12 @@ import { WithLabel } from "~/components/common/WithLabel";
 import { Button } from "~/components/ui/button";
 import { toast } from "sonner";
 import {
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  // DialogTrigger,
 } from "~/components/ui/dialog";
 import useCurrentGroup from "~/hooks/useCurrentGroup";
 import {
@@ -34,11 +36,14 @@ import { createConverter, defaultConverter } from "~/lib/firestore/firestore";
 
 interface InviteMemberDialogContentProps {
   group: ReturnType<typeof useCurrentGroup>;
+
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
 }
 
-export const InviteMemberDialogContent = ({
-  group,
-}: InviteMemberDialogContentProps) => {
+export const InviteMemberDialogContent = (
+  props: InviteMemberDialogContentProps
+) => {
   const { groupId } = useGroupRouter();
   const { addMemberToGroup, existAccount } = useDBGroup(
     getGroupDocRef(groupId!)
@@ -87,7 +92,7 @@ export const InviteMemberDialogContent = ({
         });
         return;
       }
-      if (group != "loading" && group) {
+      if (props.group != "loading" && props.group) {
         addMemberToGroup(accountRef, {
           display_name: matchedAccount.default_display_name ?? "",
           notes: "自動追加されました",
@@ -102,33 +107,38 @@ export const InviteMemberDialogContent = ({
   };
 
   return (
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>メンバーを招待</DialogTitle>
-        <DialogDescription>
-          {(group !== "loading" ? group?.name : "グループ") +
-            "に招待したいメンバーのメールアドレスを入力してください。"}
-        </DialogDescription>
-      </DialogHeader>
-      <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-        <InputWithLabel
-          label="メールアドレス"
-          type="email"
-          required
-          value={mailaddress}
-          onChange={(e) => setMailaddress(e.target.value)}
-        />
-        <WithLabel label="権限">
-          <PermissionSelector
-            permissionPreset={permPreset}
-            onChange={setPermPreset}
+    <Dialog open={props.isOpen} onOpenChange={props.onOpenChange}>
+      {/* <DialogTrigger asChild>
+        
+      </DialogTrigger> */}
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>メンバーを招待</DialogTitle>
+          <DialogDescription>
+            {(props.group !== "loading" ? props.group?.name : "グループ") +
+              "に招待したいメンバーのメールアドレスを入力してください。"}
+          </DialogDescription>
+        </DialogHeader>
+        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+          <InputWithLabel
+            label="メールアドレス"
+            type="email"
+            required
+            value={mailaddress}
+            onChange={(e) => setMailaddress(e.target.value)}
           />
-          <PermissionDescriptions presetName={permPreset} />
-        </WithLabel>
-        <div className="flex justify-end">
-          <Button type="submit">招待</Button>
-        </div>
-      </form>
-    </DialogContent>
+          <WithLabel label="権限">
+            <PermissionSelector
+              permissionPreset={permPreset}
+              onChange={setPermPreset}
+            />
+            <PermissionDescriptions presetName={permPreset} />
+          </WithLabel>
+          <div className="flex justify-end">
+            <Button type="submit">招待</Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
