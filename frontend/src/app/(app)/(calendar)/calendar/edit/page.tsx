@@ -1,33 +1,99 @@
 "use client";
 import {
-  DragStartEvent,
   DndContext,
   DragOverlay,
   defaultDropAnimationSideEffects,
 } from "@dnd-kit/core";
-import { useState } from "react";
+import { doc, Timestamp } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { useDndTimeline } from "~/hooks/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
-import { DayTimelineEvent } from "~/features/dayTimeline/DayTimelineEvent";
+import { DayTimelineSchedule } from "~/features/dayTimeline/components/DayTimelineEvent";
 import PrivateScheduleDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
+import useAuthUser from "~/hooks/useAuthUser";
+import { useCalendarSession } from "~/hooks/useCalendarSession";
+import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
+import { db } from "~/lib/firebase";
+import { defaultConverter } from "~/lib/firestore/firestore";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 
 export default function Page() {
-  const [activeId, setActiveId] = useState<string | number | null>(null);
   const [events, setEvents] = useState<DBEventPoolItem[]>([]);
+  const authUser = useAuthUser();
+  const { optimisticSchedules, addOptimisticSchedule } =
+    useOptimisticSchedules();
+  const { calendarSession } = useCalendarSession();
+  const {
+    dndContextProps,
+    onScrollDroppableArea,
+    activeId,
+    setScrollAreaRef,
+    activeEventPoolItem,
+    quantizedMinutesFromMidnight,
+  } = useDndTimeline({
+    onDropNewSchedule: (startMinute, eventPoolItem) => {
+      console.log("Drop new schedule!", startMinute, eventPoolItem);
+      const currentDate = new Date(calendarSession.currentDate);
 
-  const handleStartDrag = (event: DragStartEvent) => {
-    setActiveId(event.active.id);
+      if (authUser === "loading" || authUser === null) return;
+
+      const eventReference = doc(
+        db,
+        "accounts",
+        authUser?.uid,
+        "event_pool",
+        eventPoolItem.uid
+      ).withConverter(defaultConverter<DBEventPoolItem>());
+      const endMinutes = startMinute + eventPoolItem.default_duration;
+      const startTime = new Date(currentDate);
+      startTime.setHours(Math.floor(startMinute / 60), startMinute % 60);
+      const endTime = new Date(currentDate);
+      endTime.setHours(Math.floor(endMinutes / 60), endMinutes % 60);
+
+      addOptimisticSchedule(
+        {
+          ...eventPoolItem,
+          event_reference: eventReference,
+          actual_budget: eventPoolItem.default_budget,
+          did_prepare: false,
+          start_time: Timestamp.fromDate(startTime),
+          end_time: Timestamp.fromDate(endTime),
+          schedule_uid: crypto.randomUUID(), // 一旦ランダムなUUIDを生成、DB保存後に上書き
+        },
+        "personal"
+      );
+    },
+  });
+
+  const droppingDate = calendarSession.currentDate;
+  droppingDate.setHours(
+    Math.floor(quantizedMinutesFromMidnight / 60),
+    quantizedMinutesFromMidnight % 60
+  );
+
+  const getEndDroppingDate = (startMinute: number, duration: number) => {
+    const endMinutes = startMinute + duration;
+    const endTime = new Date(droppingDate);
+    endTime.setHours(Math.floor(endMinutes / 60), endMinutes % 60);
+    return endTime;
   };
 
+  useEffect(() => {
+    console.log(optimisticSchedules);
+  }, [optimisticSchedules]);
+
   return (
-    <DndContext onDragStart={handleStartDrag}>
+    <DndContext {...dndContextProps}>
       <CardBodyWithLeftSidebar
         leftSidebar={
           <CalendarEditSidebar events={events} setEvents={setEvents} />
         }
       >
-        <PrivateScheduleDayTimeline />
+        <PrivateScheduleDayTimeline
+          onScroll={onScrollDroppableArea}
+          setScrollAreaRef={setScrollAreaRef}
+        />
       </CardBodyWithLeftSidebar>
       <DragOverlay
         dropAnimation={{
@@ -36,11 +102,31 @@ export default function Page() {
         }}
       >
         {activeId ? (
-          <DayTimelineEvent
+          <DayTimelineSchedule
             isDragging
-            event={
-              events.find((event) => event.uid === activeId) as DBEventPoolItem
-            }
+            schedule={{
+              ...activeEventPoolItem!,
+              event_reference: doc(
+                db,
+                "accounts",
+                authUser !== "loading" ? authUser?.uid ?? "" : "",
+                "event_pool",
+                activeId
+              ).withConverter(defaultConverter<DBEventPoolItem>()),
+              start_time: Timestamp.fromDate(droppingDate),
+              end_time: Timestamp.fromDate(
+                getEndDroppingDate(
+                  quantizedMinutesFromMidnight,
+                  activeEventPoolItem!.default_duration
+                )
+              ),
+              actual_budget:
+                activeEventPoolItem === null
+                  ? { mode: "total", value: 0 }
+                  : activeEventPoolItem.default_budget,
+              did_prepare: false,
+              schedule_uid: activeEventPoolItem?.uid ?? "",
+            }}
           />
         ) : null}
       </DragOverlay>
