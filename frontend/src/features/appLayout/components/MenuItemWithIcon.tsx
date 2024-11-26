@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import React from "react";
 import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
 
@@ -8,9 +9,10 @@ interface MenuItemWithIconProps {
 }
 
 const MenuItemWithIcon: React.FC<MenuItemWithIconProps> = (props) => {
+  const router = useRouter();
   const handleClick = () => {
     if (props.url) {
-      window.location.href = props.url;
+      router.push(props.url);
     }
   };
 
