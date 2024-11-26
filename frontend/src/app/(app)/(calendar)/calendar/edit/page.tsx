@@ -59,7 +59,7 @@ export default function Page() {
           did_prepare: false,
           start_time: Timestamp.fromDate(startTime),
           end_time: Timestamp.fromDate(endTime),
-          schedule_uid: eventReference.id,
+          schedule_uid: crypto.randomUUID(), // 一旦ランダムなUUIDを生成、DB保存後に上書き
         },
         "personal"
       );

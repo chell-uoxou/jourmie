@@ -35,8 +35,7 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
         .map((schedule) => {
           return (
             <div
-              // TODO: schedule.schedule_uidをkeyとする
-              key={Math.random()}
+              key={schedule.schedule_uid}
               className="absolute"
               style={{
                 top: getTop(schedule),
