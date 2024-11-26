@@ -52,17 +52,15 @@ export const DayTimelineSchedule = ({
             {(schedule.location_text !== "" || !isDragging) && (
               <div className="flex flex-col gap-1.5 ">
                 {schedule.location_text !== "" && (
-                  <>
-                    <PropsWithIcon
-                      icon={<Map size={14} />}
-                      value={schedule.location_text}
-                    />
-                    <PropsWithIcon
-                      icon={<Clock size={14} />}
-                      value={formatTime(schedule.start_time.toDate())}
-                    />
-                  </>
+                  <PropsWithIcon
+                    icon={<Map size={14} />}
+                    value={schedule.location_text}
+                  />
                 )}
+                <PropsWithIcon
+                  icon={<Clock size={14} />}
+                  value={formatTime(schedule.start_time.toDate())}
+                />
               </div>
             )}
           </div>
