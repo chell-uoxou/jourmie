@@ -72,6 +72,13 @@ export default function Page() {
     quantizedMinutesFromMidnight % 60
   );
 
+  const getEndDroppingDate = (startMinute: number, duration: number) => {
+    const endMinutes = startMinute + duration;
+    const endTime = new Date(droppingDate);
+    endTime.setHours(Math.floor(endMinutes / 60), endMinutes % 60);
+    return endTime;
+  };
+
   useEffect(() => {
     console.log(optimisticSchedules);
   }, [optimisticSchedules]);
@@ -107,7 +114,12 @@ export default function Page() {
                 activeId
               ).withConverter(defaultConverter<DBEventPoolItem>()),
               start_time: Timestamp.fromDate(droppingDate),
-              end_time: Timestamp.now(),
+              end_time: Timestamp.fromDate(
+                getEndDroppingDate(
+                  quantizedMinutesFromMidnight,
+                  activeEventPoolItem!.default_duration
+                )
+              ),
               actual_budget:
                 activeEventPoolItem === null
                   ? { mode: "total", value: 0 }

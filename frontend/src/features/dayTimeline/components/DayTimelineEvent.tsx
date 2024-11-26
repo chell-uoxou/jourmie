@@ -4,6 +4,7 @@ import { Clock, Map } from "lucide-react";
 import clsx from "clsx";
 import { Schedule } from "~/models/types/schedule";
 import { EventPoolItem } from "~/models/types/event_pool_item";
+import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 
 export type ScheduleEvent = Schedule &
   EventPoolItem & {
@@ -26,9 +27,25 @@ export const DayTimelineSchedule = ({
   schedule,
   isDragging,
 }: DayTimelineEventProps) => {
+  const { timelineSettings } = useTimelineSettings();
+
+  const duration =
+    (schedule.end_time.toDate().getTime() -
+      schedule.start_time.toDate().getTime()) /
+    (1000 * 60);
+  const height =
+    (duration / (timelineSettings.gridInterval * 60)) *
+    timelineSettings.gridHeight;
+
   return (
     <div>
-      <Card className={clsx(isDragging && "shadow-lg")}>
+      <Card
+        className={clsx(isDragging && "shadow-lg")}
+        style={{
+          height: `${height}px`,
+          minHeight: "16px",
+        }}
+      >
         <CardContent className="py-4 px-5">
           <div className="flex flex-col gap-2">
             <h1 className="text-sm font-bold">{schedule.title}</h1>
