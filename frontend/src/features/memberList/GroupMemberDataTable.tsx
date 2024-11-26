@@ -11,6 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUp, MoreHorizontal, Plus } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -37,9 +38,8 @@ import { collection, doc } from "firebase/firestore";
 import { db } from "~/lib/firebase";
 import { DBGroupMember } from "~/lib/firestore/schemas";
 import clsx from "clsx";
-import { Dialog, DialogTrigger } from "~/components/ui/dialog";
 import useCurrentGroup from "~/hooks/useCurrentGroup";
-import { InviteMemberDialogContent } from "./components/InviteMemberDialogContent";
+import { InviteMemberDialog } from "./components/InviteMemberDialog";
 import { PermissionIcons } from "./components/PermissionIcons";
 import EditMemberDialog from "./components/EditMemberDialog";
 import RemoveMemberDialog from "./components/RemoveMemberDialog";
@@ -63,7 +63,6 @@ export function GroupMemberDataTable() {
   const [EMBSelectedMember, setEMBSelectedMember] =
     useState<DBGroupMember | null>(null);
 
-  // DeleteMemberDialog
   const [isRMBOpen, setIsRMBOpen] = useState(false);
   const [RMBSelectedMember, setRMBSelectedMember] =
     useState<DBGroupMember | null>(null);
@@ -229,6 +228,10 @@ export function GroupMemberDataTable() {
     },
   });
 
+  const searchParams = useSearchParams();
+  const invite = searchParams.get("invite") ? true : false;
+  const [openDialog, setOpenDialog] = useState(invite);
+
   return (
     <div className="w-full flex flex-col gap-3">
       <div className="flex items-center">
@@ -240,14 +243,18 @@ export function GroupMemberDataTable() {
           }}
           className="max-w-sm"
         />
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="ml-auto">
-              招待 <Plus className=" h-4 w-4" />
-            </Button>
-          </DialogTrigger>
-          <InviteMemberDialogContent group={group} />
-        </Dialog>
+        <Button
+          onClick={() => setOpenDialog(true)}
+          className="ml-auto"
+          size={"sm"}
+        >
+          招待 <Plus className=" h-4 w-4" />
+        </Button>
+        <InviteMemberDialog
+          group={group}
+          isOpen={openDialog}
+          onOpenChange={setOpenDialog}
+        />
       </div>
       <div className="rounded-md border">
         <Table>

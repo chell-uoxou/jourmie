@@ -79,6 +79,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
             <MenuItemWithIcon
               icon={<UserRoundPlus className="mr-2 h-4 w-4" />}
               title="友達を招待"
+              url={`/g/${selectedGroup.uid}/member?invite=true`}
             />
             <MenuItemWithIcon
               icon={<UsersRound className="mr-2 h-4 w-4" />}
