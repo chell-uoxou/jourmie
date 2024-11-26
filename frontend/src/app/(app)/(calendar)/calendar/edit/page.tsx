@@ -45,6 +45,7 @@ export default function Page() {
     activeId,
     setScrollAreaRef,
     activeEventPoolItem,
+    quantizedMinutesFromMidnight,
   } = useDndTimeline({
     onDropNewSchedule: (startMinute, eventPoolItem) => {
       console.log("Drop new schedule!", startMinute, eventPoolItem);
@@ -59,11 +60,11 @@ export default function Page() {
         "event_pool",
         eventPoolItem.uid
       ).withConverter(defaultConverter<DBEventPoolItem>());
-      // 表示中の日付を指すcurrentDate（0:00）に、startMinute分を加算して開始時刻を設定
-      const startTime = new Date(currentDate.setMinutes(startMinute));
-      const endTime = new Date(
-        currentDate.setMinutes(startMinute + eventPoolItem.default_duration)
-      );
+      const startTime = currentDate;
+      startTime.setHours(Math.floor(startMinute / 60), startMinute % 60);
+      const endTime = currentDate;
+      const endMinutes = startMinute + eventPoolItem.default_duration;
+      endTime.setHours(Math.floor(endMinutes / 60), endMinutes % 60);
 
       addOptimisticSchedule(
         {
@@ -79,6 +80,12 @@ export default function Page() {
       );
     },
   });
+
+  const droppingDate = calendarSession.currentDate;
+  droppingDate.setHours(
+    Math.floor(quantizedMinutesFromMidnight / 60),
+    quantizedMinutesFromMidnight % 60
+  );
 
   useEffect(() => {
     console.log(optimisticSchedules);
@@ -128,7 +135,7 @@ export default function Page() {
                 "event_pool",
                 activeId
               ).withConverter(defaultConverter<DBEventPoolItem>()),
-              start_time: Timestamp.now(),
+              start_time: Timestamp.fromDate(droppingDate),
               end_time: Timestamp.now(),
               actual_budget:
                 activeEventPoolItem === null

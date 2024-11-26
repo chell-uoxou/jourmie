@@ -27,7 +27,8 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
   const topInDayTimeline = useRef<number | null>(null);
   const scrollTopInDayTimeline = useRef<number | null>(null);
   const minutesFromMidnight = useRef<number | null>(null);
-  const quantizedMinutesFromMidnight = useRef<number | null>(null);
+  const [quantizedMinutesFromMidnight, setQuantizedMinutesFromMidnight] =
+    useState<number>(0);
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const scrollAreaRect = useRef<ClientRect | null>(null);
 
@@ -59,7 +60,7 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
   };
 
   const handleDragEnd = useCallback(() => {
-    const minute = quantizedMinutesFromMidnight.current;
+    const minute = quantizedMinutesFromMidnight;
     if (isOverDraggable && activeEventPoolItem) {
       console.log("Drag Ended: ", activeEventPoolItem?.title, minute, activeId);
       if (onDropNewSchedule && minute !== null) {
@@ -69,7 +70,13 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
       console.log("Drag Ended without drop: ", activeId);
     }
     setIsOverDraggable(false);
-  }, [activeEventPoolItem, activeId, isOverDraggable, onDropNewSchedule]);
+  }, [
+    activeEventPoolItem,
+    activeId,
+    isOverDraggable,
+    onDropNewSchedule,
+    quantizedMinutesFromMidnight,
+  ]);
 
   const setScrollAreaRef = useCallback((node: HTMLDivElement | null) => {
     scrollAreaRef.current = node;
@@ -105,15 +112,15 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
             ? 1440
             : minutesFromMidnight.current;
 
-        quantizedMinutesFromMidnight.current =
-          Math.floor(minutesFromMidnight.current / 15) * 15;
+        setQuantizedMinutesFromMidnight(
+          Math.floor(minutesFromMidnight.current / 15) * 15
+        );
 
         modifiedTransform = {
           ...modifiedTransform,
           x: (scrollAreaRect.current?.left ?? 200) - 24 + 60, // グリッドの左端から60px右にずらす
           y:
-            (quantizedMinutesFromMidnight.current / 60) *
-              timelineSettings.gridHeight -
+            (quantizedMinutesFromMidnight / 60) * timelineSettings.gridHeight -
             (scrollTopInDayTimeline.current ?? 0) -
             (args.overlayNodeRect?.top ?? 0) +
             (scrollAreaRect.current?.top ?? 0) +
@@ -122,7 +129,11 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
       }
       return modifiedTransform;
     },
-    [timelineSettings.gridHeight, timelineSettings.gridInterval]
+    [
+      quantizedMinutesFromMidnight,
+      timelineSettings.gridHeight,
+      timelineSettings.gridInterval,
+    ]
   );
 
   const dndContextProps = useMemo(() => {

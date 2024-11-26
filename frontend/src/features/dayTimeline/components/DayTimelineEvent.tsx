@@ -1,6 +1,6 @@
 import { Card, CardContent } from "~/components/ui/card";
 import { PropsWithIcon } from "./PropsWithIcon";
-import { CalendarRange, Map } from "lucide-react";
+import { Clock, Map } from "lucide-react";
 import clsx from "clsx";
 import { Schedule } from "~/models/types/schedule";
 import { EventPoolItem } from "~/models/types/event_pool_item";
@@ -15,6 +15,13 @@ interface DayTimelineEventProps {
   isDragging?: boolean;
 }
 
+const formatTime = (date: Date) => {
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
 export const DayTimelineSchedule = ({
   schedule,
   isDragging,
@@ -28,16 +35,16 @@ export const DayTimelineSchedule = ({
             {(schedule.location_text !== "" || !isDragging) && (
               <div className="flex flex-col gap-1.5 ">
                 {schedule.location_text !== "" && (
-                  <PropsWithIcon
-                    icon={<Map size={14} />}
-                    value={schedule.location_text}
-                  />
-                )}
-                {!isDragging && (
-                  <PropsWithIcon
-                    icon={<CalendarRange size={14} />}
-                    value={schedule.location_text}
-                  />
+                  <>
+                    <PropsWithIcon
+                      icon={<Map size={14} />}
+                      value={schedule.location_text}
+                    />
+                    <PropsWithIcon
+                      icon={<Clock size={14} />}
+                      value={formatTime(schedule.start_time.toDate())}
+                    />
+                  </>
                 )}
               </div>
             )}
