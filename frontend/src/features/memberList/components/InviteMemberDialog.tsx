@@ -52,6 +52,7 @@ export const InviteMemberDialog = (props: InviteMemberDialogContentProps) => {
     "can-edit-all-schedule"
   );
   const [mailaddress, setMailaddress] = useState("");
+  const [sending, setSending] = useState(false);
 
   const handleSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
@@ -71,6 +72,7 @@ export const InviteMemberDialog = (props: InviteMemberDialogContentProps) => {
           onClick: () => console.log("Undo"),
         },
       });
+      setSending(false);
     }
 
     querySnapshot.forEach(async (snapshot) => {
@@ -87,6 +89,7 @@ export const InviteMemberDialog = (props: InviteMemberDialogContentProps) => {
             onClick: () => console.log("Undo"),
           },
         });
+        setSending(false);
         return;
       }
       if (props.group !== "loading" && props.group) {
@@ -96,19 +99,17 @@ export const InviteMemberDialog = (props: InviteMemberDialogContentProps) => {
           email: matchedAccount.email ?? "",
           avatar_url: matchedAccount.avatar_url ?? "",
           editing_permission_scopes: getScopesByPreset(permPreset) ?? [],
-        })
-          .then(() => {
-            toast("メンバーを追加しました", {
-              description:
-                matchedAccount.default_display_name + "さんをグループに追加",
-            });
-            setMailaddress("");
-          })
-          .catch((error) => {
-            console.error("エラーが発生しました: ", error);
+        }).then(() => {
+          toast("メンバーを追加しました", {
+            description:
+              matchedAccount.default_display_name + "さんをグループに追加",
           });
+          setMailaddress("");
+        });
+        setSending(false);
       }
     });
+    setSending(true);
   };
 
   return (
@@ -137,7 +138,9 @@ export const InviteMemberDialog = (props: InviteMemberDialogContentProps) => {
             <PermissionDescriptions presetName={permPreset} />
           </WithLabel>
           <div className="flex justify-end">
-            <Button type="submit">招待</Button>
+            <Button type="submit" disabled={sending}>
+              招待
+            </Button>
           </div>
         </form>
       </DialogContent>
