@@ -45,10 +45,10 @@ export default function Page() {
         "event_pool",
         eventPoolItem.uid
       ).withConverter(defaultConverter<DBEventPoolItem>());
-      const startTime = currentDate;
-      startTime.setHours(Math.floor(startMinute / 60), startMinute % 60);
-      const endTime = currentDate;
       const endMinutes = startMinute + eventPoolItem.default_duration;
+      const startTime = new Date(currentDate);
+      startTime.setHours(Math.floor(startMinute / 60), startMinute % 60);
+      const endTime = new Date(currentDate);
       endTime.setHours(Math.floor(endMinutes / 60), endMinutes % 60);
 
       addOptimisticSchedule(
