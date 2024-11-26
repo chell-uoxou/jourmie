@@ -21,6 +21,19 @@ import { List } from "lucide-react";
 import { UserRound } from "lucide-react";
 import { DBGroup } from "~/lib/firestore/schemas";
 import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { InputWithLabel } from "~/components/common/InputWithLabel";
+import { WithLabel } from "~/components/common/WithLabel";
+import { Textarea } from "~/components/ui/textarea";
+import { Input } from "~/components/ui/input";
 
 type Props = {
   currentGroupId: string | "personal" | null;
@@ -30,6 +43,9 @@ type Props = {
 
 export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
   const [openGroupSwitcher, setOpenGroupSwitcher] = useState(false);
+  const [isCGOpen, setIsCGOpen] = useState(false);
+  const handleOpen = () => setIsCGOpen(true);
+  const handleClose = () => setIsCGOpen(false);
 
   const selectedGroup =
     groups === "loading" || groups === null || currentGroupId === null
@@ -37,114 +53,168 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
       : groups.find((group) => group.uid === currentGroupId);
 
   return (
-    <DropdownMenu open={openGroupSwitcher} onOpenChange={setOpenGroupSwitcher}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          role="combobox"
-          aria-expanded={openGroupSwitcher}
-          className="w-[200px] justify-between rounded-full"
-        >
-          {groups === "loading" ? (
-            <LoadingSpinner />
-          ) : groups === null || selectedGroup === null ? null : (
+    <>
+      <DropdownMenu
+        open={openGroupSwitcher}
+        onOpenChange={setOpenGroupSwitcher}
+      >
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            role="combobox"
+            aria-expanded={openGroupSwitcher}
+            className="w-[200px] justify-between rounded-full"
+          >
+            {groups === "loading" ? (
+              <LoadingSpinner />
+            ) : groups === null || selectedGroup === null ? null : (
+              <>
+                <div className="flex items-center">
+                  {currentGroupId === "personal" ? (
+                    <>
+                      <UserRound className="h-6 w-6 mr-2" />
+                      <div className="font-bold">あなた</div>
+                    </>
+                  ) : (
+                    <>
+                      <Image
+                        src={
+                          selectedGroup?.icon_url ?? "/images/defaulticon.png"
+                        }
+                        alt={"group icon"}
+                        width={24}
+                        height={24}
+                        className="mr-2"
+                      />
+                      <div>{selectedGroup?.name}</div>
+                    </>
+                  )}
+                </div>
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </>
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-[200px]">
+          {selectedGroup && (
             <>
-              <div className="flex items-center">
-                {currentGroupId === "personal" ? (
-                  <>
-                    <UserRound className="h-6 w-6 mr-2" />
-                    <div className="font-bold">あなた</div>
-                  </>
-                ) : (
-                  <>
-                    <Image
-                      src={selectedGroup?.icon_url ?? "/images/defaulticon.png"}
-                      alt={"group icon"}
-                      width={24}
-                      height={24}
-                      className="mr-2"
-                    />
-                    <div>{selectedGroup?.name}</div>
-                  </>
-                )}
-              </div>
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              <MenuItemWithIcon
+                icon={<UserRoundPlus className="mr-2 h-4 w-4" />}
+                title="友達を招待"
+                url={`/g/${selectedGroup.uid}/member?invite=true`}
+              />
+              <MenuItemWithIcon
+                icon={<UsersRound className="mr-2 h-4 w-4" />}
+                title="メンバーリスト"
+                url={`/g/${selectedGroup.uid}/member`}
+              />
+              <MenuItemWithIcon
+                icon={<Settings className="mr-2 h-4 w-4" />}
+                title="グループ設定"
+                url={`/g/${selectedGroup.uid}`}
+              />
+              <DropdownMenuSeparator className="border" />
             </>
           )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[200px]">
-        {selectedGroup && (
-          <>
-            <MenuItemWithIcon
-              icon={<UserRoundPlus className="mr-2 h-4 w-4" />}
-              title="友達を招待"
-              url={`/g/${selectedGroup.uid}/member?invite=true`}
-            />
-            <MenuItemWithIcon
-              icon={<UsersRound className="mr-2 h-4 w-4" />}
-              title="メンバーリスト"
-              url={`/g/${selectedGroup.uid}/member`}
-            />
-            <MenuItemWithIcon
-              icon={<Settings className="mr-2 h-4 w-4" />}
-              title="グループ設定"
-              url={`/g/${selectedGroup.uid}`}
-            />
-            <DropdownMenuSeparator className="border" />
-          </>
-        )}
-        <DropdownMenuGroup>
-          <DropdownMenuItem
-            onSelect={() => {
-              setOpenGroupSwitcher(false);
-              onChange("personal");
-            }}
-            className="font-bold"
-          >
-            <UserRound className="mr-2 h-4 w-4" />
-            あなた
-          </DropdownMenuItem>
-          <DropdownMenuSeparator className="border" />
-          <DropdownMenuLabel>参加中のグループ</DropdownMenuLabel>
-          {groups === null || groups === "loading" ? null : groups.length ===
-            0 ? (
-            <DropdownMenuItem disabled>
-              まだグループに参加していません。
+          <DropdownMenuGroup>
+            <DropdownMenuItem
+              onSelect={() => {
+                setOpenGroupSwitcher(false);
+                onChange("personal");
+              }}
+              className="font-bold"
+            >
+              <UserRound className="mr-2 h-4 w-4" />
+              あなた
             </DropdownMenuItem>
-          ) : (
-            groups.map((group) => (
-              <DropdownMenuItem
-                key={group.uid}
-                onSelect={() => {
-                  console.log("selected", group);
-                  setOpenGroupSwitcher(false);
-                  onChange(group.uid);
-                }}
-                className="flex"
-              >
-                <Image
-                  src={group.icon_url}
-                  alt={group.name}
-                  width={24}
-                  height={24}
-                  className="flex mr-2"
-                />
-                {group.name}
+            <DropdownMenuSeparator className="border" />
+            <DropdownMenuLabel>参加中のグループ</DropdownMenuLabel>
+            {groups === null || groups === "loading" ? null : groups.length ===
+              0 ? (
+              <DropdownMenuItem disabled>
+                まだグループに参加していません。
               </DropdownMenuItem>
-            ))
-          )}
-        </DropdownMenuGroup>
-        <MenuItemWithIcon
-          icon={<List className="mr-2 h-4 w-4" />}
-          title="グループ一覧"
-        />
-        <MenuItemWithIcon
-          // {/* TODO:新規作成の処理を追加 */}
-          icon={<CirclePlus className="mr-2 h-4 w-4" />}
-          title="新規作成"
-        />
-      </DropdownMenuContent>
-    </DropdownMenu>
+            ) : (
+              groups.map((group) => (
+                <DropdownMenuItem
+                  key={group.uid}
+                  onSelect={() => {
+                    console.log("selected", group);
+                    setOpenGroupSwitcher(false);
+                    onChange(group.uid);
+                  }}
+                  className="flex"
+                >
+                  <Image
+                    src={group.icon_url}
+                    alt={group.name}
+                    width={24}
+                    height={24}
+                    className="flex mr-2"
+                  />
+                  {group.name}
+                </DropdownMenuItem>
+              ))
+            )}
+          </DropdownMenuGroup>
+          <MenuItemWithIcon
+            icon={<List className="mr-2 h-4 w-4" />}
+            title="グループ一覧"
+          />
+          {/* <DropdownMenuItem
+          onSelect={() => {
+            setIsCGOpen(true);
+          }}
+          className="font-bold"
+        >
+          <CirclePlus className="mr-2 h-4 w-4" />
+          新規作成
+        </DropdownMenuItem> */}
+          <DropdownMenuItem onSelect={handleOpen} className="font-bold">
+            <CirclePlus className="mr-2 h-4 w-4" />
+            新規作成
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog
+        open={isCGOpen}
+        onOpenChange={setIsCGOpen}
+        aria-label="Create Group"
+      >
+        <DialogTrigger asChild></DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>グループを作成</DialogTitle>
+            <DialogDescription>
+              アイコン、グループ名、説明を入力してください
+            </DialogDescription>
+          </DialogHeader>
+          <div className="w-full flex flex-col gap-y-3">
+            <div>
+              <WithLabel label="アイコン">
+                <Input id="picture" type="file" accept="image/*" />
+              </WithLabel>
+            </div>
+            <div>
+              <InputWithLabel label="グループ名" id="name" />
+            </div>
+            <div>
+              <WithLabel label="説明">
+                <Textarea name="memo" id="memo" className="h-24" />
+              </WithLabel>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit" onClick={handleClose}>
+              保存
+            </Button>
+            <Button variant="ghost" onClick={handleClose}>
+              キャンセル
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
