@@ -20,25 +20,10 @@ import { DBEventPoolItem } from "~/lib/firestore/utils";
 
 export default function Page() {
   const [events, setEvents] = useState<DBEventPoolItem[]>([]);
-  // const [modifierState, setModifierState] = useState<
-  //   Parameters<Modifier>[0] | null
-  // >(null);
-
-  // const formatMinutes = (minutes: number) => {
-  //   const hours = Math.floor(minutes / 60);
-  //   const minutesInHour = minutes % 60;
-  //   return `${hours.toString().padStart(2, "0")}:${minutesInHour
-  //     .toString()
-  //     .padStart(2, "0")}`;
-  // };
-
   const authUser = useAuthUser();
-
   const { optimisticSchedules, addOptimisticSchedule } =
     useOptimisticSchedules();
-
   const { calendarSession } = useCalendarSession();
-
   const {
     dndContextProps,
     onScrollDroppableArea,
@@ -91,13 +76,6 @@ export default function Page() {
     console.log(optimisticSchedules);
   }, [optimisticSchedules]);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setModifierState(modifierRef.current);
-  //   }, 100);
-  //   return () => clearInterval(interval);
-  // }, [modifierRef]);
-
   return (
     <DndContext {...dndContextProps}>
       <CardBodyWithLeftSidebar
@@ -116,13 +94,6 @@ export default function Page() {
           duration: 0,
         }}
       >
-        {/* <Debug
-          modifierState={modifierState}
-          minutesFromMidnight={minutesFromMidnight}
-          topInDayTimeline={topInDayTimeline}
-          quantizedMinutesFromMidnight={quantizedMinutesFromMidnight}
-          formatMinutes={formatMinutes}
-        /> */}
         {activeId ? (
           <DayTimelineSchedule
             isDragging
