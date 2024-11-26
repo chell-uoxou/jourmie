@@ -8,7 +8,7 @@ import { doc, Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useDndTimeline } from "~/app/practice/test1/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
-import { DayTimelineEvent } from "~/features/dayTimeline/components/DayTimelineEvent";
+import { DayTimelineSchedule } from "~/features/dayTimeline/components/DayTimelineEvent";
 import PrivateScheduleDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import useAuthUser from "~/hooks/useAuthUser";
@@ -39,41 +39,46 @@ export default function Page() {
 
   const { calendarSession } = useCalendarSession();
 
-  const { dndContextProps, onScrollDroppableArea, activeId, setScrollAreaRef } =
-    useDndTimeline({
-      onDropNewSchedule: (startMinute, eventPoolItem) => {
-        console.log("Drop new schedule!", startMinute, eventPoolItem);
+  const {
+    dndContextProps,
+    onScrollDroppableArea,
+    activeId,
+    setScrollAreaRef,
+    activeEventPoolItem,
+  } = useDndTimeline({
+    onDropNewSchedule: (startMinute, eventPoolItem) => {
+      console.log("Drop new schedule!", startMinute, eventPoolItem);
+      const currentDate = new Date(calendarSession.currentDate);
 
-        if (authUser === "loading" || authUser === null) return;
+      if (authUser === "loading" || authUser === null) return;
 
-        const eventReference = doc(
-          db,
-          "accounts",
-          authUser?.uid,
-          "event_pool",
-          eventPoolItem.uid
-        ).withConverter(defaultConverter<DBEventPoolItem>());
-        const startTime = new Date(
-          calendarSession.currentDate.setMinutes(startMinute)
-        );
-        const endTime = new Date(
-          calendarSession.currentDate.setMinutes(
-            startMinute + eventPoolItem.default_duration
-          )
-        );
+      const eventReference = doc(
+        db,
+        "accounts",
+        authUser?.uid,
+        "event_pool",
+        eventPoolItem.uid
+      ).withConverter(defaultConverter<DBEventPoolItem>());
+      // 表示中の日付を指すcurrentDate（0:00）に、startMinute分を加算して開始時刻を設定
+      const startTime = new Date(currentDate.setMinutes(startMinute));
+      const endTime = new Date(
+        currentDate.setMinutes(startMinute + eventPoolItem.default_duration)
+      );
 
-        addOptimisticSchedule(
-          {
-            event_reference: eventReference,
-            actual_budget: eventPoolItem.default_budget,
-            did_prepare: false,
-            start_time: Timestamp.fromDate(startTime),
-            end_time: Timestamp.fromDate(endTime),
-          },
-          "personal"
-        );
-      },
-    });
+      addOptimisticSchedule(
+        {
+          ...eventPoolItem,
+          event_reference: eventReference,
+          actual_budget: eventPoolItem.default_budget,
+          did_prepare: false,
+          start_time: Timestamp.fromDate(startTime),
+          end_time: Timestamp.fromDate(endTime),
+          schedule_uid: eventReference.id,
+        },
+        "personal"
+      );
+    },
+  });
 
   useEffect(() => {
     console.log(optimisticSchedules);
@@ -112,11 +117,26 @@ export default function Page() {
           formatMinutes={formatMinutes}
         /> */}
         {activeId ? (
-          <DayTimelineEvent
+          <DayTimelineSchedule
             isDragging
-            event={
-              events.find((event) => event.uid === activeId) as DBEventPoolItem
-            }
+            schedule={{
+              ...activeEventPoolItem!,
+              event_reference: doc(
+                db,
+                "accounts",
+                authUser !== "loading" ? authUser?.uid ?? "" : "",
+                "event_pool",
+                activeId
+              ).withConverter(defaultConverter<DBEventPoolItem>()),
+              start_time: Timestamp.now(),
+              end_time: Timestamp.now(),
+              actual_budget:
+                activeEventPoolItem === null
+                  ? { mode: "total", value: 0 }
+                  : activeEventPoolItem.default_budget,
+              did_prepare: false,
+              schedule_uid: activeEventPoolItem?.uid ?? "",
+            }}
           />
         ) : null}
       </DragOverlay>

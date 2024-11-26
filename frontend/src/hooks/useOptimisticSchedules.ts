@@ -1,6 +1,5 @@
 import { useAtom } from "jotai";
-import { DBSchedule } from "~/lib/firestore/utils";
-import { Schedule } from "~/models/types/schedule";
+import { ScheduleEvent } from "~/features/dayTimeline/components/DayTimelineEvent";
 import { optimisticSchedulesAtom } from "~/stores/optimisticSchedules";
 
 export const useOptimisticSchedules = () => {
@@ -8,7 +7,10 @@ export const useOptimisticSchedules = () => {
     optimisticSchedulesAtom
   );
 
-  const updateSchedulesFromDB = (schedules: DBSchedule[], groupId: string) => {
+  const updateSchedulesFromDB = (
+    schedules: ScheduleEvent[],
+    groupId: string
+  ) => {
     setOptimisticSchedules(
       schedules.map((schedule) => ({
         ...schedule,
@@ -18,7 +20,7 @@ export const useOptimisticSchedules = () => {
     );
   };
 
-  const addOptimisticSchedule = (schedule: Schedule, groupId: string) => {
+  const addOptimisticSchedule = (schedule: ScheduleEvent, groupId: string) => {
     const optimisticSchedule = {
       ...schedule,
       groupId: groupId,

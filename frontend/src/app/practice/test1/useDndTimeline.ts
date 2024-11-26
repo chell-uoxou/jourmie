@@ -18,7 +18,7 @@ interface UseDndTimeLineOptions {
 export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
   const { onDropNewSchedule } = options;
 
-  const [activeId, setActiveId] = useState<string | number | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [activeEventPoolItem, setActiveEventPoolItem] =
     useState<DBEventPoolItem | null>(null);
   const [isOverDraggable, setIsOverDraggable] = useState(false);
@@ -37,7 +37,7 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
         "Start dragging: ",
         event.active.data.current?.eventPoolItem.title
       );
-      setActiveId(event.active.id);
+      setActiveId(String(event.active.id));
       setActiveEventPoolItem(event.active.data.current?.eventPoolItem);
     },
     [setActiveId]
@@ -110,7 +110,7 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
 
         modifiedTransform = {
           ...modifiedTransform,
-          x: (scrollAreaRect.current?.left ?? 200) - 24 + 60,
+          x: (scrollAreaRect.current?.left ?? 200) - 24 + 60, // グリッドの左端から60px右にずらす
           y:
             (quantizedMinutesFromMidnight.current / 60) *
               timelineSettings.gridHeight -

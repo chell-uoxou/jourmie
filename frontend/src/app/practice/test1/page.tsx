@@ -11,7 +11,7 @@ import clsx from "clsx";
 import { doc, GeoPoint, Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { DayTimelineEvent } from "~/features/dayTimeline/components/DayTimelineEvent";
+import { DayTimelineSchedule } from "~/features/dayTimeline/components/DayTimelineEvent";
 import EventPoolListItem from "~/features/eventPool/EventsPoolListItem";
 import { Timeline } from "~/features/timeline/Timeline";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
@@ -38,78 +38,80 @@ const Droppable = () => {
   );
 };
 
+export const dummyEventPool1: DBEventPoolItem = {
+  uid: "1",
+  title: "京都国立博物館",
+  description: "特別展を見学",
+  location_text: "京都府京都市東山区",
+  location_coordinates: new GeoPoint(35.0116, 135.7681),
+  attached_image: "",
+  available_times: [
+    {
+      start_time: Timestamp.fromDate(new Date("2024-10-20T09:00:00")),
+      end_time: Timestamp.fromDate(new Date("2024-10-20T18:00:00")),
+    },
+    {
+      start_time: Timestamp.fromDate(new Date("2024-10-21T09:00:00")),
+      end_time: Timestamp.fromDate(new Date("2024-10-21T18:00:00")),
+    },
+  ],
+  default_duration: 0,
+  default_budget: {
+    mode: "per_person",
+    value: 0,
+  },
+  needs_preparation: false,
+  preparation_task: "予習",
+  max_participants: 0,
+  notes: "notes",
+  created_by_account: doc(db, "accounts/1").withConverter(
+    defaultConverter<DBAccount>()
+  ),
+  created_by_member: doc(db, "members/1").withConverter(
+    defaultConverter<DBGroupMember>()
+  ),
+  schedule_instances: [],
+};
+
+export const dummyEventPool2: DBEventPoolItem = {
+  uid: "2",
+  title: "京都タワー",
+  description: "展望台に登る",
+  location_text: "京都府京都市下京区",
+  location_coordinates: new GeoPoint(34.9875, 135.7594),
+  attached_image: "",
+  available_times: [
+    {
+      start_time: Timestamp.fromDate(new Date("2024-10-20T10:00:00")),
+      end_time: Timestamp.fromDate(new Date("2024-10-20T21:00:00")),
+    },
+    {
+      start_time: Timestamp.fromDate(new Date("2024-10-21T10:00:00")),
+      end_time: Timestamp.fromDate(new Date("2024-10-21T21:00:00")),
+    },
+  ],
+  default_duration: 90,
+  default_budget: {
+    mode: "per_person",
+    value: 900,
+  },
+  needs_preparation: true,
+  preparation_task: "オンラインチケットの購入",
+  max_participants: 0,
+  notes: "",
+  created_by_account: doc(db, "accounts/1").withConverter(
+    defaultConverter<DBAccount>()
+  ),
+  created_by_member: doc(db, "members/1").withConverter(
+    defaultConverter<DBGroupMember>()
+  ),
+  schedule_instances: [],
+};
+
 export default function Page() {
   const [modifierState, setModifierState] = useState<
     Parameters<Modifier>[0] | null
   >(null);
-  const dummyEventPool1: DBEventPoolItem = {
-    uid: "1",
-    title: "京都国立博物館",
-    description: "特別展を見学",
-    location_text: "京都府京都市東山区",
-    location_coordinates: new GeoPoint(35.0116, 135.7681),
-    attached_image: "",
-    available_times: [
-      {
-        start_time: Timestamp.fromDate(new Date("2024-10-20T09:00:00")),
-        end_time: Timestamp.fromDate(new Date("2024-10-20T18:00:00")),
-      },
-      {
-        start_time: Timestamp.fromDate(new Date("2024-10-21T09:00:00")),
-        end_time: Timestamp.fromDate(new Date("2024-10-21T18:00:00")),
-      },
-    ],
-    default_duration: 0,
-    default_budget: {
-      mode: "per_person",
-      value: 0,
-    },
-    needs_preparation: false,
-    preparation_task: "予習",
-    max_participants: 0,
-    notes: "notes",
-    created_by_account: doc(db, "accounts/1").withConverter(
-      defaultConverter<DBAccount>()
-    ),
-    created_by_member: doc(db, "members/1").withConverter(
-      defaultConverter<DBGroupMember>()
-    ),
-    schedule_instances: [],
-  };
-  const dummyEventPool2: DBEventPoolItem = {
-    uid: "2",
-    title: "京都タワー",
-    description: "展望台に登る",
-    location_text: "京都府京都市下京区",
-    location_coordinates: new GeoPoint(34.9875, 135.7594),
-    attached_image: "",
-    available_times: [
-      {
-        start_time: Timestamp.fromDate(new Date("2024-10-20T10:00:00")),
-        end_time: Timestamp.fromDate(new Date("2024-10-20T21:00:00")),
-      },
-      {
-        start_time: Timestamp.fromDate(new Date("2024-10-21T10:00:00")),
-        end_time: Timestamp.fromDate(new Date("2024-10-21T21:00:00")),
-      },
-    ],
-    default_duration: 90,
-    default_budget: {
-      mode: "per_person",
-      value: 900,
-    },
-    needs_preparation: true,
-    preparation_task: "オンラインチケットの購入",
-    max_participants: 0,
-    notes: "",
-    created_by_account: doc(db, "accounts/1").withConverter(
-      defaultConverter<DBAccount>()
-    ),
-    created_by_member: doc(db, "members/1").withConverter(
-      defaultConverter<DBGroupMember>()
-    ),
-    schedule_instances: [],
-  };
 
   const {
     dndContextProps,
@@ -165,9 +167,9 @@ export default function Page() {
           formatMinutes={formatMinutes}
         />
         {activeId ? (
-          <DayTimelineEvent
+          <DayTimelineSchedule
             isDragging
-            event={
+            schedule={
               events.find((event) => event.uid === activeId) as DBEventPoolItem
             }
           />
