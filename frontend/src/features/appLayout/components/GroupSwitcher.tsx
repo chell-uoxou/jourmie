@@ -34,6 +34,8 @@ import { InputWithLabel } from "~/components/common/InputWithLabel";
 import { WithLabel } from "~/components/common/WithLabel";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
+import { CreateGroup } from "~/utils/creategroup"; // createGroup関数をインポート
+import { v4 as uuidv4 } from "uuid"; // ユニークなIDを生成
 
 type Props = {
   currentGroupId: string | "personal" | null;
@@ -46,6 +48,34 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
   const [isCGOpen, setIsCGOpen] = useState(false);
   const handleOpen = () => setIsCGOpen(true);
   const handleClose = () => setIsCGOpen(false);
+  const [groupName, setGroupName] = useState("");
+  const [groupDescription, setGroupDescription] = useState("");
+  const [groupIcon, setGroupIcon] = useState<File | null>(null);
+
+  const handleCreateGroup = async () => {
+    if (!groupName) {
+      alert("グループ名を入力してください");
+      return;
+    }
+
+    const newGroupId = uuidv4(); // ユニークなIDを生成
+    const iconUrl = "/images/defaulticon.png"; // デフォルトアイコン
+
+    try {
+      await CreateGroup(newGroupId, {
+        name: groupName,
+        description: groupDescription,
+        icon_url: iconUrl,
+      });
+
+      alert("グループが作成されました");
+      handleClose();
+      onChange(newGroupId); // 新しいグループに切り替え
+    } catch (error) {
+      console.error("グループ作成中にエラーが発生しました:", error);
+      alert("グループ作成に失敗しました");
+    }
+  };
 
   const selectedGroup =
     groups === "loading" || groups === null || currentGroupId === null
@@ -161,15 +191,6 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
             icon={<List className="mr-2 h-4 w-4" />}
             title="グループ一覧"
           />
-          {/* <DropdownMenuItem
-          onSelect={() => {
-            setIsCGOpen(true);
-          }}
-          className="font-bold"
-        >
-          <CirclePlus className="mr-2 h-4 w-4" />
-          新規作成
-        </DropdownMenuItem> */}
           <DropdownMenuItem onSelect={handleOpen} className="font-bold">
             <CirclePlus className="mr-2 h-4 w-4" />
             新規作成
@@ -193,20 +214,35 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
           <div className="w-full flex flex-col gap-y-3">
             <div>
               <WithLabel label="アイコン">
-                <Input id="picture" type="file" accept="image/*" />
+                <Input
+                  id="picture"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setGroupIcon(e.target.files?.[0] ?? null)}
+                />
               </WithLabel>
             </div>
             <div>
-              <InputWithLabel label="グループ名" id="name" />
+              <InputWithLabel
+                label="グループ名"
+                id="name"
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
+              />
             </div>
             <div>
               <WithLabel label="説明">
-                <Textarea name="memo" id="memo" className="h-24" />
+                <Textarea
+                  id="memo"
+                  className="h-24"
+                  value={groupDescription}
+                  onChange={(e) => setGroupDescription(e.target.value)}
+                />
               </WithLabel>
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" onClick={handleClose}>
+            <Button type="submit" onClick={handleCreateGroup}>
               保存
             </Button>
             <Button variant="ghost" onClick={handleClose}>
