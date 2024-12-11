@@ -11,6 +11,7 @@ import { useCalendarSession } from "~/hooks/useCalendarSession";
 import { getEndDroppingDate } from "~/app/(app)/(calendar)/calendar/edit/page";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 import { MutableRefObject, UIEventHandler, useEffect } from "react";
+import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
 
 interface TimelineSchedulesProps {
   schedules: ScheduleEvent[];
@@ -21,14 +22,36 @@ interface TimelineSchedulesProps {
 
 const TimelineSchedules = (props: TimelineSchedulesProps) => {
   const { timelineSettings } = useTimelineSettings();
+  const { calendarSession } = useCalendarSession();
+  const { updateOptimisticSchedule } = useOptimisticSchedules();
   const {
     dndContextProps,
     activeId,
     activeScheduleEvent,
     quantizedMinutesFromMidnight,
     handleScroll,
-  } = useDndEditInTimeline({ scrollAreaRef: props.scrollAreaRef });
-  const { calendarSession } = useCalendarSession();
+  } = useDndEditInTimeline({
+    scrollAreaRef: props.scrollAreaRef,
+    onChangeStartTime: (startMinute, scheduleEvent) => {
+      const newStartTime = new Date(scheduleEvent.start_time.toDate());
+      const newEndTime = new Date(scheduleEvent.end_time.toDate());
+      const duration =
+        newEndTime.getHours() * 60 +
+        newEndTime.getMinutes() -
+        newStartTime.getHours() * 60 -
+        newStartTime.getMinutes();
+      const endMinute = startMinute + duration;
+      newStartTime.setHours(Math.floor(startMinute / 60), startMinute % 60);
+      newEndTime.setHours(Math.floor(endMinute / 60), endMinute % 60);
+      updateOptimisticSchedule(scheduleEvent.schedule_uid, {
+        ...scheduleEvent,
+        start_time: Timestamp.fromDate(newStartTime),
+        end_time: Timestamp.fromDate(newEndTime),
+      });
+
+      console.log("Change start time!", startMinute, endMinute, duration);
+    },
+  });
   const authUser = useAuthUser();
 
   const droppingDate = new Date(calendarSession.currentDate);

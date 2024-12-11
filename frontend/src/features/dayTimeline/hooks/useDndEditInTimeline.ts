@@ -31,6 +31,17 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
     setActiveScheduleEvent(event.active.data.current?.schedule);
   }, []);
 
+  const handleDragEnd = useCallback(() => {
+    const minute = quantizedMinutesFromMidnight;
+    if (activeScheduleEvent) {
+      options.onChangeStartTime?.(minute, activeScheduleEvent);
+    }
+  }, [
+    activeScheduleEvent,
+    options.onChangeStartTime,
+    quantizedMinutesFromMidnight,
+  ]);
+
   const scheduleItemModifier: Modifier = useCallback(
     (args) => {
       scrollAreaRect.current =
@@ -86,6 +97,7 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
     return {
       modifiers: [scheduleItemModifier],
       onDragStart: handleStartDrag,
+      onDragEnd: handleDragEnd,
     };
   }, [handleStartDrag, scheduleItemModifier]);
 
