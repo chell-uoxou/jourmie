@@ -39,7 +39,7 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
       let modifiedTransform = args.transform;
 
       const topInDayTimeline =
-        (args.overlayNodeRect?.top ?? 0) + // ドラッグ前の小さいイベントブロックのtop位置
+        (args.activeNodeRect?.top ?? 0) + // ドラッグ前の小さいイベントブロックのtop位置
         args.transform.y + // ドラッグ中のイベントブロックのyデルタ
         (scrollTopInDayTimeline.current ?? 0) - // スクロールエリアのスクロール量
         (scrollAreaRect.current?.top ?? 0) - // スクロールエリアのtop位置
@@ -64,11 +64,11 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
 
       modifiedTransform = {
         ...modifiedTransform,
-        x: (scrollAreaRect.current?.left ?? 200) - 24 + 60, // グリッドの左端から60px右にずらす
+        x: 0, // ずらさない
         y:
           (quantizedMinutesFromMidnight / 60) * timelineSettings.gridHeight -
           (scrollTopInDayTimeline.current ?? 0) -
-          (args.overlayNodeRect?.top ?? 0) +
+          (args.activeNodeRect?.top ?? 0) +
           (scrollAreaRect.current?.top ?? 0) +
           24,
       };
