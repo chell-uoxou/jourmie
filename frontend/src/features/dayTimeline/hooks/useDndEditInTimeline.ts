@@ -1,4 +1,12 @@
-import { ClientRect, DragStartEvent, Modifier } from "@dnd-kit/core";
+import {
+  ClientRect,
+  DragStartEvent,
+  Modifier,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { Props } from "@dnd-kit/core/dist/components/DndContext/DndContext";
 import { UIEventHandler, useCallback, useMemo, useRef, useState } from "react";
 import { ScheduleEvent } from "../components/DayTimelineSchedule";
@@ -21,6 +29,23 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
   const scrollTopInDayTimeline = useRef<number | null>(null);
   const [quantizedMinutesFromMidnight, setQuantizedMinutesFromMidnight] =
     useState<number>(0);
+
+  const mouseSensor = useSensor(MouseSensor, {
+    // Require the mouse to move by 10 pixels before activating
+    activationConstraint: {
+      distance: 10,
+    },
+  });
+
+  const touchSensor = useSensor(TouchSensor, {
+    // Press delay of 250ms, with tolerance of 5px of movement
+    activationConstraint: {
+      delay: 250,
+      tolerance: 5,
+    },
+  });
+
+  const sensors = useSensors(mouseSensor, touchSensor);
 
   const handleStartDrag = useCallback((event: DragStartEvent) => {
     console.log(
@@ -98,6 +123,7 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
       modifiers: [scheduleItemModifier],
       onDragStart: handleStartDrag,
       onDragEnd: handleDragEnd,
+      sensors,
     };
   }, [handleStartDrag, scheduleItemModifier]);
 

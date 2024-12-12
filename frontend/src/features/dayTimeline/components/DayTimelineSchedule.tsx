@@ -6,6 +6,9 @@ import { Schedule } from "~/models/types/schedule";
 import { EventPoolItem } from "~/models/types/event_pool_item";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 import { forwardRef, HTMLAttributes } from "react";
+import { Popover } from "@radix-ui/react-popover";
+import { PopoverTrigger } from "~/components/ui/popover";
+import DayTimelineScheduleDetails from "./DayTimelineScheduleDetails";
 
 export type ScheduleEvent = Schedule &
   EventPoolItem & {
@@ -47,32 +50,37 @@ export const DayTimelineSchedule = forwardRef<
 
   return (
     <div ref={ref} {...rest}>
-      <Card
-        className={clsx(isDragging && "shadow-lg")}
-        style={{
-          height: `${height}px`,
-          minHeight: "16px",
-        }}
-      >
-        <CardContent className="py-4 px-5">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-sm font-bold">{schedule.title}</h1>
+      <Popover>
+        <PopoverTrigger className="w-full">
+          <Card
+            className={clsx(isDragging && "shadow-lg")}
+            style={{
+              height: `${height}px`,
+              minHeight: "16px",
+            }}
+          >
+            <CardContent className="py-4 px-5">
+              <div className="flex flex-col gap-2 items-start">
+                <h1 className="text-sm font-bold">{schedule.title}</h1>
 
-            <div className="flex flex-col gap-1.5 ">
-              {schedule.location_text !== "" && (
-                <PropsWithIcon
-                  icon={<Map size={14} />}
-                  value={schedule.location_text}
-                />
-              )}
-              <PropsWithIcon
-                icon={<Clock size={14} />}
-                value={formatTime(schedule.start_time.toDate())}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                <div className="flex flex-col gap-1.5 ">
+                  {schedule.location_text !== "" && (
+                    <PropsWithIcon
+                      icon={<Map size={14} />}
+                      value={schedule.location_text}
+                    />
+                  )}
+                  <PropsWithIcon
+                    icon={<Clock size={14} />}
+                    value={formatTime(schedule.start_time.toDate())}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </PopoverTrigger>
+        <DayTimelineScheduleDetails scheduleEvent={schedule} />
+      </Popover>
     </div>
   );
 });
