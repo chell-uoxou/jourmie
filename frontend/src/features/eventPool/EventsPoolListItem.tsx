@@ -19,6 +19,8 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
   { eventPoolItem, ...rest }: Props,
   ref
 ) {
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
   // TODO　現状は開始時間と終了時間から時間帯を表示しているが、今後は平日は何時やいつは何時と表形式にしたい。
   const formatTimes = (times: TimeRange[]) => {
     const { start_time, end_time } = times[0] ?? {
@@ -51,10 +53,15 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
   };
 
   return (
-    <div className="relative w-[350px]" ref={ref} {...rest}>
-      <Popover>
+    <div className="relative w-full" ref={ref} {...rest}>
+      <Popover onOpenChange={setIsDetailsOpen}>
         <PopoverTrigger asChild>
-          <Card className="w-[350px]">
+          <Card
+            className={clsx(
+              "transition-all duration-100",
+              isDetailsOpen ? "shadow-lg" : "shadow-sm"
+            )}
+          >
             <CardContent>
               <h1 className="text-xl font-bold mt-6 mb-4">
                 {eventPoolItem.title}

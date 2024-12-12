@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { Schedule } from "~/models/types/schedule";
 import { EventPoolItem } from "~/models/types/event_pool_item";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
-import { forwardRef, HTMLAttributes } from "react";
+import { forwardRef, HTMLAttributes, useState } from "react";
 import { Popover } from "@radix-ui/react-popover";
 import { PopoverTrigger } from "~/components/ui/popover";
 import DayTimelineScheduleDetails from "./DayTimelineScheduleDetails";
@@ -48,12 +48,18 @@ export const DayTimelineSchedule = forwardRef<
     (duration / (timelineSettings.gridInterval * 60)) *
     timelineSettings.gridHeight;
 
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
   return (
     <div ref={ref} {...rest}>
-      <Popover>
+      <Popover onOpenChange={setIsDetailsOpen}>
         <PopoverTrigger className="w-full">
           <Card
-            className={clsx(isDragging && "shadow-lg")}
+            className={clsx(
+              isDragging && "shadow-lg",
+              "transition-all duration-100",
+              isDetailsOpen ? "shadow-lg" : "shadow-sm"
+            )}
             style={{
               height: `${height}px`,
               minHeight: "16px",
