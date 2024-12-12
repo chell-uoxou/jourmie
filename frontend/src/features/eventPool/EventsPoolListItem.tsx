@@ -1,5 +1,5 @@
 "use client";
-import { forwardRef, HTMLAttributes } from "react";
+import { forwardRef, HTMLAttributes, useState } from "react";
 import { Hourglass, Map } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { useDraggable } from "@dnd-kit/core";
@@ -7,6 +7,8 @@ import clsx from "clsx";
 import { TimeRange } from "~/models/types/common";
 import { Timestamp } from "firebase/firestore";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
+import EventPoolItemDetails from "./components/EventPoolItemDetails";
+import { Popover, PopoverTrigger } from "~/components/ui/popover";
 
 type Props = {
   id: string;
@@ -50,21 +52,28 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
 
   return (
     <div className="relative w-[350px]" ref={ref} {...rest}>
-      <Card className="w-[350px]">
-        <CardContent>
-          <h1 className="text-xl font-bold mt-6 mb-4">{eventPoolItem.title}</h1>
-          <div className="col-auto flex flex-col gap-x-0 gap-y-3">
-            <div className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-start justify-start gap-x-1 text-sm">
-              <Hourglass className="w-3.5 h-3.5 mt-1" />
-              {formatTimes(eventPoolItem.available_times)}
-            </div>
-            <div className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center justify-start gap-x-1">
-              <Map className="w-3.5 h-3.5" />
-              {eventPoolItem.location_text}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Card className="w-[350px]">
+            <CardContent>
+              <h1 className="text-xl font-bold mt-6 mb-4">
+                {eventPoolItem.title}
+              </h1>
+              <div className="col-auto flex flex-col gap-x-0 gap-y-3">
+                <div className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-start justify-start gap-x-1 text-sm">
+                  <Hourglass className="w-3.5 h-3.5 mt-1" />
+                  {formatTimes(eventPoolItem.available_times)}
+                </div>
+                <div className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center justify-start gap-x-1">
+                  <Map className="w-3.5 h-3.5" />
+                  {eventPoolItem.location_text}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </PopoverTrigger>
+        <EventPoolItemDetails eventPoolItem={eventPoolItem} />
+      </Popover>
     </div>
   );
 });
