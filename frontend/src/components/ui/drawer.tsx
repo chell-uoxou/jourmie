@@ -1,18 +1,42 @@
 "use client";
 
+import { cva, VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "~/lib/utils";
 
+const drawerContentVariants = cva(
+  "fixed flex flex-col rounded-t-[10px] border bg-background",
+  {
+    variants: {
+      direction: {
+        left: "inset-y-0 left-100 z-50 mr-24 h-full w-[400px]",
+        right: "right-0", // TODO: デザイン準備
+        top: "top-0", // TODO: デザイン準備
+        bottom: "inset-x-0 bottom-0 z-50 mt-24 h-auto",
+      },
+    },
+    defaultVariants: {
+      direction: "bottom",
+    },
+  }
+);
+
+type DrawerDirection = "left" | "right" | "top" | "bottom";
+const DrawerDirectionContext = React.createContext<DrawerDirection>("bottom");
+const DrawerDirectionProvider = DrawerDirectionContext.Provider;
+
 const Drawer = ({
   shouldScaleBackground = true,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
-  <DrawerPrimitive.Root
-    shouldScaleBackground={shouldScaleBackground}
-    {...props}
-  />
+  <DrawerDirectionProvider value={props.direction ?? "bottom"}>
+    <DrawerPrimitive.Root
+      shouldScaleBackground={shouldScaleBackground}
+      {...props}
+    />
+  </DrawerDirectionProvider>
 );
 Drawer.displayName = "Drawer";
 
@@ -37,22 +61,27 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DrawerPortal>
-    <DrawerOverlay />
-    <DrawerPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
-        className
-      )}
-      {...props}
-    >
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
-      {children}
-    </DrawerPrimitive.Content>
-  </DrawerPortal>
-));
+>(({ className, children, ...props }, ref) => {
+  const direction = React.useContext(DrawerDirectionContext);
+  console.log("direction", direction);
+
+  return (
+    <DrawerPortal>
+      <DrawerOverlay />
+      <DrawerPrimitive.Content
+        ref={ref}
+        className={cn(drawerContentVariants({ direction, className }))}
+        {...props}
+      >
+        {direction === "bottom" && (
+          // デフォルトのハンドル、一旦bottom時のみ表示
+          <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+        )}
+        {children}
+      </DrawerPrimitive.Content>
+    </DrawerPortal>
+  );
+});
 DrawerContent.displayName = "DrawerContent";
 
 const DrawerHeader = ({
