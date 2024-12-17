@@ -3,6 +3,10 @@ import {
   DragOverEvent,
   DragStartEvent,
   Modifier,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import { UIEventHandler, useCallback, useMemo, useRef, useState } from "react";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
@@ -31,6 +35,23 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
     useState<number>(0);
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const scrollAreaRect = useRef<ClientRect | null>(null);
+
+  const mouseSensor = useSensor(MouseSensor, {
+    // Require the mouse to move by 10 pixels before activating
+    activationConstraint: {
+      distance: 10,
+    },
+  });
+
+  const touchSensor = useSensor(TouchSensor, {
+    // Press delay of 250ms, with tolerance of 5px of movement
+    activationConstraint: {
+      delay: 250,
+      tolerance: 5,
+    },
+  });
+
+  const sensors = useSensors(mouseSensor, touchSensor);
 
   const handleStartDrag = useCallback(
     (event: DragStartEvent) => {
@@ -78,16 +99,13 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
     quantizedMinutesFromMidnight,
   ]);
 
-  const setScrollAreaRef = useCallback((node: HTMLDivElement | null) => {
-    scrollAreaRef.current = node;
-    if (node) {
-      scrollAreaRect.current = node.getBoundingClientRect();
-    }
-  }, []);
-
   const eventItemModifier: Modifier = useCallback(
     (args) => {
       let modifiedTransform = args.transform;
+
+      if (scrollAreaRef.current) {
+        scrollAreaRect.current = scrollAreaRef.current.getBoundingClientRect();
+      }
 
       modifierRef.current = args;
 
@@ -143,8 +161,15 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
       onDragOver: handleDragOver,
       onDragCancel: handleDragCancel,
       onDragEnd: handleDragEnd,
+      sensors: sensors,
     };
-  }, [eventItemModifier, handleStartDrag, handleDragOver, handleDragEnd]);
+  }, [
+    eventItemModifier,
+    handleStartDrag,
+    handleDragOver,
+    handleDragEnd,
+    sensors,
+  ]);
 
   const onScrollDroppableArea: UIEventHandler = useCallback((e) => {
     scrollTopInDayTimeline.current = e.currentTarget.scrollTop;
@@ -159,7 +184,7 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
     minutesFromMidnight,
     topInDayTimeline,
     quantizedMinutesFromMidnight,
-    setScrollAreaRef,
+    scrollAreaRef,
     activeEventPoolItem,
   };
 };
