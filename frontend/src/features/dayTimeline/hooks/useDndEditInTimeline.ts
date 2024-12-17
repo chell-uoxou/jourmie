@@ -61,11 +61,7 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
     if (activeScheduleEvent) {
       options.onChangeStartTime?.(minute, activeScheduleEvent);
     }
-  }, [
-    activeScheduleEvent,
-    options.onChangeStartTime,
-    quantizedMinutesFromMidnight,
-  ]);
+  }, [activeScheduleEvent, options, quantizedMinutesFromMidnight]);
 
   const scheduleItemModifier: Modifier = useCallback(
     (args) => {
@@ -125,7 +121,7 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
       onDragEnd: handleDragEnd,
       sensors,
     };
-  }, [handleStartDrag, scheduleItemModifier]);
+  }, [handleDragEnd, handleStartDrag, scheduleItemModifier, sensors]);
 
   const handleScroll: UIEventHandler = (e) => {
     if (e) {

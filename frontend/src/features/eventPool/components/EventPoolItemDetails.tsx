@@ -1,7 +1,5 @@
 import SmallTitleWithIcon from "~/components/common/SmallTitleWithIcon";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import { Popover, PopoverContent } from "~/components/ui/popover";
+import { PopoverContent } from "~/components/ui/popover";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 
 interface EventPoolItemDetailsProps {
