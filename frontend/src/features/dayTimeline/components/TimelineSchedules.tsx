@@ -8,10 +8,10 @@ import { db } from "~/lib/firebase";
 import useAuthUser from "~/hooks/useAuthUser";
 import { defaultConverter } from "~/lib/firestore/firestore";
 import { useCalendarSession } from "~/hooks/useCalendarSession";
-import { getEndDroppingDate } from "~/app/(app)/(calendar)/calendar/edit/page";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 import { MutableRefObject, UIEventHandler, useEffect } from "react";
 import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
+import { getEndDroppingDate } from "../utils/getEndDroppingDate";
 
 interface TimelineSchedulesProps {
   schedules: ScheduleEvent[];

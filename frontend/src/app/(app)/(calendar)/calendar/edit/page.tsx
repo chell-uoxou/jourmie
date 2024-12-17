@@ -17,17 +17,7 @@ import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
 import { db } from "~/lib/firebase";
 import { defaultConverter } from "~/lib/firestore/firestore";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
-
-export const getEndDroppingDate = (
-  currentDate: Date,
-  startMinute: number,
-  duration: number
-) => {
-  const endMinutes = startMinute + duration;
-  const endTime = new Date(currentDate);
-  endTime.setHours(Math.floor(endMinutes / 60), endMinutes % 60);
-  return endTime;
-};
+import { getEndDroppingDate } from "~/features/dayTimeline/utils/getEndDroppingDate";
 
 export default function Page() {
   const [events, setEvents] = useState<DBEventPoolItem[]>([]);
