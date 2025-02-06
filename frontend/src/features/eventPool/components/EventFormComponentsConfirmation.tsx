@@ -33,8 +33,6 @@ export default function EventFormComponentsConfirmation({
   preparationDetails,
   participants,
   memo,
-  onClickBack: onEdit,
-  onClickRegister: onSubmit,
 }: EventFormComponentsConfirmationProps) {
   return (
     <div className="flex flex-col gap-6">
@@ -73,15 +71,6 @@ export default function EventFormComponentsConfirmation({
         )}
         <FormConfirmationItem title="最大人数" text={participants} />
         <FormConfirmationItem title="メモ" text={memo} />
-      </div>
-
-      <div className="flex flex-row justify-between gap-3">
-        <Button onClick={onEdit} className="flex w-full" variant="outline">
-          編集
-        </Button>
-        <Button onClick={onSubmit} className="flex w-full">
-          追加
-        </Button>
       </div>
     </div>
   );

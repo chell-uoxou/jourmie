@@ -10,6 +10,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
+import { useState } from "react";
 
 interface EventInputDialogProps {
   isOpen: boolean;
@@ -17,6 +18,8 @@ interface EventInputDialogProps {
 }
 
 export const EventInputDialog = (props: EventInputDialogProps) => {
+  const [isConfirmation, setIsConfirmation] = useState(false);
+
   return (
     <Sheet open={props.isOpen} onOpenChange={props.onOpenChange} modal={false}>
       <SheetContent
@@ -32,13 +35,41 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
           </SheetDescription>
         </SheetHeader>
         <ScrollArea className="flex-1 -mx-4">
-          <EventForm />
+          <EventForm
+            isConfirmation={isConfirmation}
+            setIsConfirmation={setIsConfirmation}
+          />
         </ScrollArea>
         <SheetFooter>
-          <Button>Submit</Button>
-          <SheetClose>
-            <Button variant="outline">Cancel</Button>
-          </SheetClose>
+          <div className="flex flex-col w-full gap-2">
+            {!isConfirmation ? (
+              <Button variant="default" onClick={() => setIsConfirmation(true)}>
+                確認
+              </Button>
+            ) : (
+              <div className="flex gap-2 w-full">
+                <Button
+                  className="flex-1"
+                  variant="secondary"
+                  onClick={() => setIsConfirmation(false)}
+                >
+                  戻る
+                </Button>
+                <Button
+                  className="flex-1"
+                  variant="default"
+                  onClick={() => setIsConfirmation(true)}
+                >
+                  作成
+                </Button>
+              </div>
+            )}
+            <SheetClose className="w-full">
+              <Button variant="outline" className="w-full">
+                キャンセル
+              </Button>
+            </SheetClose>
+          </div>
         </SheetFooter>
       </SheetContent>
     </Sheet>

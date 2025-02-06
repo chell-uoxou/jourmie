@@ -9,7 +9,12 @@ import { DBEventPoolItem } from "~/lib/firestore/utils";
 import EventFormComponents from "./EventFormComponents";
 import EventFormComponentsConfirmation from "./EventFormComponentsConfirmation";
 
-function EventForm() {
+interface EventFormProps {
+  isConfirmation: boolean;
+  setIsConfirmation: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function EventForm(props: EventFormProps) {
   const { currentDBAccount } = useCurrentAccount();
 
   const eventsCollection = isReady(currentDBAccount)
@@ -30,8 +35,7 @@ function EventForm() {
   const [preparationDetails, setPreparationDetails] = useState("");
   const [participants, setParticipants] = useState("");
   const [memo, setMemo] = useState("");
-
-  const [isConfirmation, setIsConfirmation] = useState(false);
+  const { isConfirmation, setIsConfirmation } = props;
 
   // 確認画面からの実際のデータ送信
   const handleFinalSubmit = async () => {
@@ -89,25 +93,23 @@ function EventForm() {
     <div>
       {isConfirmation ? (
         <form className="w-full">
-          <div className="w-full">
-            <div className="flex flex-col gap-4">
-              <EventFormComponentsConfirmation
-                name={name}
-                description={description}
-                location={location}
-                startDateTime={startDateTime}
-                endDateTime={endDateTime}
-                duration={duration}
-                budgetType={budgetType}
-                budget={budget}
-                isPreparationChecked={isPreparationChecked}
-                preparationDetails={preparationDetails}
-                participants={participants}
-                memo={memo}
-                onClickBack={() => setIsConfirmation(false)}
-                onClickRegister={handleFinalSubmit}
-              />
-            </div>
+          <div className="flex flex-col gap-4 px-4">
+            <EventFormComponentsConfirmation
+              name={name}
+              description={description}
+              location={location}
+              startDateTime={startDateTime}
+              endDateTime={endDateTime}
+              duration={duration}
+              budgetType={budgetType}
+              budget={budget}
+              isPreparationChecked={isPreparationChecked}
+              preparationDetails={preparationDetails}
+              participants={participants}
+              memo={memo}
+              onClickBack={() => setIsConfirmation(false)}
+              onClickRegister={handleFinalSubmit}
+            />
           </div>
         </form>
       ) : (
@@ -138,7 +140,6 @@ function EventForm() {
               setParticipants={setParticipants}
               memo={memo}
               setMemo={setMemo}
-              onClickConfirm={() => setIsConfirmation(true)}
             />
           </div>
         </form>
