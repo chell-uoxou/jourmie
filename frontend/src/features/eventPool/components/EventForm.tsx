@@ -88,7 +88,7 @@ function EventForm() {
   return (
     <div>
       {isConfirmation ? (
-        <form className="w-96 p-2">
+        <form className="w-full">
           <div className="w-full">
             <div className="flex flex-col gap-4">
               <EventFormComponentsConfirmation
@@ -111,7 +111,7 @@ function EventForm() {
           </div>
         </form>
       ) : (
-        <form className="w-96 p-2">
+        <form className="w-full px-4">
           <div className="flex flex-col w-full gap-6">
             <EventFormComponents
               name={name}
