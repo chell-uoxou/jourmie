@@ -125,8 +125,10 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
     if (Object.keys(eventForm.formState.dirtyFields).length > 0) {
       setIsDialogOpen(true);
     } else {
-      eventForm.reset();
+      setIsDialogOpen(false);
+      setIsConfirmation(false);
       props.onOpenChange(false);
+      eventForm.reset();
     }
   };
 
@@ -204,6 +206,7 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
         onOpenChange={setIsDialogOpen}
         onConfirm={() => {
           setIsDialogOpen(false);
+          setIsConfirmation(false);
           props.onOpenChange(false);
           eventForm.reset();
         }}
