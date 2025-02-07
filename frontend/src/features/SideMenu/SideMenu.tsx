@@ -4,7 +4,7 @@ import React from "react";
 import SideMenuItemWithIcon from "./components/SideMenuItemWithIcon";
 import Heading from "./components/Heading";
 import Border from "./components/Border";
-import { Flower2 } from "lucide-react";
+import { Flower2, Settings } from "lucide-react";
 import { UsersRound } from "lucide-react";
 import { SquareCheckBig } from "lucide-react";
 import { PiggyBank } from "lucide-react";
@@ -62,6 +62,14 @@ function SideMenu() {
               pushInGroup("/budget");
             }}
             isSelected={getPathInGroup() === "/budget"}
+          />
+          <SideMenuItemWithIcon
+            icon={<Settings className="size-5" />}
+            title="設定"
+            onClick={() => {
+              pushInGroup("/preferences");
+            }}
+            isSelected={getPathInGroup() === "/preferences"}
           />
           <Border />
         </>
