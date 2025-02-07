@@ -131,7 +131,7 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
         <SheetHeader>
           <SheetTitle>イベント候補 新規作成</SheetTitle>
           <SheetDescription>
-            行ってみたいイベントを追加してみましょう‼︎
+            気になるイベントをイベント候補として登録
           </SheetDescription>
         </SheetHeader>
         <form
