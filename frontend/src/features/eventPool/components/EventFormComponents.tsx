@@ -24,14 +24,22 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
   const { eventForm } = props;
   const errors = eventForm.formState.errors;
 
+  const formatDuration = (duration: number) => {
+    const hour = Math.floor(duration / 60);
+    const minute = duration % 60;
+    return (hour > 0 ? hour + "時間" : "") + (minute > 0 ? minute + "分" : "");
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <InputWithLabel
-        label="名前"
+        label="タイトル"
         {...eventForm.register("title", { required: true })}
         errorText={errors.title && "イベントタイトルを入力してください"}
       />
-      <InputWithLabel label="説明" {...eventForm.register("description")} />
+      <WithLabel label="説明">
+        <Textarea {...eventForm.register("description")} className="h-12" />
+      </WithLabel>
       <InputWithLabel label="場所" {...eventForm.register("location_text")} />
       <div className="flex flex-col gap-2">
         <div className="text-sm text-left text-slate-900 font-bold">
@@ -40,64 +48,106 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
         <div className="flex flex-col gap-4 ml-4">
           <WithLabel label="開始日時">
             <DateTimePicker
+              {...eventForm.register("available_start_time", {
+                validate: (value) => {
+                  return (
+                    value instanceof Date &&
+                    eventForm.getValues("available_end_time") > value
+                  );
+                },
+              })}
               value={eventForm.watch("available_start_time")}
               onChange={(e) =>
                 e && eventForm.setValue("available_start_time", e)
               }
-              displayFormat={{ hour24: "MM/dd（eee）hh:mm" }}
-              className="flex1"
+              displayFormat={{ hour24: "M/d（eee）HH:mm" }}
               locale={ja}
             />
+            {errors.available_start_time ? (
+              <div className="text-red-500 text-sm">
+                終了日時より前の有効な開始日時を入力してください
+              </div>
+            ) : null}
           </WithLabel>
           <WithLabel label="終了日時">
             <DateTimePicker
+              {...eventForm.register("available_end_time", {
+                validate: (value) => {
+                  return (
+                    value instanceof Date &&
+                    eventForm.getValues("available_start_time") < value
+                  );
+                },
+              })}
               value={eventForm.watch("available_end_time")}
               onChange={(e) => e && eventForm.setValue("available_end_time", e)}
-              displayFormat={{ hour24: "MM/dd（eee）hh:mm" }}
-              className="flex1"
+              displayFormat={{ hour24: "M/d（eee）HH:mm" }}
               locale={ja}
             />
+            {errors.available_end_time ? (
+              <div className="text-red-500 text-sm">
+                開始日時より後の有効な終了日時を入力してください
+              </div>
+            ) : null}
           </WithLabel>
         </div>
       </div>
-
-      <InputWithLabel
-        label="所要時間(分)"
-        type="number"
-        {...eventForm.register("default_duration", {
-          required: true,
-          validate: (value) => {
-            return Number(value) >= 0 && Number.isInteger(value);
-          },
-          valueAsNumber: true,
-        })}
-      />
+      <div className="flex gap-2 w-full">
+        <div className="w-1/3">
+          <InputWithLabel
+            label="所要時間(分)"
+            type="number"
+            step={15}
+            min={0}
+            {...eventForm.register("default_duration", {
+              validate: (value) => {
+                return (
+                  (Number(value) >= 0 && Number.isInteger(value)) ||
+                  isNaN(value)
+                );
+              },
+              valueAsNumber: true,
+            })}
+            errorText={
+              errors.default_duration && "有効な所要時間を入力してください"
+            }
+          />
+        </div>
+        <div className="flex-1 flex items-end justify-center">
+          <span className="h-10 flex items-center text-base text-slate-900">
+            {formatDuration(eventForm.watch("default_duration"))}
+          </span>
+        </div>
+      </div>
       <div className="flex w-full gap-2">
-        <WithLabel label="1人あたり/合算">
-          <Select
-            onValueChange={(value) => {
-              if (value === "per_person" || value === "total") {
-                eventForm.setValue("default_budget_type", value);
-              }
-            }}
-            value={eventForm.watch("default_budget_type")}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="選択" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="per_person">1人あたり</SelectItem>
-              <SelectItem value="total">合算</SelectItem>
-            </SelectContent>
-          </Select>
-        </WithLabel>
+        <div className="w-1/3">
+          <WithLabel label="1人あたり/合算">
+            <Select
+              onValueChange={(value) => {
+                if (value === "per_person" || value === "total") {
+                  eventForm.setValue("default_budget_type", value);
+                }
+              }}
+              value={eventForm.watch("default_budget_type")}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="選択" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="per_person">1人あたり</SelectItem>
+                <SelectItem value="total">合算</SelectItem>
+              </SelectContent>
+            </Select>
+          </WithLabel>
+        </div>
         <InputWithLabel
           label="予算(円)"
           type="number"
+          step={100}
+          min={0}
           {...eventForm.register("default_budget", {
-            required: true,
             validate: (value) => {
-              return value >= 0;
+              return value >= 0 || isNaN(value);
             },
             valueAsNumber: true,
           })}
@@ -114,19 +164,22 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
         />
         <label
           htmlFor="needs_preparation"
-          className="text-sm font-medium leading-none"
+          className="text-sm font-bold leading-none "
         >
           予定を確定するまでにタスクがある
         </label>
       </div>
-      <InputWithLabel
-        label="予定の準備タスク"
-        {...eventForm.register("preparation_task")}
-        disabled={!eventForm.watch("needs_preparation")}
-      />
+      {eventForm.watch("needs_preparation") && (
+        <InputWithLabel
+          label="予定の準備タスク"
+          {...eventForm.register("preparation_task")}
+        />
+      )}
       <InputWithLabel
         label="最大人数"
         type="number"
+        step={1}
+        min={1}
         {...eventForm.register("max_participants", {
           validate: (value) => {
             return (value >= 1 && Number.isInteger(value)) || isNaN(value);
@@ -134,10 +187,10 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
           valueAsNumber: true,
         })}
         errorText={
-          errors.max_participants && "最大人数を1以上の整数で入力してください"
+          errors.max_participants && "1人以上の最大人数を入力してください"
         }
       />
-      <WithLabel label="メモ">
+      <WithLabel label="メモ（URL、注意事項など）">
         <Textarea {...eventForm.register("notes")} className="h-24" />
       </WithLabel>
     </div>

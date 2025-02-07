@@ -174,7 +174,7 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
               </div>
             )}
             <SheetClose className="w-full">
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" type="button">
                 キャンセル
               </Button>
             </SheetClose>
