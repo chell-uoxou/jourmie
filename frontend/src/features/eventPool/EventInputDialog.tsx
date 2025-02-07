@@ -2,7 +2,6 @@ import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -20,6 +19,7 @@ import { db } from "~/lib/firebase";
 import { useFirestoreCollection } from "~/hooks/useFirestoreCollection";
 import { AccountEventPoolItem } from "~/models/types/account_event_pool_item";
 import { set } from "date-fns";
+import CloseConfirmationDialog from "./components/CloseConfirmationDialog";
 
 interface EventInputDialogProps {
   isOpen: boolean;
@@ -46,6 +46,7 @@ export type EventPoolItemForm = Omit<
 
 export const EventInputDialog = (props: EventInputDialogProps) => {
   const [isConfirmation, setIsConfirmation] = useState(false);
+  const [isCloseDialogOpen, setIsDialogOpen] = useState(false);
 
   const { currentDBAccount } = useCurrentAccount();
   const eventsCollection = isReady(currentDBAccount)
@@ -120,13 +121,27 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
     }
   };
 
+  const handleCloseDialog = () => {
+    if (Object.keys(eventForm.formState.dirtyFields).length > 0) {
+      setIsDialogOpen(true);
+    } else {
+      eventForm.reset();
+      props.onOpenChange(false);
+    }
+  };
+
   return (
     <Sheet open={props.isOpen} onOpenChange={props.onOpenChange} modal={false}>
       <SheetContent
         side={"left"}
         className="flex flex-col mt-14 h-[calc(100svh-56px)] min-w-[400px]"
         onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()} // TODO: 編集中なら確認ダイアログを出す
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+          handleCloseDialog();
+        }}
+        showCloseButton={false}
+        onClickCustomClose={handleCloseDialog}
       >
         <SheetHeader>
           <SheetTitle>イベント候補 新規作成</SheetTitle>
@@ -173,14 +188,27 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
                 </Button>
               </div>
             )}
-            <SheetClose className="w-full">
-              <Button variant="outline" className="w-full" type="button">
-                キャンセル
-              </Button>
-            </SheetClose>
+            <Button
+              variant="outline"
+              className="w-full"
+              type="button"
+              onClick={handleCloseDialog}
+            >
+              キャンセル
+            </Button>
           </div>
         </form>
       </SheetContent>
+      <CloseConfirmationDialog
+        isOpen={isCloseDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onConfirm={() => {
+          setIsDialogOpen(false);
+          props.onOpenChange(false);
+          eventForm.reset();
+        }}
+        onCancel={() => setIsDialogOpen(false)}
+      />
     </Sheet>
   );
 };
