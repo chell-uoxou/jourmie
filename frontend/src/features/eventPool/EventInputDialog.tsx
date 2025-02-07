@@ -5,7 +5,6 @@ import {
   SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
@@ -125,7 +124,7 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
     <Sheet open={props.isOpen} onOpenChange={props.onOpenChange} modal={false}>
       <SheetContent
         side={"left"}
-        className="flex flex-col mt-14 h-auto min-w-[400px]"
+        className="flex flex-col mt-14 h-[calc(100svh-56px)] min-w-[400px]"
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()} // TODO: 編集中なら確認ダイアログを出す
       >
@@ -135,31 +134,25 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
             行ってみたいイベントを追加してみましょう‼︎
           </SheetDescription>
         </SheetHeader>
-        <ScrollArea className="flex-1 -mx-4">
-          <div>
+        <form
+          onSubmit={eventForm.handleSubmit(() => setIsConfirmation(true))}
+          className="flex flex-col h-[calc(100%-72px)] gap-4"
+        >
+          <ScrollArea className="flex-1 -mx-4">
             {!isConfirmation ? (
               <div className="flex flex-col w-full gap-6 px-4">
-                <EventFormComponents
-                  eventForm={eventForm}
-                  onSubmit={eventForm.handleSubmit(() =>
-                    setIsConfirmation(true)
-                  )}
-                />
+                <EventFormComponents eventForm={eventForm} />
               </div>
             ) : (
               <div className="flex flex-col gap-4 px-4">
                 <EventFormComponentsConfirmation eventForm={eventForm} />
               </div>
             )}
-          </div>
-        </ScrollArea>
-        <SheetFooter>
+          </ScrollArea>
+
           <div className="flex flex-col w-full gap-2">
             {!isConfirmation ? (
-              <Button
-                variant="default"
-                onClick={eventForm.handleSubmit(() => setIsConfirmation(true))}
-              >
+              <Button variant="default" type="submit">
                 確認
               </Button>
             ) : (
@@ -186,7 +179,7 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
               </Button>
             </SheetClose>
           </div>
-        </SheetFooter>
+        </form>
       </SheetContent>
     </Sheet>
   );

@@ -10,7 +10,6 @@ import {
 } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
 import { Checkbox } from "~/components/ui/checkbox";
-
 import { InputWithLabel } from "~/components/common/InputWithLabel";
 import { WithLabel } from "~/components/common/WithLabel";
 import { ja } from "date-fns/locale";
@@ -19,15 +18,14 @@ import { EventPoolItemForm } from "../EventInputDialog";
 
 interface EventFormComponentsProps {
   eventForm: UseFormReturn<EventPoolItemForm>;
-  onSubmit: () => void;
 }
 
 export default function EventFormComponents(props: EventFormComponentsProps) {
-  const { eventForm, onSubmit } = props;
+  const { eventForm } = props;
   const errors = eventForm.formState.errors;
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+    <div className="flex flex-col gap-4">
       <InputWithLabel
         label="名前"
         {...eventForm.register("title", { required: true })}
@@ -137,6 +135,6 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
       <WithLabel label="メモ">
         <Textarea {...eventForm.register("notes")} className="h-24" />
       </WithLabel>
-    </form>
+    </div>
   );
 }
