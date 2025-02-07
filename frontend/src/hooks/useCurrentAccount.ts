@@ -108,9 +108,3 @@ export default function useCurrentAccount() {
 
   return { currentDBAccount, getGroupsByAccount };
 }
-
-export const isReady = (
-  currentAccount: ReturnType<typeof useCurrentAccount>["currentDBAccount"]
-): currentAccount is DBAccount => {
-  return currentAccount !== "loading" && currentAccount !== null;
-};
