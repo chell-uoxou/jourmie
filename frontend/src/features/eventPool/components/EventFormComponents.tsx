@@ -29,29 +29,36 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
       <InputWithLabel
         label="名前"
         {...eventForm.register("title", { required: true })}
-        errorText={errors.title && "名前を入力してください"}
+        errorText={errors.title && "イベントタイトルを入力してください"}
       />
       <InputWithLabel label="説明" {...eventForm.register("description")} />
       <InputWithLabel label="場所" {...eventForm.register("location_text")} />
-      <div className="flex flex-row gap-4">
-        <WithLabel label="開始日時">
-          <DateTimePicker
-            value={eventForm.watch("available_start_time")}
-            onChange={(e) => e && eventForm.setValue("available_start_time", e)}
-            displayFormat={{ hour24: "MM/dd（eee）hh:mm" }}
-            className="flex1"
-            locale={ja}
-          />
-        </WithLabel>
-        <WithLabel label="終了日時">
-          <DateTimePicker
-            value={eventForm.watch("available_end_time")}
-            onChange={(e) => e && eventForm.setValue("available_end_time", e)}
-            displayFormat={{ hour24: "MM/dd（eee）hh:mm" }}
-            className="flex1"
-            locale={ja}
-          />
-        </WithLabel>
+      <div className="flex flex-col gap-2">
+        <div className="text-sm text-left text-slate-900 font-bold">
+          イベントをドロップできる範囲（会期、開館時間など）
+        </div>
+        <div className="flex flex-col gap-4 ml-4">
+          <WithLabel label="開始日時">
+            <DateTimePicker
+              value={eventForm.watch("available_start_time")}
+              onChange={(e) =>
+                e && eventForm.setValue("available_start_time", e)
+              }
+              displayFormat={{ hour24: "MM/dd（eee）hh:mm" }}
+              className="flex1"
+              locale={ja}
+            />
+          </WithLabel>
+          <WithLabel label="終了日時">
+            <DateTimePicker
+              value={eventForm.watch("available_end_time")}
+              onChange={(e) => e && eventForm.setValue("available_end_time", e)}
+              displayFormat={{ hour24: "MM/dd（eee）hh:mm" }}
+              className="flex1"
+              locale={ja}
+            />
+          </WithLabel>
+        </div>
       </div>
 
       <InputWithLabel
@@ -94,9 +101,7 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
             },
             valueAsNumber: true,
           })}
-          errorText={
-            errors.default_budget && "予算を0以上の整数で入力してください"
-          }
+          errorText={errors.default_budget && "有効な予算を入力してください"}
         />
       </div>
       <div className="flex items-center gap-2 mt-4">
@@ -111,7 +116,7 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
           htmlFor="needs_preparation"
           className="text-sm font-medium leading-none"
         >
-          予定を確定するまでにやることがある
+          予定を確定するまでにタスクがある
         </label>
       </div>
       <InputWithLabel
