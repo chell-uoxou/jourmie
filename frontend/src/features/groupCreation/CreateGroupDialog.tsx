@@ -14,7 +14,8 @@ import {
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { CreateGroup } from "~/utils/creategroup";
-import useCurrentAccount, { isReady } from "~/hooks/useCurrentAccount";
+import useCurrentAccount from "~/hooks/useCurrentAccount";
+import { isReady } from "~/lib/firestore/utils";
 
 interface CreateGroupDialogProps {
   isDialogOpen: boolean;
