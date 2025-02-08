@@ -49,6 +49,7 @@ export async function CreateGroup(
     await setDoc(doc(membersRef, currentUser.uid), {
       account_reference: accountRef,
       display_name: currentUser.displayName || currentUser.email || "No Name",
+      email: currentUser.email || "No Email",
       editing_permission_scopes: [
         "common_schedules",
         "open_schedules",
