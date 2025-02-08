@@ -32,3 +32,9 @@ export const isValidAsGroupOpenSchedule = (
 ): schedule is DBGroupOpenSchedule => {
   return "members" in schedule;
 };
+
+export const isReady = <T>(
+  hookResult: T | null | "loading"
+): hookResult is T => {
+  return hookResult !== "loading" && hookResult !== null;
+};

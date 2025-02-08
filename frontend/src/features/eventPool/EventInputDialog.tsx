@@ -8,13 +8,13 @@ import {
   SheetTitle,
 } from "~/components/ui/sheet";
 import { useState } from "react";
-import { DBEventPoolItem } from "~/lib/firestore/utils";
+import { DBEventPoolItem, isReady } from "~/lib/firestore/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
 import EventFormComponents from "./components/EventFormComponents";
 import EventFormComponentsConfirmation from "./components/EventFormComponentsConfirmation";
 import { collection, Timestamp } from "firebase/firestore";
 import { BudgetMode } from "~/models/types/common";
-import useCurrentAccount, { isReady } from "~/hooks/useCurrentAccount";
+import useCurrentAccount from "~/hooks/useCurrentAccount";
 import { db } from "~/lib/firebase";
 import { useFirestoreCollection } from "~/hooks/useFirestoreCollection";
 import { AccountEventPoolItem } from "~/models/types/account_event_pool_item";
