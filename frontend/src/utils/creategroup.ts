@@ -28,7 +28,7 @@ export async function CreateGroup(
   // 添付ファイルが存在し、かつファイルサイズがある場合のみ Storage アップロード
   if (groupIcon && groupIcon.size > 0) {
     const storage = getStorage();
-    const storageRef = ref(storage, `group_icon/${groupId}`);
+    const storageRef = ref(storage, `group_icons/${groupId}`);
     await uploadBytes(storageRef, groupIcon);
     iconUrl = await getDownloadURL(storageRef);
   }
