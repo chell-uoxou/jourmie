@@ -3,7 +3,7 @@ import useCurrentAccount from "~/hooks/useCurrentAccount";
 import useCurrentGroup from "~/hooks/useCurrentGroup";
 
 export default function Page() {
-  const dbGroup = useCurrentGroup();
+  const dbGroup = useCurrentGroup(true);
   const { currentDBAccount: dbAccount } = useCurrentAccount();
   console.log(dbGroup, dbAccount);
 

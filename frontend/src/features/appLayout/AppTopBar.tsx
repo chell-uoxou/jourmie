@@ -12,7 +12,7 @@ import useGroupRouter from "~/hooks/useGroupRouter";
 
 export const AppTopBar = () => {
   const [groups, setGroups] = useState<DBGroup[] | null | "loading">("loading");
-  const { currentDBAccount, getGroupsByAccount } = useCurrentAccount();
+  const { currentDBAccount, getGroupsByAccount } = useCurrentAccount(true);
   const { isInGroup, groupId, pushToChangeGroup } = useGroupRouter();
 
   useEffect(() => {
