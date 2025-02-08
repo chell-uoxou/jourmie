@@ -21,21 +21,7 @@ import { List } from "lucide-react";
 import { UserRound } from "lucide-react";
 import { DBGroup } from "~/lib/firestore/schemas";
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
-import { InputWithLabel } from "~/components/common/InputWithLabel";
-import { WithLabel } from "~/components/common/WithLabel";
-import { Textarea } from "~/components/ui/textarea";
-import { Input } from "~/components/ui/input";
-import { CreateGroup } from "~/utils/creategroup";
-import { v4 as uuidv4 } from "uuid";
+import CreateGroupDialog from "~/features/groupCreation/CreateGroupDialog";
 
 type Props = {
   currentGroupId: string | "personal" | null;
@@ -46,43 +32,6 @@ type Props = {
 export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
   const [openGroupSwitcher, setOpenGroupSwitcher] = useState(false);
   const [isCGOpen, setIsCGOpen] = useState(false);
-  const handleOpen = () => setIsCGOpen(true);
-  const handleClose = () => setIsCGOpen(false);
-  const [groupName, setGroupName] = useState("");
-  const [groupDescription, setGroupDescription] = useState("");
-  const [groupIcon, setGroupIcon] = useState<File | null>(null);
-
-  const handleCreateGroup = async () => {
-    if (!groupName) {
-      alert("グループ名を入力してください");
-      return;
-    }
-
-    const newGroupId = uuidv4();
-
-    try {
-      await CreateGroup(
-        newGroupId,
-        {
-          name: groupName,
-          description: groupDescription,
-        },
-        groupIcon ?? undefined
-      );
-
-      alert("グループが作成されました");
-      handleClose();
-      onChange(newGroupId);
-
-      // 入力内容のリセット
-      setGroupName("");
-      setGroupDescription("");
-      setGroupIcon(null);
-    } catch (error) {
-      console.error("グループ作成中にエラーが発生しました:", error);
-      alert("グループ作成に失敗しました");
-    }
-  };
 
   // currentGroupId が "personal" の場合は、専用のダミーオブジェクトを返す
   const selectedGroup = (() => {
@@ -206,66 +155,20 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
             icon={<List className="mr-2 h-4 w-4" />}
             title="グループ一覧"
           />
-          <DropdownMenuItem onSelect={handleOpen} className="font-bold">
+          <DropdownMenuItem
+            onSelect={() => setIsCGOpen(true)}
+            className="font-bold"
+          >
             <CirclePlus className="mr-2 h-4 w-4" />
             新規作成
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <Dialog
-        open={isCGOpen}
-        onOpenChange={setIsCGOpen}
-        aria-label="Create Group"
-      >
-        <DialogTrigger asChild></DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>グループを作成</DialogTitle>
-            <DialogDescription>
-              アイコン、グループ名、説明を入力してください
-            </DialogDescription>
-          </DialogHeader>
-          <div className="w-full flex flex-col gap-y-3">
-            <div>
-              <WithLabel label="アイコン">
-                <Input
-                  id="picture"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setGroupIcon(e.target.files?.[0] ?? null)}
-                />
-              </WithLabel>
-            </div>
-            <div>
-              <InputWithLabel
-                label="グループ名"
-                id="name"
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-              />
-            </div>
-            <div>
-              <WithLabel label="説明">
-                <Textarea
-                  id="memo"
-                  className="h-24"
-                  value={groupDescription}
-                  onChange={(e) => setGroupDescription(e.target.value)}
-                />
-              </WithLabel>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" onClick={handleCreateGroup}>
-              保存
-            </Button>
-            <Button variant="ghost" onClick={handleClose}>
-              キャンセル
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <CreateGroupDialog
+        isDialogOpen={isCGOpen}
+        setIsDialogOpen={setIsCGOpen}
+        switchGroupHandler={onChange}
+      />
     </>
   );
 }
