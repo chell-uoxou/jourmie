@@ -9,9 +9,7 @@ export const CardBodyWithLeftSidebar = (
 ) => {
   return (
     <div className="flex gap-0 size-full">
-      <div className="border-r border-brand-border-color h-full">
-        {props.leftSidebar}
-      </div>
+      <div className="h-full">{props.leftSidebar}</div>
       <div className="bg-gray-100 size-full p-6">
         <div className="flex-1 shadow-xl rounded-lg bg-white size-full">
           {props.children}

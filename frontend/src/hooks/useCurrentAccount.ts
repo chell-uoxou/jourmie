@@ -1,5 +1,5 @@
 import { useFirestoreCollection } from "./useFirestoreCollection";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "~/lib/firebase";
 import useAuthUser from "./useAuthUser";
 import { useCallback, useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import { defaultConverter } from "~/lib/firestore/firestore";
 const undefinedDefaultName = "名無しさん";
 const temporaryGroupIdForDemo = "YqPvZW6JKURIcTjCR9FA"; // デモ用に新規登録したアカウントを放り込むグループのID
 
-export default function useCurrentAccount() {
+export default function useCurrentAccount(realTime: boolean = false) {
   const [currentDBAccount, setCurrentDBAccount] = useState<
     DBAccount | null | "loading"
   >("loading");
@@ -29,8 +29,8 @@ export default function useCurrentAccount() {
     if (currentAuthUser === null || accountExists === null) {
       setCurrentDBAccount(null);
     } else {
-      // アカウントデータが存在しない場合は作成
-      accountExists(currentAuthUser.uid).then(async (exists) => {
+      const fetchAccount = async () => {
+        const exists = await accountExists(currentAuthUser.uid);
         if (!exists) {
           await setAccount(currentAuthUser.uid, {
             email: currentAuthUser.email ?? "",
@@ -60,31 +60,48 @@ export default function useCurrentAccount() {
             "accounts",
             currentAuthUser.uid
           ).withConverter(defaultConverter<DBAccount>());
-          existAccount(accountRef).then((exists) => {
-            if (!exists) {
-              console.log(
-                `adding ${currentAuthUser.displayName} to demo group {${temporaryGroupIdForDemo}}`
-              );
-              addMemberToGroup(accountRef, {
-                display_name: currentAuthUser.displayName ?? "",
-                notes: "自動追加されました",
-                email: currentAuthUser.email ?? "",
-                avatar_url: currentAuthUser.photoURL ?? "",
-                editing_permission_scopes: [
-                  "common_schedules",
-                  "event_pool",
-                  "group_settings",
-                  "open_schedules",
-                ],
-              });
-            } else {
-              console.log(
-                `already added to demo group {${temporaryGroupIdForDemo}}`
-              );
-            }
-          });
+          const accountExistsInGroup = await existAccount(accountRef);
+          if (!accountExistsInGroup) {
+            console.log(
+              `adding ${currentAuthUser.displayName} to demo group {${temporaryGroupIdForDemo}}`
+            );
+            await addMemberToGroup(accountRef, {
+              display_name: currentAuthUser.displayName ?? "",
+              notes: "自動追加されました",
+              email: currentAuthUser.email ?? "",
+              avatar_url: currentAuthUser.photoURL ?? "",
+              editing_permission_scopes: [
+                "common_schedules",
+                "event_pool",
+                "group_settings",
+                "open_schedules",
+              ],
+            });
+          } else {
+            console.log(
+              `already added to demo group {${temporaryGroupIdForDemo}}`
+            );
+          }
         }
-      });
+      };
+
+      if (realTime) {
+        const unsubscribe = onSnapshot(
+          doc(db, "accounts", currentAuthUser.uid).withConverter(
+            defaultConverter<DBAccount>()
+          ),
+          (doc) => {
+            if (doc.exists()) {
+              setCurrentDBAccount(doc.data());
+            } else {
+              setCurrentDBAccount(null);
+            }
+          }
+        );
+        return () => unsubscribe();
+      } else {
+        fetchAccount();
+      }
     }
   }, [
     currentAuthUser,
@@ -93,6 +110,7 @@ export default function useCurrentAccount() {
     setAccount,
     existAccount,
     addMemberToGroup,
+    realTime,
   ]);
 
   const getGroupsByAccount = useCallback(async (account: DBAccount) => {
