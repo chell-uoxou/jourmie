@@ -31,8 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { useEffect, useMemo, useState } from "react";
-import { useFirestoreCollection } from "~/hooks/useFirestoreCollection";
+import { useMemo, useState } from "react";
 import useGroupRouter from "~/hooks/useGroupRouter";
 import { collection, doc } from "firebase/firestore";
 import { db } from "~/lib/firebase";
@@ -43,6 +42,7 @@ import { InviteMemberDialog } from "./components/InviteMemberDialog";
 import { PermissionIcons } from "./components/PermissionIcons";
 import EditMemberDialog from "./components/EditMemberDialog";
 import RemoveMemberDialog from "./components/RemoveMemberDialog";
+import { useFirestoreRealtimeCollection } from "~/hooks/useFirestoreRealtimeCollection";
 
 export function GroupMemberDataTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -52,11 +52,9 @@ export function GroupMemberDataTable() {
 
   const { groupId } = useGroupRouter();
   const group = useCurrentGroup(true);
-  const { list } = useFirestoreCollection<DBGroupMember>(
+  const data = useFirestoreRealtimeCollection<DBGroupMember>(
     groupId ? collection(doc(db, "groups", groupId), "members") : null
   );
-
-  const [data, setData] = useState<DBGroupMember[]>([]);
 
   // EditMemberDialog
   const [isEMBOpen, setIsEMBOpen] = useState(false);
@@ -66,13 +64,6 @@ export function GroupMemberDataTable() {
   const [isRMBOpen, setIsRMBOpen] = useState(false);
   const [RMBSelectedMember, setRMBSelectedMember] =
     useState<DBGroupMember | null>(null);
-
-  useEffect(() => {
-    list().then((members) => {
-      console.log("members!!!!!!!!!!!!!", members);
-      setData(members ?? []);
-    });
-  }, [list]);
 
   const columns: ColumnDef<DBGroupMember>[] = useMemo(
     () => [
