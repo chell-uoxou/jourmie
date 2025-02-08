@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 function SideMenu() {
   const { isInGroup, pushInGroup, getPathInGroup } = useGroupRouter();
   const { push } = useRouter();
-  const dbGroup = useCurrentGroup();
+  const dbGroup = useCurrentGroup(true);
   return (
     <div className="flex flex-col gap-2 w-52">
       {isInGroup && (

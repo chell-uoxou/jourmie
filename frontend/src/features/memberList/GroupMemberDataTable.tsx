@@ -51,7 +51,7 @@ export function GroupMemberDataTable() {
   const [rowSelection, setRowSelection] = useState({});
 
   const { groupId } = useGroupRouter();
-  const group = useCurrentGroup();
+  const group = useCurrentGroup(true);
   const { list } = useFirestoreCollection<DBGroupMember>(
     groupId ? collection(doc(db, "groups", groupId), "members") : null
   );

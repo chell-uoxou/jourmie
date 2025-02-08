@@ -7,7 +7,7 @@ import useCurrentGroup from "~/hooks/useCurrentGroup";
 import { Skeleton } from "~/components/ui/skeleton";
 
 function Page() {
-  const currentDbGroup = useCurrentGroup();
+  const currentDbGroup = useCurrentGroup(true);
 
   return (
     <div className="flex w-full justify-center items-center p-6">
