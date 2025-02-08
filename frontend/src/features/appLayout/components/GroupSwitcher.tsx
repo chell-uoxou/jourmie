@@ -74,7 +74,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
       handleClose();
       onChange(newGroupId);
 
-      // 入力内容のリセット（必要に応じて）
+      // 入力内容のリセット
       setGroupName("");
       setGroupDescription("");
       setGroupIcon(null);
@@ -84,10 +84,22 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
     }
   };
 
-  const selectedGroup =
-    groups === "loading" || groups === null || currentGroupId === null
-      ? null
-      : groups.find((group) => group.uid === currentGroupId);
+  // currentGroupId が "personal" の場合は、専用のダミーオブジェクトを返す
+  const selectedGroup = (() => {
+    if (currentGroupId === "personal") {
+      return {
+        uid: "personal",
+        name: "あなた",
+        icon_url: "/images/defaulticon.png",
+      };
+    }
+    if (groups === "loading" || groups === null || currentGroupId === null) {
+      return null;
+    }
+    // undefined な要素を除外してから探す
+    const validGroups = groups.filter((group) => group !== undefined);
+    return validGroups.find((group) => group.uid === currentGroupId) || null;
+  })();
 
   return (
     <>
@@ -104,28 +116,23 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
           >
             {groups === "loading" ? (
               <LoadingSpinner />
-            ) : groups === null || selectedGroup === null ? null : (
+            ) : selectedGroup === null ? (
+              // フォールバック表示
+              <div className="flex items-center">
+                <UserRound className="h-6 w-6 mr-2" />
+                <div className="font-bold">あなた</div>
+              </div>
+            ) : (
               <>
                 <div className="flex items-center">
-                  {currentGroupId === "personal" ? (
-                    <>
-                      <UserRound className="h-6 w-6 mr-2" />
-                      <div className="font-bold">あなた</div>
-                    </>
-                  ) : (
-                    <>
-                      <Image
-                        src={
-                          selectedGroup?.icon_url ?? "/images/defaulticon.png"
-                        }
-                        alt={"group icon"}
-                        width={24}
-                        height={24}
-                        className="mr-2"
-                      />
-                      <div>{selectedGroup?.name}</div>
-                    </>
-                  )}
+                  <Image
+                    src={selectedGroup.icon_url ?? "/images/defaulticon.png"}
+                    alt="group icon"
+                    width={24}
+                    height={24}
+                    className="mr-2"
+                  />
+                  <div>{selectedGroup.name}</div>
                 </div>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </>
@@ -133,7 +140,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[200px]">
-          {selectedGroup && (
+          {selectedGroup && selectedGroup.uid !== "personal" && (
             <>
               <MenuItemWithIcon
                 icon={<UserRoundPlus className="mr-2 h-4 w-4" />}
@@ -166,32 +173,33 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
             </DropdownMenuItem>
             <DropdownMenuSeparator className="border" />
             <DropdownMenuLabel>参加中のグループ</DropdownMenuLabel>
-            {groups === null || groups === "loading" ? null : groups.length ===
-              0 ? (
+            {groups !== "loading" && groups !== null && groups.length > 0 ? (
+              groups
+                .filter((group) => group !== undefined)
+                .map((group) => (
+                  <DropdownMenuItem
+                    key={group.uid}
+                    onSelect={() => {
+                      console.log("selected", group);
+                      setOpenGroupSwitcher(false);
+                      onChange(group.uid);
+                    }}
+                    className="flex"
+                  >
+                    <Image
+                      src={group.icon_url || "/images/defaulticon.png"}
+                      alt={group.name || "group icon"}
+                      width={24}
+                      height={24}
+                      className="flex mr-2"
+                    />
+                    {group.name}
+                  </DropdownMenuItem>
+                ))
+            ) : (
               <DropdownMenuItem disabled>
                 まだグループに参加していません。
               </DropdownMenuItem>
-            ) : (
-              groups.map((group) => (
-                <DropdownMenuItem
-                  key={group.uid}
-                  onSelect={() => {
-                    console.log("selected", group);
-                    setOpenGroupSwitcher(false);
-                    onChange(group.uid);
-                  }}
-                  className="flex"
-                >
-                  <Image
-                    src={group.icon_url}
-                    alt={group.name}
-                    width={24}
-                    height={24}
-                    className="flex mr-2"
-                  />
-                  {group.name}
-                </DropdownMenuItem>
-              ))
             )}
           </DropdownMenuGroup>
           <MenuItemWithIcon
