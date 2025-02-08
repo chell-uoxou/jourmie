@@ -13,8 +13,8 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-import { v4 as uuidv4 } from "uuid";
 import { CreateGroup } from "~/utils/creategroup";
+import useCurrentAccount, { isReady } from "~/hooks/useCurrentAccount";
 
 interface CreateGroupDialogProps {
   isDialogOpen: boolean;
@@ -26,6 +26,7 @@ const CreateGroupDialog = (props: CreateGroupDialogProps) => {
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const [groupIcon, setGroupIcon] = useState<File | null>(null);
+  const { currentDBAccount } = useCurrentAccount();
 
   const handleCreateGroup = async () => {
     if (!groupName) {
@@ -33,21 +34,26 @@ const CreateGroupDialog = (props: CreateGroupDialogProps) => {
       return;
     }
 
-    const newGroupId = uuidv4();
+    if (!isReady(currentDBAccount)) {
+      throw new Error("アカウント情報が取得できていません");
+      return;
+    }
+
+    const sendData: Parameters<typeof CreateGroup>[0] = {
+      name: groupName,
+      description: groupDescription,
+    };
 
     try {
-      await CreateGroup(
-        newGroupId,
-        {
-          name: groupName,
-          description: groupDescription,
-        },
+      const newGroupRef = await CreateGroup(
+        sendData,
+        currentDBAccount,
         groupIcon ?? undefined
       );
 
       alert("グループが作成されました");
       props.setIsDialogOpen(false);
-      props.switchGroupHandler(newGroupId);
+      props.switchGroupHandler(newGroupRef!.id);
 
       // 入力内容のリセット
       setGroupName("");
