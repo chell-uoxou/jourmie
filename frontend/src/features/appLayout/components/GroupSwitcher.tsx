@@ -34,8 +34,8 @@ import { InputWithLabel } from "~/components/common/InputWithLabel";
 import { WithLabel } from "~/components/common/WithLabel";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-import { CreateGroup } from "~/utils/creategroup"; // createGroup関数をインポート
-import { v4 as uuidv4 } from "uuid"; // ユニークなIDを生成
+import { CreateGroup } from "~/utils/creategroup";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
   currentGroupId: string | "personal" | null;
@@ -58,19 +58,26 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
       return;
     }
 
-    const newGroupId = uuidv4(); // ユニークなIDを生成
-    const iconUrl = "/images/defaulticon.png"; // デフォルトアイコン
+    const newGroupId = uuidv4();
 
     try {
-      await CreateGroup(newGroupId, {
-        name: groupName,
-        description: groupDescription,
-        icon_url: iconUrl,
-      });
+      await CreateGroup(
+        newGroupId,
+        {
+          name: groupName,
+          description: groupDescription,
+        },
+        groupIcon ?? undefined
+      );
 
       alert("グループが作成されました");
       handleClose();
-      onChange(newGroupId); // 新しいグループに切り替え
+      onChange(newGroupId);
+
+      // 入力内容のリセット（必要に応じて）
+      setGroupName("");
+      setGroupDescription("");
+      setGroupIcon(null);
     } catch (error) {
       console.error("グループ作成中にエラーが発生しました:", error);
       alert("グループ作成に失敗しました");

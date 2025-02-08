@@ -1,36 +1,71 @@
-import { doc, setDoc, collection } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  collection,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 import { db } from "~/lib/firebase"; // Firebase 初期化ファイル
+import { getAuth } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-// グループ作成関数
 export async function CreateGroup(
   groupId: string,
-  groupData: { name: string; description?: string; icon_url?: string }
+  groupData: { name: string; description?: string; icon_url?: string },
+  groupIcon?: File
 ) {
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
+
+  if (!currentUser) {
+    throw new Error("ユーザーがログインしていません");
+  }
+
+  // グループアイコンの URL を決定
+  let iconUrl = "/images/defaulticon.png";
+  if (groupIcon && groupIcon.size > 0) {
+    // Firebase Storage にアップロード
+    const storage = getStorage();
+    const storageRef = ref(storage, `group_icons/${groupId}`);
+    await uploadBytes(storageRef, groupIcon);
+    iconUrl = await getDownloadURL(storageRef);
+  } else if (groupData.icon_url) {
+    iconUrl = groupData.icon_url;
+  }
+
   try {
-    // groups/{groupId} にドキュメントを作成
     const groupRef = doc(db, "groups", groupId);
+    // groups コレクションにグループ情報を登録
     await setDoc(groupRef, {
       ...groupData,
+      icon_url: iconUrl,
       createdAt: new Date(), // 作成日時を追加
     });
 
-    // サブコレクションの初期化
-    const commonSchedulesRef = doc(collection(groupRef, "common_schedules"));
-    const eventPoolRef = doc(collection(groupRef, "event_pool"));
-    const membersRef = doc(collection(groupRef, "members"));
-    const openSchedulesRef = doc(collection(groupRef, "open_schedules"));
-    const scheduleMemosRef = doc(collection(groupRef, "schedule_memos"));
+    // 作成者をメンバーサブコレクションに追加（主要な権限を付与）
+    const membersRef = collection(groupRef, "members");
+    const accountRef = doc(db, "accounts", currentUser.uid);
 
-    // 初期データをセット (空データでも可)
-    await Promise.all([
-      setDoc(commonSchedulesRef, { initialized: true }),
-      setDoc(eventPoolRef, { initialized: true }),
-      setDoc(membersRef, { initialized: true }),
-      setDoc(openSchedulesRef, { initialized: true }),
-      setDoc(scheduleMemosRef, { initialized: true }),
-    ]);
+    await setDoc(doc(membersRef, currentUser.uid), {
+      account_reference: accountRef,
+      display_name: currentUser.displayName || currentUser.email || "No Name",
+      editing_permission_scopes: [
+        "common_schedules",
+        "open_schedules",
+        "event_pool",
+        "group_settings",
+      ],
+      notes: "グループ作成者",
+    });
 
-    console.log("グループとサブコレクションが作成されました");
+    // accounts コレクションの自分のドキュメントに、グループへの参照を追加
+    await updateDoc(accountRef, {
+      groups: arrayUnion(groupRef),
+    });
+
+    console.log(
+      "グループとメンバーが作成され、ユーザーアカウントにグループ参照が追加されました"
+    );
   } catch (error) {
     console.error("グループ作成中にエラーが発生しました: ", error);
     alert("グループ作成に失敗しました。もう一度試してください。");
