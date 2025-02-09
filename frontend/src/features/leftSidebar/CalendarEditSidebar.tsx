@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { collection, doc } from "firebase/firestore";
 import { Plus } from "lucide-react";
 import { Button } from "~/components/ui/button";
@@ -16,6 +16,7 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import EventPoolListSkeleton from "../eventPool/EventPoolListSkeleton";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 import useGroupRouter from "~/hooks/useGroupRouter";
+import { useEventPoolFormSheet } from "~/hooks/useEventPoolFormSheet";
 
 export default function CalendarEditSidebar({
   events,
@@ -30,7 +31,11 @@ export default function CalendarEditSidebar({
       ? collection(doc(db, "accounts", currentDBAccount.uid), "event_pool")
       : null
   );
-  const [openDialog, setOpenDialog] = useState(false);
+  const {
+    isOpenEventPoolFormSheet: isOpen,
+    setOpenEventPoolFormSheet: updateOpen,
+    currentEventPoolItem,
+  } = useEventPoolFormSheet();
   const router = useGroupRouter();
 
   useEffect(() => {
@@ -59,7 +64,7 @@ export default function CalendarEditSidebar({
           isLoading={currentDBAccount === "loading"}
         ></SmallTitleWithIcon>
         <Button
-          onClick={() => setOpenDialog(true)}
+          onClick={() => updateOpen(true)}
           className="flex items-center gap-1 pr-4 h-8"
           size={"sm"}
         >
@@ -76,7 +81,11 @@ export default function CalendarEditSidebar({
         <EventPoolListSkeleton />
       )}
 
-      <EventInputDialog isOpen={openDialog} onOpenChange={setOpenDialog} />
+      <EventInputDialog
+        isOpen={isOpen}
+        onOpenChange={updateOpen}
+        currentEvent={currentEventPoolItem}
+      />
     </div>
   );
 }

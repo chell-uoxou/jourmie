@@ -7,7 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DBEventPoolItem, isReady } from "~/lib/firestore/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
 import EventFormComponents from "./components/EventFormComponents";
@@ -24,6 +24,7 @@ import CloseConfirmationDialog from "./components/CloseConfirmationDialog";
 interface EventInputDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  currentEvent?: DBEventPoolItem | null;
 }
 
 // EventPoolItemForm は EventForm からコピーし、全部をInput用にStringに変換
@@ -52,7 +53,8 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
   const eventsCollection = isReady(currentDBAccount)
     ? collection(db, "accounts", currentDBAccount.uid, "event_pool")
     : null;
-  const { add } = useFirestoreCollection<DBEventPoolItem>(eventsCollection);
+  const { add, update } =
+    useFirestoreCollection<DBEventPoolItem>(eventsCollection);
 
   const eventForm = useForm<EventPoolItemForm>({
     defaultValues: {
@@ -80,6 +82,20 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
       notes: "",
     },
   });
+
+  useEffect(() => {
+    if (props.currentEvent) {
+      eventForm.reset({
+        ...props.currentEvent,
+        available_start_time:
+          props.currentEvent.available_times[0].start_time.toDate(),
+        available_end_time:
+          props.currentEvent.available_times[0].end_time.toDate(),
+        default_budget_type: props.currentEvent.default_budget.mode,
+        default_budget: props.currentEvent.default_budget.value,
+      });
+    }
+  }, [props.currentEvent, eventForm]);
 
   const handleFinalSubmit: SubmitHandler<EventPoolItemForm> = async (data) => {
     if (!isReady(currentDBAccount)) {
@@ -112,12 +128,17 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
     };
 
     try {
-      await add(sendData);
-      alert("イベントが正常に追加されました！");
+      if (props.currentEvent) {
+        await update(props.currentEvent.uid, sendData);
+        alert("イベントが正常に更新されました！");
+      } else {
+        await add(sendData);
+        alert("イベントが正常に追加されました！");
+      }
       eventForm.reset();
       setIsConfirmation(false);
     } catch (error) {
-      console.error("Error adding event: ", error);
+      console.error("Error adding/updating event: ", error);
     }
   };
 
@@ -146,7 +167,9 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
         onClickCustomClose={handleCloseDialog}
       >
         <SheetHeader>
-          <SheetTitle>イベント候補 新規作成</SheetTitle>
+          <SheetTitle>
+            イベント候補 {props.currentEvent ? "編集" : "新規作成"}
+          </SheetTitle>
           <SheetDescription>
             気になるイベントをイベント候補として登録
           </SheetDescription>
@@ -186,7 +209,7 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
                   variant="default"
                   onClick={eventForm.handleSubmit(handleFinalSubmit)}
                 >
-                  作成
+                  {props.currentEvent ? "更新" : "作成"}
                 </Button>
               </div>
             )}
