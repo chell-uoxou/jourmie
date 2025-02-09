@@ -24,13 +24,11 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const { setOpenEventPoolFormSheet, setCurrentEventPoolItem } =
     useEventPoolFormSheet();
-  // 削除確認ダイアログの開閉状態
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
 
-  // 削除ボタンが押されたときのダミーハンドラー
   const handleDeleteButtonClick = () => {
     console.log("削除ボタンが押されました。まだ削除機能は実装されていません。");
-    setIsRemoveDialogOpen(false); // ダイアログを閉じる
+    setIsRemoveDialogOpen(false);
   };
 
   // 時間帯のフォーマット関数
@@ -91,7 +89,6 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
           eventPoolItem={eventPoolItem}
           onClickAddToCalendar={() => {}}
           onClickClose={() => setIsDetailsOpen(false)}
-          // 「削除」ボタン押下時はダイアログを開く
           onClickDelete={() => setIsRemoveDialogOpen(true)}
           onClickEdit={() => {
             setCurrentEventPoolItem(eventPoolItem);
