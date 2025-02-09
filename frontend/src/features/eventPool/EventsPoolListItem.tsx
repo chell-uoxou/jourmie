@@ -10,6 +10,7 @@ import { DBEventPoolItem } from "~/lib/firestore/utils";
 import EventPoolItemDetails from "./components/EventPoolItemDetails";
 import { Popover, PopoverTrigger } from "~/components/ui/popover";
 import { useEventPoolFormSheet } from "~/hooks/useEventPoolFormSheet";
+import RemoveEventDialog from "../memberList/components/RemoveEventDialog";
 
 type Props = {
   id: string;
@@ -23,11 +24,16 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const { setOpenEventPoolFormSheet, setCurrentEventPoolItem } =
     useEventPoolFormSheet();
-  const [isRMBOpen, setIsRMBOpen] = useState(false);
-  const [RMBSelectedEvent, setRMBSelectedEvent] =
-    useState<DBEventPoolItem | null>(null);
+  // 削除確認ダイアログの開閉状態
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
 
-  // TODO　現状は開始時間と終了時間から時間帯を表示しているが、今後は平日は何時やいつは何時と表形式にしたい。
+  // 削除ボタンが押されたときのダミーハンドラー
+  const handleDeleteButtonClick = () => {
+    console.log("削除ボタンが押されました。まだ削除機能は実装されていません。");
+    setIsRemoveDialogOpen(false); // ダイアログを閉じる
+  };
+
+  // 時間帯のフォーマット関数
   const formatTimes = (times: TimeRange[]) => {
     const { start_time, end_time } = times[0] ?? {
       start_time: Timestamp.now(),
@@ -36,7 +42,6 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
 
     const startDate = start_time.toDate();
     const endDate = end_time.toDate();
-
     const sameDay = startDate.toDateString() === endDate.toDateString();
 
     const startFormatted = startDate.toLocaleString("ja-JP", {
@@ -46,16 +51,13 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
       hour: "2-digit",
       minute: "2-digit",
     });
-
     const endFormatted = endDate.toLocaleString("ja-JP", {
       hour: "2-digit",
       minute: "2-digit",
       ...(sameDay ? {} : { year: "numeric", month: "numeric", day: "numeric" }),
     });
 
-    return sameDay
-      ? `${startFormatted} ~ ${endFormatted}`
-      : `${startFormatted} ~ ${endFormatted}`;
+    return `${startFormatted} ~ ${endFormatted}`;
   };
 
   return (
@@ -72,12 +74,12 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
               <h1 className="text-xl font-bold mt-6 mb-4">
                 {eventPoolItem.title}
               </h1>
-              <div className="col-auto flex flex-col gap-x-0 gap-y-3">
-                <div className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-start justify-start gap-x-1 text-sm">
+              <div className="flex flex-col gap-y-3">
+                <div className="flex items-start gap-x-1 text-sm font-medium">
                   <Hourglass className="w-3.5 h-3.5 mt-1" />
                   {formatTimes(eventPoolItem.available_times)}
                 </div>
-                <div className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center justify-start gap-x-1">
+                <div className="flex items-center gap-x-1 text-sm font-medium">
                   <Map className="w-3.5 h-3.5" />
                   {eventPoolItem.location_text}
                 </div>
@@ -89,13 +91,20 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
           eventPoolItem={eventPoolItem}
           onClickAddToCalendar={() => {}}
           onClickClose={() => setIsDetailsOpen(false)}
-          onClickDelete={() => {}}
+          // 「削除」ボタン押下時はダイアログを開く
+          onClickDelete={() => setIsRemoveDialogOpen(true)}
           onClickEdit={() => {
             setCurrentEventPoolItem(eventPoolItem);
             setOpenEventPoolFormSheet(true);
           }}
         />
       </Popover>
+      <RemoveEventDialog
+        open={isRemoveDialogOpen}
+        onOpenChange={setIsRemoveDialogOpen}
+        event={eventPoolItem}
+        onDelete={handleDeleteButtonClick}
+      />
     </div>
   );
 });

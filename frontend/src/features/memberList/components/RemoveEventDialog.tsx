@@ -15,9 +15,11 @@ interface RemoveEventDialogProps {
   open?: boolean;
   onOpenChange: (open: boolean) => void;
   event: DBEventPoolItem | null;
+  onDelete: () => void;
 }
+
 const RemoveEventDialog = (props: RemoveEventDialogProps) => {
-  const { event, ...dialogProps } = props;
+  const { event, onDelete, ...dialogProps } = props;
   return (
     <AlertDialog {...dialogProps}>
       <AlertDialogContent>
@@ -32,7 +34,10 @@ const RemoveEventDialog = (props: RemoveEventDialogProps) => {
         <AlertDialogFooter>
           <AlertDialogCancel>キャンセル</AlertDialogCancel>
           <AlertDialogAction asChild>
-            <Button className={buttonVariants({ variant: "destructive" })}>
+            <Button
+              onClick={onDelete}
+              className={buttonVariants({ variant: "destructive" })}
+            >
               イベント候補を削除
             </Button>
           </AlertDialogAction>
