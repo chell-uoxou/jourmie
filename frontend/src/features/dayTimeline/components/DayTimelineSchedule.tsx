@@ -85,7 +85,13 @@ export const DayTimelineSchedule = forwardRef<
             </CardContent>
           </Card>
         </PopoverTrigger>
-        <DayTimelineScheduleDetails scheduleEvent={schedule} />
+        <DayTimelineScheduleDetails
+          scheduleEvent={schedule}
+          onClickAddToCalendar={() => {}}
+          onClickClose={() => setIsDetailsOpen(false)}
+          onClickDelete={() => {}}
+          onClickEdit={() => {}}
+        />
       </Popover>
     </div>
   );
