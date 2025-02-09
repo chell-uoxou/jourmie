@@ -52,7 +52,7 @@ export const DayTimelineSchedule = forwardRef<
 
   return (
     <div ref={ref} {...rest}>
-      <Popover onOpenChange={setIsDetailsOpen}>
+      <Popover onOpenChange={setIsDetailsOpen} open={isDetailsOpen}>
         <PopoverTrigger className="w-full">
           <Card
             className={clsx(
@@ -85,7 +85,13 @@ export const DayTimelineSchedule = forwardRef<
             </CardContent>
           </Card>
         </PopoverTrigger>
-        <DayTimelineScheduleDetails scheduleEvent={schedule} />
+        <DayTimelineScheduleDetails
+          scheduleEvent={schedule}
+          onClickAddToCalendar={() => {}}
+          onClickClose={() => setIsDetailsOpen(false)}
+          onClickDelete={() => {}}
+          onClickEdit={() => {}}
+        />
       </Popover>
     </div>
   );
