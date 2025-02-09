@@ -54,7 +54,7 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
 
   return (
     <div className="relative w-full" ref={ref} {...rest}>
-      <Popover onOpenChange={setIsDetailsOpen}>
+      <Popover onOpenChange={setIsDetailsOpen} open={isDetailsOpen}>
         <PopoverTrigger asChild>
           <Card
             className={clsx(
@@ -79,7 +79,13 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
             </CardContent>
           </Card>
         </PopoverTrigger>
-        <EventPoolItemDetails eventPoolItem={eventPoolItem} />
+        <EventPoolItemDetails
+          eventPoolItem={eventPoolItem}
+          onClickAddToCalendar={() => {}}
+          onClickClose={() => setIsDetailsOpen(false)}
+          onClickDelete={() => {}}
+          onClickEdit={() => {}}
+        />
       </Popover>
     </div>
   );
