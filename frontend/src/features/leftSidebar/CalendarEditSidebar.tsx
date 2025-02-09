@@ -26,11 +26,8 @@ export default function CalendarEditSidebar() {
       : null
   );
 
-  const {
-    isOpenEventPoolFormSheet: isOpen,
-    setOpenEventPoolFormSheet: updateOpen,
-    currentEventPoolItem,
-  } = useEventPoolFormSheet();
+  const { setOpenEventPoolFormSheet, setCurrentEventPoolItem } =
+    useEventPoolFormSheet();
   const router = useGroupRouter();
 
   return (
@@ -46,7 +43,10 @@ export default function CalendarEditSidebar() {
           isLoading={currentDBAccount === "loading"}
         ></SmallTitleWithIcon>
         <Button
-          onClick={() => updateOpen(true)}
+          onClick={() => {
+            setCurrentEventPoolItem(null);
+            setOpenEventPoolFormSheet(true);
+          }}
           className="flex items-center gap-1 pr-4 h-8"
           size={"sm"}
         >
@@ -63,11 +63,7 @@ export default function CalendarEditSidebar() {
         <EventPoolListSkeleton />
       )}
 
-      <EventInputDialog
-        isOpen={isOpen}
-        onOpenChange={updateOpen}
-        currentEvent={currentEventPoolItem}
-      />
+      <EventInputDialog />
     </div>
   );
 }

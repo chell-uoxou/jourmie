@@ -1,6 +1,5 @@
 import { useAtom } from "jotai";
 import { useCallback, useMemo } from "react";
-import { DBEventPoolItem } from "~/lib/firestore/utils";
 import { eventPoolFormSheetAtom } from "~/stores/eventPoolFormSheet";
 
 export const useEventPoolFormSheet = () => {
@@ -14,7 +13,7 @@ export const useEventPoolFormSheet = () => {
   );
 
   const setOpenEventPoolFormSheet = useCallback(
-    (isOpen: boolean) => {
+    (isOpen: (typeof eventPoolFormSheet)["isSheetOpen"]) => {
       setEventPoolFormSheet((prev) => ({
         ...prev,
         isSheetOpen: isOpen,
@@ -29,7 +28,9 @@ export const useEventPoolFormSheet = () => {
   );
 
   const setCurrentEventPoolItem = useCallback(
-    (currentEventPoolItem: DBEventPoolItem) => {
+    (
+      currentEventPoolItem: (typeof eventPoolFormSheet)["currentEventPoolItem"]
+    ) => {
       setEventPoolFormSheet((prev) => ({
         ...prev,
         currentEventPoolItem,

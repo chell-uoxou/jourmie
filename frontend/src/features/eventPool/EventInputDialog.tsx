@@ -20,12 +20,7 @@ import { useFirestoreCollection } from "~/hooks/useFirestoreCollection";
 import { AccountEventPoolItem } from "~/models/types/account_event_pool_item";
 import { set } from "date-fns";
 import CloseConfirmationDialog from "./components/CloseConfirmationDialog";
-
-interface EventInputDialogProps {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-  currentEvent?: DBEventPoolItem | null;
-}
+import { useEventPoolFormSheet } from "~/hooks/useEventPoolFormSheet";
 
 // EventPoolItemForm は EventForm からコピーし、全部をInput用にStringに変換
 export type EventPoolItemForm = Omit<
@@ -34,68 +29,82 @@ export type EventPoolItemForm = Omit<
   | "available_times"
   | "default_duration"
   | "default_budget"
-  | "max_participants"
+  | "uid"
 > & {
   available_start_time: Date;
   available_end_time: Date;
   default_duration: number;
   default_budget_type: BudgetMode;
   default_budget: number;
-  preparation_task: string;
-  max_participants: number;
 };
 
-export const EventInputDialog = (props: EventInputDialogProps) => {
+export const EventInputDialog = () => {
   const [isConfirmation, setIsConfirmation] = useState(false);
-  const [isCloseDialogOpen, setIsDialogOpen] = useState(false);
-
+  const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
   const { currentDBAccount } = useCurrentAccount();
+  const {
+    setCurrentEventPoolItem,
+    currentEventPoolItem,
+    isOpenEventPoolFormSheet: isOpen,
+    setOpenEventPoolFormSheet: setIsOpen,
+  } = useEventPoolFormSheet();
   const eventsCollection = isReady(currentDBAccount)
     ? collection(db, "accounts", currentDBAccount.uid, "event_pool")
     : null;
   const { add, update } =
     useFirestoreCollection<DBEventPoolItem>(eventsCollection);
 
+  const defaultValues: EventPoolItemForm = {
+    title: "",
+    description: "",
+    location_text: "",
+    available_start_time: set(new Date(), {
+      hours: 9,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+    }), // 今日の9時
+    available_end_time: set(new Date(), {
+      hours: 17,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+    }), // 今日の17時
+    default_duration: 0,
+    default_budget_type: "per_person",
+    default_budget: 0,
+    needs_preparation: false,
+    preparation_task: "",
+    max_participants: NaN, // 未入力
+    notes: "",
+    attached_image: "",
+    schedule_instances: [],
+  };
+
   const eventForm = useForm<EventPoolItemForm>({
-    defaultValues: {
-      title: "",
-      description: "",
-      location_text: "",
-      available_start_time: set(new Date(), {
-        hours: 9,
-        minutes: 0,
-        seconds: 0,
-        milliseconds: 0,
-      }), // 今日の9時
-      available_end_time: set(new Date(), {
-        hours: 17,
-        minutes: 0,
-        seconds: 0,
-        milliseconds: 0,
-      }), // 今日の17時
-      default_duration: 0,
-      default_budget_type: "per_person",
-      default_budget: 0,
-      needs_preparation: false,
-      preparation_task: "",
-      max_participants: NaN, // 未入力
-      notes: "",
-    },
+    defaultValues,
   });
 
   useEffect(() => {
-    if (props.currentEvent) {
+    console.log("currentEventPoolItem", currentEventPoolItem);
+
+    if (currentEventPoolItem) {
+      console.log("reset to currentEventPoolItem", currentEventPoolItem.title);
       eventForm.reset({
-        ...props.currentEvent,
+        ...currentEventPoolItem,
         available_start_time:
-          props.currentEvent.available_times[0].start_time.toDate(),
+          currentEventPoolItem.available_times[0].start_time.toDate(),
         available_end_time:
-          props.currentEvent.available_times[0].end_time.toDate(),
-        default_budget_type: props.currentEvent.default_budget.mode,
-        default_budget: props.currentEvent.default_budget.value,
+          currentEventPoolItem.available_times[0].end_time.toDate(),
+        default_budget_type: currentEventPoolItem.default_budget.mode,
+        default_budget: currentEventPoolItem.default_budget.value,
       });
+    } else {
+      console.log("reset");
+      eventForm.reset({});
+      console.log(eventForm.formState.defaultValues);
     }
-  }, [props.currentEvent, eventForm]);
+  }, [eventForm, currentEventPoolItem]);
 
   const handleFinalSubmit: SubmitHandler<EventPoolItemForm> = async (data) => {
     if (!isReady(currentDBAccount)) {
@@ -128,14 +137,17 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
     };
 
     try {
-      if (props.currentEvent) {
-        await update(props.currentEvent.uid, sendData);
+      if (currentEventPoolItem) {
+        await update(currentEventPoolItem.uid, sendData);
         alert("イベントが正常に更新されました！");
+        setIsOpen(false);
+        setCurrentEventPoolItem(null);
+        eventForm.reset(defaultValues);
       } else {
         await add(sendData);
         alert("イベントが正常に追加されました！");
       }
-      eventForm.reset();
+      eventForm.reset(defaultValues);
       setIsConfirmation(false);
     } catch (error) {
       console.error("Error adding/updating event: ", error);
@@ -144,17 +156,18 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
 
   const handleCloseDialog = () => {
     if (Object.keys(eventForm.formState.dirtyFields).length > 0) {
-      setIsDialogOpen(true);
+      setIsCloseDialogOpen(true);
     } else {
-      setIsDialogOpen(false);
+      setIsCloseDialogOpen(false);
       setIsConfirmation(false);
-      props.onOpenChange(false);
-      eventForm.reset();
+      setIsOpen(false);
+      setCurrentEventPoolItem(null);
+      eventForm.reset(defaultValues);
     }
   };
 
   return (
-    <Sheet open={props.isOpen} onOpenChange={props.onOpenChange} modal={false}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen} modal={false}>
       <SheetContent
         side={"left"}
         className="flex flex-col mt-14 h-[calc(100svh-56px)] min-w-[400px]"
@@ -168,7 +181,7 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
       >
         <SheetHeader>
           <SheetTitle>
-            イベント候補 {props.currentEvent ? "編集" : "新規作成"}
+            イベント候補 {currentEventPoolItem ? "編集" : "新規作成"}
           </SheetTitle>
           <SheetDescription>
             気になるイベントをイベント候補として登録
@@ -191,7 +204,15 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
           </ScrollArea>
 
           <div className="flex flex-col w-full gap-2">
-            {!isConfirmation ? (
+            {currentEventPoolItem ? (
+              <Button
+                variant="default"
+                type="submit"
+                onClick={eventForm.handleSubmit(handleFinalSubmit)}
+              >
+                更新
+              </Button>
+            ) : !isConfirmation ? (
               <Button variant="default" type="submit">
                 確認
               </Button>
@@ -209,7 +230,7 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
                   variant="default"
                   onClick={eventForm.handleSubmit(handleFinalSubmit)}
                 >
-                  {props.currentEvent ? "更新" : "作成"}
+                  作成
                 </Button>
               </div>
             )}
@@ -226,14 +247,15 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
       </SheetContent>
       <CloseConfirmationDialog
         isOpen={isCloseDialogOpen}
-        onOpenChange={setIsDialogOpen}
+        onOpenChange={setIsCloseDialogOpen}
         onConfirm={() => {
-          setIsDialogOpen(false);
+          setIsCloseDialogOpen(false);
           setIsConfirmation(false);
-          props.onOpenChange(false);
+          setIsOpen(false);
+          setCurrentEventPoolItem(null);
           eventForm.reset();
         }}
-        onCancel={() => setIsDialogOpen(false)}
+        onCancel={() => setIsCloseDialogOpen(false)}
       />
     </Sheet>
   );
