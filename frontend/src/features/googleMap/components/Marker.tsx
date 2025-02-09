@@ -23,9 +23,12 @@ const Marker = ({
   useEffect(() => {
     if (!map) return;
 
-    // 既存のマーカーを削除
+    // 既存のマーカーとウィンドウを削除
     if (marker) {
       marker.setMap(null);
+    }
+    if (infoWindow) {
+      infoWindow.close();
     }
 
     const newMarker = new google.maps.Marker({
@@ -39,7 +42,7 @@ const Marker = ({
       if (e.latLng) {
         const newPos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
         setPosition(newPos);
-        renderInfoWindow(newMarker, newPos);
+        // renderInfoWindow(newMarker, newPos);
       }
     });
 
@@ -58,6 +61,8 @@ const Marker = ({
     });
 
     setMarker(newMarker);
+    // 初期表示時に InfoWindow を開く
+    renderInfoWindow(newMarker, center);
 
     return () => {
       newMarker.setMap(null);
@@ -72,6 +77,9 @@ const Marker = ({
     marker: google.maps.Marker,
     position: { lat: number; lng: number }
   ) => {
+    if (infoWindow) {
+      infoWindow.close();
+    }
     const infoWindowDiv = document.createElement("div");
     const root = createRoot(infoWindowDiv);
     root.render(<InfoWindow position={position} />);
