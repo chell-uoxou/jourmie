@@ -34,6 +34,25 @@ export default function Map({ currentLocation, defaultCenter }: MapProps) {
   // マップがロードされたときの処理
   const onLoad = (mapInstance: google.maps.Map) => {
     map.current = mapInstance;
+    // マップをクリックできるようにし、クリックした位置にマーカーを追加する
+    mapInstance.addListener("click", (e: google.maps.MapMouseEvent) => {
+      if (e.latLng) {
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+
+        const latElement = document.getElementById("lat");
+        const lngElement = document.getElementById("lng");
+        if (latElement && lngElement) {
+          latElement.textContent = lat.toString();
+          lngElement.textContent = lng.toString();
+        }
+
+        new google.maps.Marker({
+          position: { lat, lng },
+          map: mapInstance,
+        });
+      }
+    });
   };
 
   // マップがアンロードされたときの処理
