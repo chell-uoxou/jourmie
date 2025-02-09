@@ -135,7 +135,7 @@ export const EventInputDialog = () => {
     try {
       if (currentEventPoolItem) {
         await update(currentEventPoolItem.uid, sendData);
-        alert("イベントが正常に更新されました！");
+        toast.success("イベントが正常に更新されました！");
         setIsOpen(false);
         setCurrentEventPoolItem(null);
         eventForm.reset(defaultValues);
