@@ -22,6 +22,8 @@ import { UserRound } from "lucide-react";
 import { DBGroup } from "~/lib/firestore/schemas";
 import { useState } from "react";
 import CreateGroupDialog from "~/features/groupCreation/CreateGroupDialog";
+import { useRouter, usePathname } from "next/navigation";
+import useInviteDialogOpen from "~/hooks/useInviteDialogOpen";
 
 type Props = {
   currentGroupId: string | "personal" | null;
@@ -32,6 +34,11 @@ type Props = {
 export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
   const [openGroupSwitcher, setOpenGroupSwitcher] = useState(false);
   const [isCGOpen, setIsCGOpen] = useState(false);
+
+  // グローバルな招待ダイアログ状態のフックを利用
+  const { setIsOpen: setInviteDialogOpen } = useInviteDialogOpen();
+  const router = useRouter();
+  const pathname = usePathname();
 
   // currentGroupId が "personal" の場合は、専用のダミーオブジェクトを返す
   const selectedGroup = (() => {
@@ -45,7 +52,6 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
     if (groups === "loading" || groups === null || currentGroupId === null) {
       return null;
     }
-    // undefined な要素を除外してから探す
     const validGroups = groups.filter((group) => group !== undefined);
     return validGroups.find((group) => group.uid === currentGroupId) || null;
   })();
@@ -66,7 +72,6 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
             {groups === "loading" ? (
               <LoadingSpinner />
             ) : selectedGroup === null ? (
-              // フォールバック表示
               <div className="flex items-center">
                 <UserRound className="h-6 w-6 mr-2" />
                 <div className="font-bold">あなた</div>
@@ -91,10 +96,19 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
         <DropdownMenuContent className="w-[200px]">
           {selectedGroup && selectedGroup.uid !== "personal" && (
             <>
+              {/* 「友達を招待」は onSelect 経由で処理する */}
               <MenuItemWithIcon
                 icon={<UserRoundPlus className="mr-2 h-4 w-4" />}
                 title="友達を招待"
-                url={`/g/${selectedGroup.uid}/member?invite=true`}
+                onSelect={() => {
+                  setOpenGroupSwitcher(false);
+                  // もし member ページにいなければ、該当ページに遷移
+                  if (!pathname.includes("/member")) {
+                    router.push(`/g/${selectedGroup.uid}/member`);
+                  }
+                  // グローバル状態を true にしてダイアログを開く
+                  setInviteDialogOpen(true);
+                }}
               />
               <MenuItemWithIcon
                 icon={<UsersRound className="mr-2 h-4 w-4" />}
