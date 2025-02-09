@@ -19,6 +19,7 @@ import { Button } from "~/components/ui/button";
 import { Search } from "lucide-react";
 import RegisteredPreciseLocation from "./RegisteredPreciseLocation";
 import { useMapWidget } from "~/hooks/useMapWidget";
+import { toast } from "sonner";
 
 interface EventFormComponentsProps {
   eventForm: UseFormReturn<EventPoolItemForm>;
@@ -47,8 +48,10 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
     setRedirectHandler((location) => {
       eventForm.setValue("location_coordinate_lat", location.location.lat);
       eventForm.setValue("location_coordinate_lon", location.location.lng);
-      console.log(location);
       if (location.value) eventForm.setValue("location_text", location.value);
+      toast.info("イベント候補に地点を追加しました", {
+        description: location.value,
+      });
     });
   }, [eventForm, redirectInputRef, setRedirectHandler]);
 
@@ -83,7 +86,18 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
 
         {eventForm.watch("location_coordinate_lat") &&
           eventForm.watch("location_coordinate_lon") && (
-            <RegisteredPreciseLocation label="選択された地点" />
+            <RegisteredPreciseLocation
+              label="地図から選択された地点"
+              onClickDelete={() => {
+                toast.info("イベント候補から地点を削除しました", {
+                  description:
+                    "再度地点を設定するには、検索ボタンを押してマップから地点を選択してください。",
+                  duration: 8000,
+                });
+                eventForm.setValue("location_coordinate_lat", null);
+                eventForm.setValue("location_coordinate_lon", null);
+              }}
+            />
           )}
       </div>
       <div className="flex flex-col gap-2">

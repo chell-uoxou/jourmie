@@ -1,10 +1,9 @@
-import { MapPinCheck, MapPinCheckInside, X } from "lucide-react";
+import { MapPinCheckInside, X } from "lucide-react";
 import React from "react";
 import { Button } from "~/components/ui/button";
 
 interface RegisteredPreciseLocationProps {
   label: string;
-  onClick?: () => void;
   onClickDelete?: () => void;
 }
 
@@ -14,7 +13,7 @@ const RegisteredPreciseLocation = (props: RegisteredPreciseLocationProps) => {
       <MapPinCheckInside size={18} />
       <span className="flex-1">{props.label}</span>
       <Button
-        onClick={props.onClick}
+        onClick={props.onClickDelete}
         type="button"
         variant={"ghost"}
         className="text-muted-foreground p-0 size-4"
