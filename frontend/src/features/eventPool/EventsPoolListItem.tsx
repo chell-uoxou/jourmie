@@ -23,6 +23,9 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const { setOpenEventPoolFormSheet, setCurrentEventPoolItem } =
     useEventPoolFormSheet();
+  const [isRMBOpen, setIsRMBOpen] = useState(false);
+  const [RMBSelectedEvent, setRMBSelectedEvent] =
+    useState<DBEventPoolItem | null>(null);
 
   // TODO　現状は開始時間と終了時間から時間帯を表示しているが、今後は平日は何時やいつは何時と表形式にしたい。
   const formatTimes = (times: TimeRange[]) => {
