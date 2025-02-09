@@ -12,6 +12,7 @@ import {
 import { MoveRight, Search } from "lucide-react";
 import clsx from "clsx";
 import { useMapWidget } from "~/hooks/useMapWidget";
+import { LoadingSpinner } from "~/components/ui/spinner";
 
 interface PlacePrediction {
   place_id: string;
@@ -30,6 +31,8 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null); // 選択した候補のプレースID
   const inputRef = useRef<HTMLInputElement | null>(null); // 入力フィールドの参照
   const [selectedIndex, setSelectedIndex] = useState<number>(-1); // 選択中のインデックス
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDebouncePending, setIsDebouncePending] = useState<boolean>(false);
 
   const { _mapWidgetInputRef } = useMapWidget();
 
@@ -40,18 +43,18 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
 
   // Google Places APIで候補を取得する処理
   const fetchSuggestions = useCallback((inputValue: string) => {
+    setIsLoading(true);
     if (inputValue) {
       const service = new google.maps.places.AutocompleteService();
-      service.getPlacePredictions(
-        { input: inputValue },
-        (predictions, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK) {
-            setSuggestions(predictions || []);
-          } else {
-            setSuggestions([]);
-          }
-        }
-      );
+      service
+        .getPlacePredictions({ input: inputValue })
+        .then((result) => {
+          setSuggestions(result.predictions);
+          setIsLoading(false);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     } else {
       setSuggestions([]);
     }
@@ -60,6 +63,7 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
   const debouncedFetchSuggestions = useDebouncedCallback(
     (inputValue: string) => {
       fetchSuggestions(inputValue);
+      setIsDebouncePending(false);
     },
     750
   );
@@ -77,6 +81,7 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setInputValue(e.target.value);
+      setIsDebouncePending(true);
       debouncedFetchSuggestions(e.target.value);
     },
     [debouncedFetchSuggestions]
@@ -168,7 +173,11 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
           }}
           className="p-3"
         >
-          <Search className="size-4" />
+          {(isLoading || isDebouncePending) && inputValue !== "" ? (
+            <LoadingSpinner className="size-4" />
+          ) : (
+            <Search className="size-4" />
+          )}
         </Button>
       </div>
       {isOpen && (
