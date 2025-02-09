@@ -14,9 +14,8 @@ import SmallIconButton from "~/components/common/SmallIconButton";
 import SmallTitleWithIcon from "~/components/common/SmallTitleWithIcon";
 import { PopoverContent } from "~/components/ui/popover";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
-import { Timestamp } from "firebase/firestore";
-import { TimeRange } from "~/models/types/common";
 import formatDuration from "~/utils/formater";
+import formatTimes from "~/utils/timesformater";
 
 interface EventPoolItemDetailsProps {
   eventPoolItem: DBEventPoolItem;
@@ -27,36 +26,6 @@ interface EventPoolItemDetailsProps {
 }
 
 const EventPoolItemDetails = (props: EventPoolItemDetailsProps) => {
-  const formatTimes = (times: TimeRange[]) => {
-    const { start_time, end_time } = times[0] ?? {
-      start_time: Timestamp.now(),
-      end_time: Timestamp.now(),
-    };
-
-    const startDate = start_time.toDate();
-    const endDate = end_time.toDate();
-
-    const sameDay = startDate.toDateString() === endDate.toDateString();
-
-    const startFormatted = startDate.toLocaleString("ja-JP", {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    const endFormatted = endDate.toLocaleString("ja-JP", {
-      hour: "2-digit",
-      minute: "2-digit",
-      ...(sameDay ? {} : { year: "numeric", month: "numeric", day: "numeric" }),
-    });
-
-    return sameDay
-      ? `${startFormatted} ~ ${endFormatted}`
-      : `${startFormatted} ~ ${endFormatted}`;
-  };
-
   return (
     <PopoverContent className="w-80" side={"right"} sideOffset={10}>
       <div className="flex flex-col gap-4">
