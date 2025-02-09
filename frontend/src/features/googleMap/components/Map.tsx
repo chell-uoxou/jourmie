@@ -72,9 +72,7 @@ export default function Map({ currentLocation, defaultCenter }: MapProps) {
           onUnmount={onUnmount}
           options={mapOptions}
         >
-          {map.current && (
-            <Marker map={map.current} center={center} draggable />
-          )}
+          {map.current && <Marker map={map.current} center={center} />}
           <div className="flex w-full z-10 absolute top-4 px-3">
             <SearchBox onAddressSelect={handleAddressSelect} />
           </div>
