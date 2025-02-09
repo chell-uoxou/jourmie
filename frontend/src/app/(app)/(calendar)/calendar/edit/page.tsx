@@ -5,7 +5,7 @@ import {
   defaultDropAnimationSideEffects,
 } from "@dnd-kit/core";
 import { doc, Timestamp } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDndTimeline } from "~/hooks/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
 import { DayTimelineSchedule } from "~/features/dayTimeline/components/DayTimelineSchedule";
@@ -20,7 +20,6 @@ import { DBEventPoolItem } from "~/lib/firestore/utils";
 import { getEndDroppingDate } from "~/features/dayTimeline/utils/getEndDroppingDate";
 
 export default function Page() {
-  const [events, setEvents] = useState<DBEventPoolItem[]>([]);
   const authUser = useAuthUser();
   const { optimisticSchedules, addOptimisticSchedule } =
     useOptimisticSchedules();
@@ -79,11 +78,7 @@ export default function Page() {
 
   return (
     <DndContext {...dndContextProps}>
-      <CardBodyWithLeftSidebar
-        leftSidebar={
-          <CalendarEditSidebar events={events} setEvents={setEvents} />
-        }
-      >
+      <CardBodyWithLeftSidebar leftSidebar={<CalendarEditSidebar />}>
         <PrivateScheduleDayTimeline
           onScroll={onScrollDroppableArea}
           scrollAreaRef={scrollAreaRef}
