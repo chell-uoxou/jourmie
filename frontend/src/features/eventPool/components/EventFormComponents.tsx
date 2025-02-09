@@ -45,8 +45,10 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
 
   useEffect(() => {
     setRedirectHandler((location) => {
-      eventForm.setValue("location_coordinate_lat", location.lat);
-      eventForm.setValue("location_coordinate_lon", location.lng);
+      eventForm.setValue("location_coordinate_lat", location.location.lat);
+      eventForm.setValue("location_coordinate_lon", location.location.lng);
+      console.log(location);
+      if (location.value) eventForm.setValue("location_text", location.value);
     });
   }, [eventForm, redirectInputRef, setRedirectHandler]);
 

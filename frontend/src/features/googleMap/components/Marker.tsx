@@ -7,15 +7,17 @@ const Marker = ({
   map,
   center,
   draggable = true,
+  currentLocationDescription,
 }: {
   map: google.maps.Map;
   center: { lat: number; lng: number };
   draggable?: boolean;
+  currentLocationDescription: string;
 }) => {
   const marker = useRef<google.maps.Marker | null>(null);
   const infoWindow = useRef<google.maps.InfoWindow | null>(null);
   const [position, setPosition] = useState(center); // マーカーの現在座標
-  const { _focusRedirectSearchBox } = useMapWidget();
+  const { _redirectSearchBox } = useMapWidget();
 
   const updateInfoWindow = useCallback(
     (position: { lat: number; lng: number }) => {
@@ -25,8 +27,12 @@ const Marker = ({
         <InfoWindow
           position={position}
           onClickChooseLocation={(location) => {
-            _focusRedirectSearchBox({ location });
+            _redirectSearchBox({
+              location,
+              value: currentLocationDescription,
+            });
           }}
+          locationDescription={currentLocationDescription}
         />
       );
       console.log(infoWindow.current);
@@ -42,7 +48,7 @@ const Marker = ({
         });
       }
     },
-    [_focusRedirectSearchBox, map]
+    [_redirectSearchBox, currentLocationDescription, map]
   );
 
   useEffect(() => {

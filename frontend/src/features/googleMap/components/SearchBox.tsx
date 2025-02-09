@@ -20,7 +20,7 @@ interface PlacePrediction {
 }
 
 interface SearchBoxProps {
-  onAddressSelect: (lat: number, lng: number) => void; // 親コンポーネントに住所選択を通知
+  onAddressSelect: (lat: number, lng: number, inputValue: string) => void; // 親コンポーネントに住所選択を通知
 }
 
 export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
@@ -31,7 +31,7 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
   const inputRef = useRef<HTMLInputElement | null>(null); // 入力フィールドの参照
   const [selectedIndex, setSelectedIndex] = useState<number>(-1); // 選択中のインデックス
 
-  const { _focusRedirectSearchBox, _mapWidgetInputRef } = useMapWidget();
+  const { _mapWidgetInputRef } = useMapWidget();
 
   useEffect(() => {
     setIsOpen(inputValue.length > 0 && suggestions.length > 0);
@@ -64,18 +64,15 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
     750
   );
 
-  const fetchGeoCode = useCallback(
-    (placeId: string) => {
-      const geocoder = new google.maps.Geocoder();
-      geocoder.geocode({ placeId: placeId }, (results, status) => {
-        if (status === "OK" && results && results[0]) {
-          const location = results[0].geometry.location; // 緯度と経度を取得
-          onAddressSelect(location.lat(), location.lng()); // 親コンポーネントに選択した住所を通知
-        }
-      });
-    },
-    [onAddressSelect]
-  );
+  const fetchGeoCode = useCallback(async (placeId: string) => {
+    const geocoder = new google.maps.Geocoder();
+    return geocoder.geocode({ placeId: placeId }).then((results) => {
+      const location = results.results[0]?.geometry?.location;
+      if (location) {
+        return location;
+      }
+    });
+  }, []);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,9 +88,13 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
       setSelectedPlaceId(place.place_id); // 選択したプレースIDを保存
       setSuggestions([]); // 候補リストを閉じるために候補をリセット
       // inputRef.current?.focus(); // 入力フィールドにフォーカス
-      fetchGeoCode(place.place_id); // 住所を選択したときに緯度経度を取得
+      fetchGeoCode(place.place_id).then((location) => {
+        if (location) {
+          onAddressSelect(location.lat(), location.lng(), place.description);
+        }
+      });
     },
-    [fetchGeoCode]
+    [fetchGeoCode, onAddressSelect]
   );
 
   const handleSubmit = useCallback(

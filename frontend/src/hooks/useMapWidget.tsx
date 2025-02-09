@@ -1,19 +1,20 @@
 import { createContext, useContext } from "react";
 import { Location } from "~/features/googleMap/types/location";
 
+interface FocusRedirectSearchBoxOptions {
+  value: string | null;
+  location: Location;
+}
 export type SharedInputsRefContextType = {
   mapWidgetInputRef: React.MutableRefObject<HTMLInputElement | null>;
   redirectInputRef: React.MutableRefObject<HTMLInputElement | null>;
-  redirectHandler: React.MutableRefObject<(location: Location) => void | null>;
+  redirectHandler: React.MutableRefObject<
+    (options: Required<FocusRedirectSearchBoxOptions>) => void | null
+  >;
 };
 
 export const SharedInputsRefContext =
   createContext<SharedInputsRefContextType | null>(null);
-
-interface FocusRedirectSearchBoxOptions {
-  value?: string;
-  location?: Location;
-}
 
 export const useMapWidget = () => {
   const context = SharedInputsRefContext;
@@ -25,7 +26,9 @@ export const useMapWidget = () => {
 
   const { mapWidgetInputRef: _mapWidgetInputRef, redirectInputRef } = inputsRef;
 
-  const setRedirectHandler = (handler: (location: Location) => void) => {
+  const setRedirectHandler = (
+    handler: (options: FocusRedirectSearchBoxOptions) => void
+  ) => {
     inputsRef.redirectHandler.current = handler;
   };
 
@@ -36,16 +39,15 @@ export const useMapWidget = () => {
     _mapWidgetInputRef.current?.focus();
   };
 
-  const _focusRedirectSearchBox = (options: FocusRedirectSearchBoxOptions) => {
-    if (options.value) {
-      redirectInputRef.current!.value = options.value;
-    }
-    if (options.location) {
+  const _redirectSearchBox = (options: FocusRedirectSearchBoxOptions) => {
+    if (options.location && options.value) {
       if (inputsRef.redirectHandler.current) {
-        inputsRef.redirectHandler.current(options.location);
+        inputsRef.redirectHandler.current(options);
       } else {
         console.error("redirectHandler is not set");
       }
+    } else {
+      console.error("location or value is not set");
     }
 
     redirectInputRef.current?.focus();
@@ -55,7 +57,7 @@ export const useMapWidget = () => {
     focusMapSearchBox,
     redirectInputRef,
     setRedirectHandler,
-    _focusRedirectSearchBox,
+    _redirectSearchBox,
     _mapWidgetInputRef,
   };
 };
