@@ -22,8 +22,8 @@ import { UserRound } from "lucide-react";
 import { DBGroup } from "~/lib/firestore/schemas";
 import { useState } from "react";
 import CreateGroupDialog from "~/features/groupCreation/CreateGroupDialog";
-import { useRouter, usePathname } from "next/navigation";
 import useInviteDialogOpen from "~/hooks/useInviteDialogOpen";
+import useGroupRouter from "~/hooks/useGroupRouter";
 
 type Props = {
   currentGroupId: string | "personal" | null;
@@ -37,9 +37,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
 
   // グローバルな招待ダイアログ状態のフックを利用
   const { setIsOpen: setInviteDialogOpen } = useInviteDialogOpen();
-  const router = useRouter();
-  const pathname = usePathname();
-
+  const { getPathInGroup, pushInGroup } = useGroupRouter();
   // currentGroupId が "personal" の場合は、専用のダミーオブジェクトを返す
   const selectedGroup = (() => {
     if (currentGroupId === "personal") {
@@ -96,17 +94,13 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
         <DropdownMenuContent className="w-[200px]">
           {selectedGroup && selectedGroup.uid !== "personal" && (
             <>
-              {/* 「友達を招待」は onSelect 経由で処理する */}
               <MenuItemWithIcon
                 icon={<UserRoundPlus className="mr-2 h-4 w-4" />}
                 title="友達を招待"
                 onSelect={() => {
-                  setOpenGroupSwitcher(false);
-                  // もし member ページにいなければ、該当ページに遷移
-                  if (!pathname.includes("/member")) {
-                    router.push(`/g/${selectedGroup.uid}/member`);
+                  if (!getPathInGroup().includes("member")) {
+                    pushInGroup("/member");
                   }
-                  // グローバル状態を true にしてダイアログを開く
                   setInviteDialogOpen(true);
                 }}
               />
