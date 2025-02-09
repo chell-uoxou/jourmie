@@ -11,6 +11,7 @@ import { db } from "~/lib/firebase"; // Firebase 初期化ファイル
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { DBAccount, DBGroup, DBGroupMember } from "~/lib/firestore/schemas";
 import { createConverter } from "~/lib/firestore/firestore";
+import { toast } from "sonner";
 
 const uploadGroupIcon = async (groupId: string, groupIcon?: File) => {
   // アイコンが添付されていなければデフォルトのURLを設定
@@ -84,6 +85,12 @@ export async function CreateGroup(
     return groupRef;
   } catch (error) {
     console.error("グループ作成中にエラーが発生しました: ", error);
-    alert("グループ作成に失敗しました。もう一度試してください。");
+    toast("グループ作成に失敗しました。", {
+      description: "もう一度入力してください",
+      action: {
+        label: "戻る",
+        onClick: () => console.log("Undo"),
+      },
+    });
   }
 }

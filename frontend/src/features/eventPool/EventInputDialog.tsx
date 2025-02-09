@@ -20,6 +20,7 @@ import { useFirestoreCollection } from "~/hooks/useFirestoreCollection";
 import { AccountEventPoolItem } from "~/models/types/account_event_pool_item";
 import { set } from "date-fns";
 import CloseConfirmationDialog from "./components/CloseConfirmationDialog";
+import { toast } from "sonner";
 
 interface EventInputDialogProps {
   isOpen: boolean;
@@ -113,7 +114,13 @@ export const EventInputDialog = (props: EventInputDialogProps) => {
 
     try {
       await add(sendData);
-      alert("イベントが正常に追加されました！");
+      toast("イベントが正常に追加されました！", {
+        description: "",
+        action: {
+          label: "戻る",
+          onClick: () => console.log("Undo"),
+        },
+      });
       eventForm.reset();
       setIsConfirmation(false);
     } catch (error) {
