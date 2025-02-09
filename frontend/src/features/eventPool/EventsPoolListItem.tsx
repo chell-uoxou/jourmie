@@ -27,6 +27,7 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
 
   const handleDeleteButtonClick = () => {
+    //Todo:ここに削除処理を追加
     console.log("削除ボタンが押されました。まだ削除機能は実装されていません。");
     setIsRemoveDialogOpen(false);
   };
