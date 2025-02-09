@@ -22,6 +22,8 @@ import { UserRound } from "lucide-react";
 import { DBGroup } from "~/lib/firestore/schemas";
 import { useState } from "react";
 import CreateGroupDialog from "~/features/groupCreation/CreateGroupDialog";
+import useInviteDialogOpen from "~/hooks/useInviteDialogOpen";
+import useGroupRouter from "~/hooks/useGroupRouter";
 
 type Props = {
   currentGroupId: string | "personal" | null;
@@ -33,6 +35,9 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
   const [openGroupSwitcher, setOpenGroupSwitcher] = useState(false);
   const [isCGOpen, setIsCGOpen] = useState(false);
 
+  // グローバルな招待ダイアログ状態のフックを利用
+  const { setIsOpen: setInviteDialogOpen } = useInviteDialogOpen();
+  const { getPathInGroup, pushInGroup } = useGroupRouter();
   // currentGroupId が "personal" の場合は、専用のダミーオブジェクトを返す
   const selectedGroup = (() => {
     if (currentGroupId === "personal") {
@@ -45,7 +50,6 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
     if (groups === "loading" || groups === null || currentGroupId === null) {
       return null;
     }
-    // undefined な要素を除外してから探す
     const validGroups = groups.filter((group) => group !== undefined);
     return validGroups.find((group) => group.uid === currentGroupId) || null;
   })();
@@ -66,7 +70,6 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
             {groups === "loading" ? (
               <LoadingSpinner />
             ) : selectedGroup === null ? (
-              // フォールバック表示
               <div className="flex items-center">
                 <UserRound className="h-6 w-6 mr-2" />
                 <div className="font-bold">あなた</div>
@@ -94,7 +97,12 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
               <MenuItemWithIcon
                 icon={<UserRoundPlus className="mr-2 h-4 w-4" />}
                 title="友達を招待"
-                url={`/g/${selectedGroup.uid}/member?invite=true`}
+                onSelect={() => {
+                  if (!getPathInGroup().includes("member")) {
+                    pushInGroup("/member");
+                  }
+                  setInviteDialogOpen(true);
+                }}
               />
               <MenuItemWithIcon
                 icon={<UsersRound className="mr-2 h-4 w-4" />}
