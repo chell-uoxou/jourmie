@@ -15,6 +15,9 @@ import { WithLabel } from "~/components/common/WithLabel";
 import { ja } from "date-fns/locale";
 import { UseFormReturn } from "react-hook-form";
 import { EventPoolItemForm } from "../EventInputDialog";
+import { Button } from "~/components/ui/button";
+import { Search } from "lucide-react";
+import RegisteredPreciseLocation from "./RegisteredPreciseLocation";
 
 interface EventFormComponentsProps {
   eventForm: UseFormReturn<EventPoolItemForm>;
@@ -30,6 +33,11 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
     return (hour > 0 ? hour + "時間" : "") + (minute > 0 ? minute + "分" : "");
   };
 
+  const handleClickSearchLocation = () => {
+    // RightSideBarのマップが開かれる
+    // 右のマップの検索バーに内容がコピーされ、フォーカスされる
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <InputWithLabel
@@ -40,7 +48,18 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
       <WithLabel label="説明">
         <Textarea {...eventForm.register("description")} className="h-12" />
       </WithLabel>
-      <InputWithLabel label="場所" {...eventForm.register("location_text")} />
+      <div className="flex flex-col gap-2">
+        <InputWithLabel
+          label="場所"
+          {...eventForm.register("location_text")}
+          rightElement={
+            <Button type="button" size={"icon"} onClick={() => {}}>
+              <Search />
+            </Button>
+          }
+        />
+        <RegisteredPreciseLocation label="追加された地点" />
+      </div>
       <div className="flex flex-col gap-2">
         <div className="text-sm text-left text-slate-900 font-bold">
           イベントをドロップできる範囲（会期、開館時間など）
