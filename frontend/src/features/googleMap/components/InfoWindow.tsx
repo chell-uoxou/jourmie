@@ -1,19 +1,15 @@
 import { Button } from "~/components/ui/button";
-import { useMapWidget } from "~/hooks/useMapWidget";
+import { Location } from "~/features/googleMap/types/location";
 
 interface InfoWindowProps {
   position: google.maps.LatLngLiteral;
+  onClickChooseLocation?: (location: Location) => void;
 }
 
-const InfoWindow: React.FC<InfoWindowProps> = ({ position }) => {
-  const { _focusRedirectSearchBox } = useMapWidget();
+const InfoWindow = (props: InfoWindowProps) => {
   const handleDetermineAddress = () => {
-    _focusRedirectSearchBox({
-      location: {
-        lat: position.lat,
-        lng: position.lng,
-      },
-    });
+    if (!props.onClickChooseLocation) return;
+    props.onClickChooseLocation(props.position);
   };
   return (
     <div className="flex w-full justify-center pl-1.5">
