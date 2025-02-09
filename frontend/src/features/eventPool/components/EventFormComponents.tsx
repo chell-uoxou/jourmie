@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { DateTimePicker } from "~/components/ui/datetimepicker";
 import {
   Select,
@@ -27,7 +27,8 @@ interface EventFormComponentsProps {
 export default function EventFormComponents(props: EventFormComponentsProps) {
   const { eventForm } = props;
   const errors = eventForm.formState.errors;
-  const { focusMapSearchBox, redirectInputRef } = useMapWidget();
+  const { focusMapSearchBox, redirectInputRef, setRedirectHandler } =
+    useMapWidget();
 
   const formatDuration = (duration: number) => {
     const hour = Math.floor(duration / 60);
@@ -41,6 +42,13 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
 
   const { ref: locationTextFormRef, ...locationTextFormProps } =
     eventForm.register("location_text");
+
+  useEffect(() => {
+    setRedirectHandler((location) => {
+      eventForm.setValue("location_coordinate_lat", location.lat);
+      eventForm.setValue("location_coordinate_lon", location.lng);
+    });
+  }, [eventForm, redirectInputRef, setRedirectHandler]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -70,7 +78,11 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
             </Button>
           }
         />
-        <RegisteredPreciseLocation label="追加された地点" />
+
+        {eventForm.watch("location_coordinate_lat") &&
+          eventForm.watch("location_coordinate_lon") && (
+            <RegisteredPreciseLocation label="選択された地点" />
+          )}
       </div>
       <div className="flex flex-col gap-2">
         <div className="text-sm text-left text-slate-900 font-bold">

@@ -1,18 +1,25 @@
 import { Button } from "~/components/ui/button";
+import { useMapWidget } from "~/hooks/useMapWidget";
 
 interface InfoWindowProps {
   position: google.maps.LatLngLiteral;
 }
 
 const InfoWindow: React.FC<InfoWindowProps> = ({ position }) => {
+  const { _focusRedirectSearchBox } = useMapWidget();
   const handleDetermineAddress = () => {
-    console.log(position.lat, position.lng);
+    _focusRedirectSearchBox({
+      location: {
+        lat: position.lat,
+        lng: position.lng,
+      },
+    });
   };
   return (
-    <div className="flex flex-col bg-white p-2 gap-2">
-      <p>緯度: {position.lat}</p>
-      <p>経度: {position.lng}</p>
-      <Button onClick={handleDetermineAddress}>決定</Button>
+    <div className="flex w-full justify-center pl-1.5">
+      <Button onClick={handleDetermineAddress} className="m-2">
+        ここを選択
+      </Button>
     </div>
   );
 };
