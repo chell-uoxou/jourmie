@@ -18,6 +18,7 @@ import { EventPoolItemForm } from "../EventInputDialog";
 import { Button } from "~/components/ui/button";
 import { Search } from "lucide-react";
 import RegisteredPreciseLocation from "./RegisteredPreciseLocation";
+import { useMapWidget } from "~/hooks/useMapWidget";
 
 interface EventFormComponentsProps {
   eventForm: UseFormReturn<EventPoolItemForm>;
@@ -26,6 +27,7 @@ interface EventFormComponentsProps {
 export default function EventFormComponents(props: EventFormComponentsProps) {
   const { eventForm } = props;
   const errors = eventForm.formState.errors;
+  const { focusMapSearchBox, redirectInputRef } = useMapWidget();
 
   const formatDuration = (duration: number) => {
     const hour = Math.floor(duration / 60);
@@ -34,9 +36,11 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
   };
 
   const handleClickSearchLocation = () => {
-    // RightSideBarのマップが開かれる
-    // 右のマップの検索バーに内容がコピーされ、フォーカスされる
+    focusMapSearchBox(eventForm.getValues("location_text"));
   };
+
+  const { ref: locationTextFormRef, ...locationTextFormProps } =
+    eventForm.register("location_text");
 
   return (
     <div className="flex flex-col gap-4">
@@ -51,9 +55,17 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
       <div className="flex flex-col gap-2">
         <InputWithLabel
           label="場所"
-          {...eventForm.register("location_text")}
+          {...locationTextFormProps}
+          ref={(e) => {
+            locationTextFormRef(e);
+            redirectInputRef.current = e;
+          }}
           rightElement={
-            <Button type="button" size={"icon"} onClick={() => {}}>
+            <Button
+              type="button"
+              size={"icon"}
+              onClick={handleClickSearchLocation}
+            >
               <Search />
             </Button>
           }

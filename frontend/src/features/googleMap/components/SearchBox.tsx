@@ -11,6 +11,7 @@ import {
 } from "~/components/ui/command";
 import { MoveRight, Search } from "lucide-react";
 import clsx from "clsx";
+import { useMapWidget } from "~/hooks/useMapWidget";
 
 interface PlacePrediction {
   place_id: string;
@@ -27,8 +28,10 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]); // 候補の状態
   const [isOpen, setIsOpen] = useState<boolean>(false); // 候補表示のフラグ
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null); // 選択した候補のプレースID
-  const inputRef = useRef<HTMLInputElement>(null); // 入力フィールドの参照
+  const inputRef = useRef<HTMLInputElement | null>(null); // 入力フィールドの参照
   const [selectedIndex, setSelectedIndex] = useState<number>(-1); // 選択中のインデックス
+
+  const { _focusRedirectSearchBox, _mapWidgetInputRef } = useMapWidget();
 
   useEffect(() => {
     setIsOpen(inputValue.length > 0 && suggestions.length > 0);
@@ -150,7 +153,10 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
           placeholder="地名を検索"
           value={inputValue}
           onChange={handleInputChange}
-          ref={inputRef}
+          ref={(e) => {
+            inputRef.current = e;
+            _mapWidgetInputRef.current = e;
+          }}
           onKeyDown={handleKeyDown}
         />
         <Button
