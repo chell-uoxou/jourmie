@@ -86,24 +86,19 @@ export const EventInputDialog = () => {
   });
 
   useEffect(() => {
-    console.log("currentEventPoolItem", currentEventPoolItem);
-
     if (currentEventPoolItem) {
-      console.log("reset to currentEventPoolItem", currentEventPoolItem.title);
-      eventForm.reset({
-        ...currentEventPoolItem,
-        available_start_time:
-          currentEventPoolItem.available_times[0].start_time.toDate(),
-        available_end_time:
-          currentEventPoolItem.available_times[0].end_time.toDate(),
-        default_budget_type: currentEventPoolItem.default_budget.mode,
-        default_budget: currentEventPoolItem.default_budget.value,
-      });
-    } else {
-      console.log("reset");
-      eventForm.reset({});
-      console.log(eventForm.formState.defaultValues);
-    }
+    eventForm.reset({
+      ...currentEventPoolItem,
+      available_start_time:
+        currentEventPoolItem.available_times[0].start_time.toDate(),
+      available_end_time:
+        currentEventPoolItem.available_times[0].end_time.toDate(),
+      default_budget_type: currentEventPoolItem.default_budget.mode,
+      default_budget: currentEventPoolItem.default_budget.value,
+    });
+  } else {
+    eventForm.reset({});
+  }
   }, [eventForm, currentEventPoolItem]);
 
   const handleFinalSubmit: SubmitHandler<EventPoolItemForm> = async (data) => {
