@@ -1,5 +1,5 @@
 import { Card, CardContent } from "~/components/ui/card";
-import { PropsWithIcon } from "./PropsWithIcon";
+import { PropsWithIcon } from "~/components/common/PropsWithIcon";
 import { Clock, Map } from "lucide-react";
 import clsx from "clsx";
 import { Schedule } from "~/models/types/schedule";

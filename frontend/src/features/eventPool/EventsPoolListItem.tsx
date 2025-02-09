@@ -9,6 +9,7 @@ import { Timestamp } from "firebase/firestore";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 import EventPoolItemDetails from "./components/EventPoolItemDetails";
 import { Popover, PopoverTrigger } from "~/components/ui/popover";
+import { useEventPoolFormSheet } from "~/hooks/useEventPoolFormSheet";
 
 type Props = {
   id: string;
@@ -20,6 +21,8 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
   ref
 ) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const { setOpenEventPoolFormSheet, setCurrentEventPoolItem } =
+    useEventPoolFormSheet();
 
   // TODO　現状は開始時間と終了時間から時間帯を表示しているが、今後は平日は何時やいつは何時と表形式にしたい。
   const formatTimes = (times: TimeRange[]) => {
@@ -54,7 +57,7 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
 
   return (
     <div className="relative w-full" ref={ref} {...rest}>
-      <Popover onOpenChange={setIsDetailsOpen}>
+      <Popover onOpenChange={setIsDetailsOpen} open={isDetailsOpen}>
         <PopoverTrigger asChild>
           <Card
             className={clsx(
@@ -79,7 +82,16 @@ const Component = forwardRef<HTMLDivElement, Props>(function EventPoolItem(
             </CardContent>
           </Card>
         </PopoverTrigger>
-        <EventPoolItemDetails eventPoolItem={eventPoolItem} />
+        <EventPoolItemDetails
+          eventPoolItem={eventPoolItem}
+          onClickAddToCalendar={() => {}}
+          onClickClose={() => setIsDetailsOpen(false)}
+          onClickDelete={() => {}}
+          onClickEdit={() => {
+            setCurrentEventPoolItem(eventPoolItem);
+            setOpenEventPoolFormSheet(true);
+          }}
+        />
       </Popover>
     </div>
   );
