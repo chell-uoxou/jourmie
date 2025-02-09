@@ -90,7 +90,7 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
       setInputValue(place.description); // 入力フィールドに住所を設定
       setSelectedPlaceId(place.place_id); // 選択したプレースIDを保存
       setSuggestions([]); // 候補リストを閉じるために候補をリセット
-      inputRef.current?.focus(); // 入力フィールドにフォーカス
+      // inputRef.current?.focus(); // 入力フィールドにフォーカス
       fetchGeoCode(place.place_id); // 住所を選択したときに緯度経度を取得
     },
     [fetchGeoCode]
@@ -158,6 +158,7 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
             _mapWidgetInputRef.current = e;
           }}
           onKeyDown={handleKeyDown}
+          onFocus={handleInputChange}
         />
         <Button
           type="button"
