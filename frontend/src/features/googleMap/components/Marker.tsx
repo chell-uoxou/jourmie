@@ -15,7 +15,6 @@ const Marker = ({
   const infoWindow = useRef<google.maps.InfoWindow | null>(null);
   const [position, setPosition] = useState(center); // マーカーの現在座標
 
-  // InfoWindow を表示する関数
   const updateInfoWindow = useCallback(
     (position: { lat: number; lng: number }) => {
       const infoWindowDiv = document.createElement("div");
@@ -75,6 +74,7 @@ const Marker = ({
     };
   }, [center, draggable, map]);
 
+  // propsによる中心座標の変更時（検索ボックスでの検索など）
   useEffect(() => {
     if (marker.current) {
       marker.current.setPosition(center);
@@ -82,8 +82,9 @@ const Marker = ({
     updateInfoWindow(center);
   }, [center, updateInfoWindow]);
 
+  // ドラッグによる座標変更時
   useEffect(() => {
-    map.panTo(position);
+    map.panTo(position); // マップの中心をウィーンって移動
     updateInfoWindow(position);
   }, [map, position, updateInfoWindow]);
 
