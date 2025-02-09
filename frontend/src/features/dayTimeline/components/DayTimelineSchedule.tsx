@@ -52,7 +52,7 @@ export const DayTimelineSchedule = forwardRef<
 
   return (
     <div ref={ref} {...rest}>
-      <Popover onOpenChange={setIsDetailsOpen}>
+      <Popover onOpenChange={setIsDetailsOpen} open={isDetailsOpen}>
         <PopoverTrigger className="w-full">
           <Card
             className={clsx(
