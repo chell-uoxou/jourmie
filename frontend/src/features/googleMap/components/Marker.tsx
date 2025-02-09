@@ -7,7 +7,7 @@ const Marker = ({
   center,
   draggable = true,
 }: {
-  map?: google.maps.Map;
+  map: google.maps.Map;
   center: { lat: number; lng: number };
   draggable?: boolean;
 }) => {
