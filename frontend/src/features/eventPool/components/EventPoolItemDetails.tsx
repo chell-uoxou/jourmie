@@ -8,6 +8,7 @@ import {
   Hourglass,
   Check,
   Text,
+  PiggyBank,
 } from "lucide-react";
 import SmallIconButton from "~/components/common/SmallIconButton";
 import SmallTitleWithIcon from "~/components/common/SmallTitleWithIcon";
@@ -89,6 +90,12 @@ const EventPoolItemDetails = (props: EventPoolItemDetailsProps) => {
           <div className="flex gap-2 items-center text-sm">
             <Hourglass className="size-4" />
             {formatDuration(props.eventPoolItem.default_duration)}
+          </div>
+          <div className="flex gap-2 items-center text-sm">
+            <PiggyBank className="size-4" />
+            {props.eventPoolItem.default_budget.mode === "per_person"
+              ? `${props.eventPoolItem.default_budget.value}円/人`
+              : `合計 ${props.eventPoolItem.default_budget.value}円`}
           </div>
           <div className="flex gap-2 items-center text-sm">
             <Check className="size-4" />
