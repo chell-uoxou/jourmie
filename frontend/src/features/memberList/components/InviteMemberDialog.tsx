@@ -68,10 +68,11 @@ export const InviteMemberDialog = (props: InviteMemberDialogContentProps) => {
       toast("そのメールアドレスのユーザは存在しません", {
         description: "もう一度入力してください",
         action: {
-          label: "おけ",
+          label: "戻る",
           onClick: () => console.log("Undo"),
         },
       });
+
       setSending(false);
     }
 
@@ -84,10 +85,6 @@ export const InviteMemberDialog = (props: InviteMemberDialogContentProps) => {
       if (await existAccount(accountRef)) {
         toast("そのユーザはすでにグループに所属しています", {
           description: "もう一度入力してください",
-          action: {
-            label: "おけ",
-            onClick: () => console.log("Undo"),
-          },
         });
         setSending(false);
         return;
