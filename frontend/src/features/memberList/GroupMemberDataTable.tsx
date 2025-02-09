@@ -11,7 +11,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUp, MoreHorizontal, Plus } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import useInviteDialogOpen from "~/hooks/useInviteDialogOpen";
+
 
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -219,9 +220,9 @@ export function GroupMemberDataTable() {
     },
   });
 
-  const searchParams = useSearchParams();
-  const invite = searchParams.get("invite") ? true : false;
-  const [openDialog, setOpenDialog] = useState(invite);
+  const { isOpen: openDialog, setIsOpen: setOpenDialog } =
+    useInviteDialogOpen();
+
 
   return (
     <div className="w-full flex flex-col gap-3">

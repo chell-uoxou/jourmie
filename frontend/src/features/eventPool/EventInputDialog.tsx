@@ -20,6 +20,7 @@ import { useFirestoreCollection } from "~/hooks/useFirestoreCollection";
 import { AccountEventPoolItem } from "~/models/types/account_event_pool_item";
 import { set } from "date-fns";
 import CloseConfirmationDialog from "./components/CloseConfirmationDialog";
+import { toast } from "sonner";
 import { useEventPoolFormSheet } from "~/hooks/useEventPoolFormSheet";
 
 // EventPoolItemForm は EventForm からコピーし、全部をInput用にStringに変換
@@ -87,18 +88,18 @@ export const EventInputDialog = () => {
 
   useEffect(() => {
     if (currentEventPoolItem) {
-    eventForm.reset({
-      ...currentEventPoolItem,
-      available_start_time:
-        currentEventPoolItem.available_times[0].start_time.toDate(),
-      available_end_time:
-        currentEventPoolItem.available_times[0].end_time.toDate(),
-      default_budget_type: currentEventPoolItem.default_budget.mode,
-      default_budget: currentEventPoolItem.default_budget.value,
-    });
-  } else {
-    eventForm.reset({});
-  }
+      eventForm.reset({
+        ...currentEventPoolItem,
+        available_start_time:
+          currentEventPoolItem.available_times[0].start_time.toDate(),
+        available_end_time:
+          currentEventPoolItem.available_times[0].end_time.toDate(),
+        default_budget_type: currentEventPoolItem.default_budget.mode,
+        default_budget: currentEventPoolItem.default_budget.value,
+      });
+    } else {
+      eventForm.reset({});
+    }
   }, [eventForm, currentEventPoolItem]);
 
   const handleFinalSubmit: SubmitHandler<EventPoolItemForm> = async (data) => {
@@ -134,13 +135,19 @@ export const EventInputDialog = () => {
     try {
       if (currentEventPoolItem) {
         await update(currentEventPoolItem.uid, sendData);
-        alert("イベントが正常に更新されました！");
+        toast.success("イベントが正常に更新されました！");
         setIsOpen(false);
         setCurrentEventPoolItem(null);
         eventForm.reset(defaultValues);
       } else {
         await add(sendData);
-        alert("イベントが正常に追加されました！");
+        toast("イベントが正常に追加されました！", {
+          description: "",
+          action: {
+            label: "戻る",
+            onClick: () => console.log("Undo"),
+          },
+        });
       }
       eventForm.reset(defaultValues);
       setIsConfirmation(false);

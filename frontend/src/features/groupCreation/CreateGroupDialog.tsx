@@ -16,6 +16,8 @@ import { Textarea } from "~/components/ui/textarea";
 import { CreateGroup } from "~/utils/creategroup";
 import useCurrentAccount from "~/hooks/useCurrentAccount";
 import { isReady } from "~/lib/firestore/utils";
+import { toast } from "sonner";
+import { Toaster } from "~/components/ui/sonner";
 
 interface CreateGroupDialogProps {
   isDialogOpen: boolean;
@@ -31,7 +33,13 @@ const CreateGroupDialog = (props: CreateGroupDialogProps) => {
 
   const handleCreateGroup = async () => {
     if (!groupName) {
-      alert("グループ名を入力してください");
+      toast("グループ名を入力してください", {
+        description: "もう一度入力してください",
+        action: {
+          label: "戻る",
+          onClick: () => console.log("Undo"),
+        },
+      });
       return;
     }
 
@@ -52,7 +60,13 @@ const CreateGroupDialog = (props: CreateGroupDialogProps) => {
         groupIcon ?? undefined
       );
 
-      alert("グループが作成されました");
+      toast("グループが作成されました", {
+        description: "",
+        action: {
+          label: "戻る",
+          onClick: () => console.log("Undo"),
+        },
+      });
       props.setIsDialogOpen(false);
       props.switchGroupHandler(newGroupRef!.id);
 
@@ -62,7 +76,13 @@ const CreateGroupDialog = (props: CreateGroupDialogProps) => {
       setGroupIcon(null);
     } catch (error) {
       console.error("グループ作成中にエラーが発生しました:", error);
-      alert("グループ作成に失敗しました");
+      toast("グループ作成に失敗しました", {
+        description: "もう一度入力してください",
+        action: {
+          label: "戻る",
+          onClick: () => console.log("Undo"),
+        },
+      });
     }
   };
 
@@ -72,6 +92,7 @@ const CreateGroupDialog = (props: CreateGroupDialogProps) => {
       onOpenChange={props.setIsDialogOpen}
       aria-label="Create Group"
     >
+      <Toaster />
       <DialogTrigger asChild></DialogTrigger>
       <DialogContent>
         <DialogHeader>

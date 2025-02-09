@@ -1,6 +1,5 @@
 import React from "react";
 import { Button, ButtonProps } from "../ui/button";
-import { X } from "lucide-react";
 
 interface SmallIconButtonProps extends ButtonProps {
   icon: React.ReactNode;

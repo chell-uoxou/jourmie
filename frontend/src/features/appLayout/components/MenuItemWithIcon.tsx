@@ -6,12 +6,16 @@ interface MenuItemWithIconProps {
   icon: React.ReactNode;
   title: string;
   url?: string;
+  onSelect?: () => void; // onSelect を追加
 }
 
 const MenuItemWithIcon: React.FC<MenuItemWithIconProps> = (props) => {
   const router = useRouter();
+
   const handleClick = () => {
-    if (props.url) {
+    if (props.onSelect) {
+      props.onSelect();
+    } else if (props.url) {
       router.push(props.url);
     }
   };
