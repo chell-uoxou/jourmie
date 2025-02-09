@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import InfoWindow from "./InfoWindow";
-import { info } from "console";
 
 const Marker = ({
   map,
@@ -15,6 +14,28 @@ const Marker = ({
   const marker = useRef<google.maps.Marker | null>(null);
   const infoWindow = useRef<google.maps.InfoWindow | null>(null);
   const [position, setPosition] = useState(center); // マーカーの現在座標
+
+  // InfoWindow を表示する関数
+  const updateInfoWindow = useCallback(
+    (position: { lat: number; lng: number }) => {
+      const infoWindowDiv = document.createElement("div");
+      const root = createRoot(infoWindowDiv);
+      root.render(<InfoWindow position={position} />);
+      console.log(infoWindow.current);
+
+      if (infoWindow.current) {
+        infoWindow.current.setContent(infoWindowDiv);
+      }
+
+      if (!infoWindow.current?.isOpen) {
+        infoWindow.current?.open({
+          map,
+          anchor: marker.current,
+        });
+      }
+    },
+    [map]
+  );
 
   useEffect(() => {
     if (!map) return;
@@ -52,38 +73,19 @@ const Marker = ({
         infoWindow.current = null;
       }
     };
-  }, []);
+  }, [center, draggable, map]);
 
   useEffect(() => {
     if (marker.current) {
       marker.current.setPosition(center);
     }
     updateInfoWindow(center);
-  }, [center]);
+  }, [center, updateInfoWindow]);
 
   useEffect(() => {
     map.panTo(position);
     updateInfoWindow(position);
-  }, [position]);
-
-  // InfoWindow を表示する関数
-  const updateInfoWindow = (position: { lat: number; lng: number }) => {
-    const infoWindowDiv = document.createElement("div");
-    const root = createRoot(infoWindowDiv);
-    root.render(<InfoWindow position={position} />);
-    console.log(infoWindow.current);
-
-    if (infoWindow.current) {
-      infoWindow.current.setContent(infoWindowDiv);
-    }
-
-    if (!infoWindow.current?.isOpen) {
-      infoWindow.current?.open({
-        map,
-        anchor: marker.current,
-      });
-    }
-  };
+  }, [map, position, updateInfoWindow]);
 
   return null;
 };
