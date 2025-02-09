@@ -2,20 +2,8 @@ import SmallTitleWithIcon from "~/components/common/SmallTitleWithIcon";
 import { PopoverContent } from "~/components/ui/popover";
 import { ScheduleEvent } from "./DayTimelineSchedule";
 import SmallIconButton from "~/components/common/SmallIconButton";
-import {
-  CalendarPlus,
-  Pencil,
-  Trash2,
-  X,
-  Map,
-  CalendarRange,
-  Hourglass,
-  Check,
-  Text,
-  PiggyBank,
-} from "lucide-react";
+import { X, Map, Check, Text, PiggyBank, Clock } from "lucide-react";
 import formatTimes from "~/utils/timesformater";
-import formatDuration from "~/utils/formater";
 
 interface DayTimelineScheduleDetailsProps {
   scheduleEvent: ScheduleEvent;
@@ -32,17 +20,6 @@ const DayTimelineScheduleDetails = (props: DayTimelineScheduleDetailsProps) => {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <div className="flex justify-end w-full ">
-            <div className="flex gap-0">
-              <SmallIconButton icon={<Pencil />} onClick={props.onClickEdit} />
-              <SmallIconButton
-                icon={<CalendarPlus />}
-                onClick={props.onClickAddToCalendar}
-              />
-              <SmallIconButton
-                icon={<Trash2 />}
-                onClick={props.onClickDelete}
-              />
-            </div>
             <SmallIconButton icon={<X />} onClick={props.onClickClose} />
           </div>
           <SmallTitleWithIcon title={props.scheduleEvent.title} />
@@ -54,12 +31,8 @@ const DayTimelineScheduleDetails = (props: DayTimelineScheduleDetailsProps) => {
             {props.scheduleEvent.location_text}
           </div>
           <div className="flex gap-2 items-center text-sm">
-            <CalendarRange className="size-4" />
-            {formatTimes(props.scheduleEvent.available_times)}
-          </div>
-          <div className="flex gap-2 items-center text-sm">
-            <Hourglass className="size-4" />
-            {formatDuration(props.scheduleEvent.default_duration)}
+            <Clock className="size-4" />
+            {formatTimes([props.scheduleEvent])}
           </div>
           <div className="flex gap-2 items-center text-sm">
             <PiggyBank className="size-4" />
