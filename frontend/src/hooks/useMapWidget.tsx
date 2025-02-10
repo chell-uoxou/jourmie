@@ -53,11 +53,16 @@ export const useMapWidget = () => {
     redirectInputRef.current?.focus();
   };
 
+  const isReadyMapWidget = () => {
+    return _mapWidgetInputRef.current !== null;
+  };
+
   return {
     focusMapSearchBox,
     redirectInputRef,
     setRedirectHandler,
     _redirectSearchBox,
     _mapWidgetInputRef,
+    isReadyMapWidget,
   };
 };

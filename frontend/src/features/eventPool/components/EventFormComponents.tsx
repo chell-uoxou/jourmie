@@ -20,6 +20,7 @@ import { Search } from "lucide-react";
 import RegisteredPreciseLocation from "./RegisteredPreciseLocation";
 import { useMapWidget } from "~/hooks/useMapWidget";
 import { toast } from "sonner";
+import { useRightPanel } from "~/hooks/useRightPanel";
 
 interface EventFormComponentsProps {
   eventForm: UseFormReturn<EventPoolItemForm>;
@@ -28,8 +29,14 @@ interface EventFormComponentsProps {
 export default function EventFormComponents(props: EventFormComponentsProps) {
   const { eventForm } = props;
   const errors = eventForm.formState.errors;
-  const { focusMapSearchBox, redirectInputRef, setRedirectHandler } =
-    useMapWidget();
+  const {
+    focusMapSearchBox,
+    redirectInputRef,
+    setRedirectHandler,
+    isReadyMapWidget,
+  } = useMapWidget();
+
+  const { openMapPanel, hasMapRendered } = useRightPanel();
 
   const formatDuration = (duration: number) => {
     const hour = Math.floor(duration / 60);
@@ -38,7 +45,20 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
   };
 
   const handleClickSearchLocation = () => {
-    focusMapSearchBox(eventForm.getValues("location_text"));
+    openMapPanel();
+    console.log(hasMapRendered);
+
+    if (!hasMapRendered) {
+      setTimeout(() => {
+        if (isReadyMapWidget()) {
+          focusMapSearchBox(eventForm.getValues("location_text"));
+        } else {
+          toast.error("地図が読み込まれていません。もう一度お試しください。");
+        }
+      }, 300);
+    } else {
+      focusMapSearchBox(eventForm.getValues("location_text"));
+    }
   };
 
   const { ref: locationTextFormRef, ...locationTextFormProps } =
