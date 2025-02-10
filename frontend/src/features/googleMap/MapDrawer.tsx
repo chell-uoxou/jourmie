@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Map from "~/features/googleMap/components/Map";
 import { Location } from "./types/location";
 import { Map as LucideMap } from "lucide-react";
+import { useRightPanel } from "~/hooks/useRightPanel";
 
 interface MapDrawerProps {
   show: boolean;
@@ -18,7 +19,7 @@ const MapDrawer = (props: MapDrawerProps) => {
     lng: 135.561208,
   });
   // 初回表示を追跡するための状態
-  const [hasShown, setHasShown] = useState(false);
+  const { hasMapRendered, setHasMapRendered } = useRightPanel();
   // ブラウザのAPIから現在位置を取得し状態MapCenterを更新
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -36,12 +37,13 @@ const MapDrawer = (props: MapDrawerProps) => {
       }
     );
   }, []);
+
   // `show`がtrueになったタイミングで`hasShown`をtrueに設定
   useEffect(() => {
-    if (props.show && !hasShown) {
-      setHasShown(true);
+    if (props.show && !hasMapRendered) {
+      setHasMapRendered(true);
     }
-  }, [props.show, hasShown]);
+  }, [hasMapRendered, props.show, setHasMapRendered]);
 
   return (
     <div
@@ -55,8 +57,8 @@ const MapDrawer = (props: MapDrawerProps) => {
           <LucideMap className="size-6" />
           マップ
         </div>
-        {/* hasShownがtrueになったらMapを表示 */}
-        {hasShown && (
+
+        {hasMapRendered && (
           <Map
             currentLocation={currentLocation ?? undefined}
             defaultCenter={currentLocation ? currentLocation : mapCenter}

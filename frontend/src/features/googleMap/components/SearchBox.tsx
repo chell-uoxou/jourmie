@@ -11,6 +11,8 @@ import {
 } from "~/components/ui/command";
 import { MoveRight, Search } from "lucide-react";
 import clsx from "clsx";
+import { useMapWidget } from "~/hooks/useMapWidget";
+import { LoadingSpinner } from "~/components/ui/spinner";
 
 interface PlacePrediction {
   place_id: string;
@@ -19,7 +21,7 @@ interface PlacePrediction {
 }
 
 interface SearchBoxProps {
-  onAddressSelect: (lat: number, lng: number) => void; // 親コンポーネントに住所選択を通知
+  onAddressSelect: (lat: number, lng: number, inputValue: string) => void; // 親コンポーネントに住所選択を通知
 }
 
 export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
@@ -27,8 +29,12 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]); // 候補の状態
   const [isOpen, setIsOpen] = useState<boolean>(false); // 候補表示のフラグ
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null); // 選択した候補のプレースID
-  const inputRef = useRef<HTMLInputElement>(null); // 入力フィールドの参照
+  const inputRef = useRef<HTMLInputElement | null>(null); // 入力フィールドの参照
   const [selectedIndex, setSelectedIndex] = useState<number>(-1); // 選択中のインデックス
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDebouncePending, setIsDebouncePending] = useState<boolean>(false);
+
+  const { _mapWidgetInputRef } = useMapWidget();
 
   useEffect(() => {
     setIsOpen(inputValue.length > 0 && suggestions.length > 0);
@@ -37,18 +43,18 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
 
   // Google Places APIで候補を取得する処理
   const fetchSuggestions = useCallback((inputValue: string) => {
+    setIsLoading(true);
     if (inputValue) {
       const service = new google.maps.places.AutocompleteService();
-      service.getPlacePredictions(
-        { input: inputValue },
-        (predictions, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK) {
-            setSuggestions(predictions || []);
-          } else {
-            setSuggestions([]);
-          }
-        }
-      );
+      service
+        .getPlacePredictions({ input: inputValue })
+        .then((result) => {
+          setSuggestions(result.predictions);
+          setIsLoading(false);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     } else {
       setSuggestions([]);
     }
@@ -57,26 +63,25 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
   const debouncedFetchSuggestions = useDebouncedCallback(
     (inputValue: string) => {
       fetchSuggestions(inputValue);
+      setIsDebouncePending(false);
     },
     750
   );
 
-  const fetchGeoCode = useCallback(
-    (placeId: string) => {
-      const geocoder = new google.maps.Geocoder();
-      geocoder.geocode({ placeId: placeId }, (results, status) => {
-        if (status === "OK" && results && results[0]) {
-          const location = results[0].geometry.location; // 緯度と経度を取得
-          onAddressSelect(location.lat(), location.lng()); // 親コンポーネントに選択した住所を通知
-        }
-      });
-    },
-    [onAddressSelect]
-  );
+  const fetchGeoCode = useCallback(async (placeId: string) => {
+    const geocoder = new google.maps.Geocoder();
+    return geocoder.geocode({ placeId: placeId }).then((results) => {
+      const location = results.results[0]?.geometry?.location;
+      if (location) {
+        return location;
+      }
+    });
+  }, []);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setInputValue(e.target.value);
+      setIsDebouncePending(true);
       debouncedFetchSuggestions(e.target.value);
     },
     [debouncedFetchSuggestions]
@@ -87,10 +92,14 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
       setInputValue(place.description); // 入力フィールドに住所を設定
       setSelectedPlaceId(place.place_id); // 選択したプレースIDを保存
       setSuggestions([]); // 候補リストを閉じるために候補をリセット
-      inputRef.current?.focus(); // 入力フィールドにフォーカス
-      fetchGeoCode(place.place_id); // 住所を選択したときに緯度経度を取得
+      // inputRef.current?.focus(); // 入力フィールドにフォーカス
+      fetchGeoCode(place.place_id).then((location) => {
+        if (location) {
+          onAddressSelect(location.lat(), location.lng(), place.description);
+        }
+      });
     },
-    [fetchGeoCode]
+    [fetchGeoCode, onAddressSelect]
   );
 
   const handleSubmit = useCallback(
@@ -150,8 +159,12 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
           placeholder="地名を検索"
           value={inputValue}
           onChange={handleInputChange}
-          ref={inputRef}
+          ref={(e) => {
+            inputRef.current = e;
+            _mapWidgetInputRef.current = e;
+          }}
           onKeyDown={handleKeyDown}
+          onFocus={handleInputChange}
         />
         <Button
           type="button"
@@ -160,7 +173,11 @@ export default function SearchBox({ onAddressSelect }: SearchBoxProps) {
           }}
           className="p-3"
         >
-          <Search className="size-4" />
+          {(isLoading || isDebouncePending) && inputValue !== "" ? (
+            <LoadingSpinner className="size-4" />
+          ) : (
+            <Search className="size-4" />
+          )}
         </Button>
       </div>
       {isOpen && (

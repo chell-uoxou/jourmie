@@ -1,18 +1,23 @@
 import { Button } from "~/components/ui/button";
+import { Location } from "~/features/googleMap/types/location";
 
 interface InfoWindowProps {
   position: google.maps.LatLngLiteral;
+  locationDescription?: string;
+  onClickChooseLocation?: (location: Location) => void;
 }
 
-const InfoWindow: React.FC<InfoWindowProps> = ({ position }) => {
+const InfoWindow = (props: InfoWindowProps) => {
   const handleDetermineAddress = () => {
-    console.log(position.lat, position.lng);
+    if (!props.onClickChooseLocation) return;
+    props.onClickChooseLocation(props.position);
   };
   return (
-    <div className="flex flex-col bg-white p-2 gap-2">
-      <p>緯度: {position.lat}</p>
-      <p>経度: {position.lng}</p>
-      <Button onClick={handleDetermineAddress}>決定</Button>
+    <div className="flex flex-col w-full justify-center pl-1.5">
+      <p className="text-center">{props.locationDescription}</p>
+      <Button onClick={handleDetermineAddress} className="m-2">
+        ここを選択
+      </Button>
     </div>
   );
 };

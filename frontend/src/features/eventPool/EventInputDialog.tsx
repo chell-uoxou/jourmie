@@ -12,7 +12,7 @@ import { DBEventPoolItem, isReady } from "~/lib/firestore/utils";
 import { SubmitHandler, useForm } from "react-hook-form";
 import EventFormComponents from "./components/EventFormComponents";
 import EventFormComponentsConfirmation from "./components/EventFormComponentsConfirmation";
-import { collection, Timestamp } from "firebase/firestore";
+import { collection, GeoPoint, Timestamp } from "firebase/firestore";
 import { BudgetMode } from "~/models/types/common";
 import useCurrentAccount from "~/hooks/useCurrentAccount";
 import { db } from "~/lib/firebase";
@@ -31,12 +31,15 @@ export type EventPoolItemForm = Omit<
   | "default_duration"
   | "default_budget"
   | "uid"
+  | "location_coordinates"
 > & {
   available_start_time: Date;
   available_end_time: Date;
   default_duration: number;
   default_budget_type: BudgetMode;
   default_budget: number;
+  location_coordinate_lon: number | null;
+  location_coordinate_lat: number | null;
 };
 
 export const EventInputDialog = () => {
@@ -80,6 +83,8 @@ export const EventInputDialog = () => {
     notes: "",
     attached_image: "",
     schedule_instances: [],
+    location_coordinate_lon: null,
+    location_coordinate_lat: null,
   };
 
   const eventForm = useForm<EventPoolItemForm>({
@@ -96,6 +101,10 @@ export const EventInputDialog = () => {
           currentEventPoolItem.available_times[0].end_time.toDate(),
         default_budget_type: currentEventPoolItem.default_budget.mode,
         default_budget: currentEventPoolItem.default_budget.value,
+        location_coordinate_lat:
+          currentEventPoolItem.location_coordinates?.latitude ?? null,
+        location_coordinate_lon:
+          currentEventPoolItem.location_coordinates?.longitude ?? null,
       });
     } else {
       eventForm.reset({});
@@ -112,7 +121,13 @@ export const EventInputDialog = () => {
       title: data.title,
       description: data.description,
       location_text: data.location_text,
-      location_coordinates: null, // TODO: ジオコーディング
+      location_coordinates:
+        data.location_coordinate_lat && data.location_coordinate_lon
+          ? new GeoPoint(
+              data.location_coordinate_lat,
+              data.location_coordinate_lon
+            )
+          : null,
       attached_image: "", // TODO: 画像アップロード
       available_times: [
         {

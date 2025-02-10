@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { DateTimePicker } from "~/components/ui/datetimepicker";
 import {
   Select,
@@ -15,6 +15,12 @@ import { WithLabel } from "~/components/common/WithLabel";
 import { ja } from "date-fns/locale";
 import { UseFormReturn } from "react-hook-form";
 import { EventPoolItemForm } from "../EventInputDialog";
+import { Button } from "~/components/ui/button";
+import { Search } from "lucide-react";
+import RegisteredPreciseLocation from "./RegisteredPreciseLocation";
+import { useMapWidget } from "~/hooks/useMapWidget";
+import { toast } from "sonner";
+import { useRightPanel } from "~/hooks/useRightPanel";
 
 interface EventFormComponentsProps {
   eventForm: UseFormReturn<EventPoolItemForm>;
@@ -23,12 +29,51 @@ interface EventFormComponentsProps {
 export default function EventFormComponents(props: EventFormComponentsProps) {
   const { eventForm } = props;
   const errors = eventForm.formState.errors;
+  const {
+    focusMapSearchBox,
+    redirectInputRef,
+    setRedirectHandler,
+    isReadyMapWidget,
+  } = useMapWidget();
+
+  const { openMapPanel, hasMapRendered } = useRightPanel();
 
   const formatDuration = (duration: number) => {
     const hour = Math.floor(duration / 60);
     const minute = duration % 60;
     return (hour > 0 ? hour + "時間" : "") + (minute > 0 ? minute + "分" : "");
   };
+
+  const handleClickSearchLocation = () => {
+    openMapPanel();
+    console.log(hasMapRendered);
+
+    if (!hasMapRendered) {
+      setTimeout(() => {
+        if (isReadyMapWidget()) {
+          focusMapSearchBox(eventForm.getValues("location_text"));
+        } else {
+          toast.error("地図が読み込まれていません。もう一度お試しください。");
+        }
+      }, 300);
+    } else {
+      focusMapSearchBox(eventForm.getValues("location_text"));
+    }
+  };
+
+  const { ref: locationTextFormRef, ...locationTextFormProps } =
+    eventForm.register("location_text");
+
+  useEffect(() => {
+    setRedirectHandler((location) => {
+      eventForm.setValue("location_coordinate_lat", location.location.lat);
+      eventForm.setValue("location_coordinate_lon", location.location.lng);
+      if (location.value) eventForm.setValue("location_text", location.value);
+      toast.info("イベント候補に地点を追加しました", {
+        description: location.value,
+      });
+    });
+  }, [eventForm, redirectInputRef, setRedirectHandler]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -40,7 +85,42 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
       <WithLabel label="説明">
         <Textarea {...eventForm.register("description")} className="h-12" />
       </WithLabel>
-      <InputWithLabel label="場所" {...eventForm.register("location_text")} />
+      <div className="flex flex-col gap-2">
+        <InputWithLabel
+          label="場所"
+          {...locationTextFormProps}
+          ref={(e) => {
+            locationTextFormRef(e);
+            redirectInputRef.current = e;
+          }}
+          onEnterKeyPress={handleClickSearchLocation}
+          rightElement={
+            <Button
+              type="button"
+              size={"icon"}
+              onClick={handleClickSearchLocation}
+            >
+              <Search />
+            </Button>
+          }
+        />
+
+        {eventForm.watch("location_coordinate_lat") &&
+          eventForm.watch("location_coordinate_lon") && (
+            <RegisteredPreciseLocation
+              label="地図から選択された地点"
+              onClickDelete={() => {
+                toast.info("イベント候補から地点を削除しました", {
+                  description:
+                    "再度地点を設定するには、検索ボタンを押してマップから地点を選択してください。",
+                  duration: 8000,
+                });
+                eventForm.setValue("location_coordinate_lat", null);
+                eventForm.setValue("location_coordinate_lon", null);
+              }}
+            />
+          )}
+      </div>
       <div className="flex flex-col gap-2">
         <div className="text-sm text-left text-slate-900 font-bold">
           イベントをドロップできる範囲（会期、開館時間など）
