@@ -34,6 +34,8 @@ type Props = {
 export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
   const [openGroupSwitcher, setOpenGroupSwitcher] = useState(false);
   const [isCGOpen, setIsCGOpen] = useState(false);
+  const DEFAULT_ICON_URL =
+    "https://firebasestorage.googleapis.com/v0/b/jourmie-181d8.appspot.com/o/group_icons%2FdefaultIcon.png?alt=media&token=ced5dd5a-f87f-4652-9643-76a8579f1249";
 
   // グローバルな招待ダイアログ状態のフックを利用
   const { setIsOpen: setInviteDialogOpen } = useInviteDialogOpen();
@@ -44,7 +46,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
       return {
         uid: "personal",
         name: "あなた",
-        icon_url: "/images/defaulticon.png",
+        icon_url: DEFAULT_ICON_URL,
       };
     }
     if (groups === "loading" || groups === null || currentGroupId === null) {
@@ -78,7 +80,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
               <>
                 <div className="flex items-center">
                   <Image
-                    src={selectedGroup.icon_url ?? "/images/defaulticon.png"}
+                    src={selectedGroup.icon_url ?? DEFAULT_ICON_URL}
                     alt="group icon"
                     width={24}
                     height={24}
@@ -144,7 +146,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
                     className="flex"
                   >
                     <Image
-                      src={group.icon_url || "/images/defaulticon.png"}
+                      src={group.icon_url || DEFAULT_ICON_URL}
                       alt={group.name || "group icon"}
                       width={24}
                       height={24}
