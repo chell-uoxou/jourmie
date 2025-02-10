@@ -15,7 +15,8 @@ import { toast } from "sonner";
 
 const uploadGroupIcon = async (groupId: string, groupIcon?: File) => {
   // アイコンが添付されていなければデフォルトのURLを設定
-  let iconUrl = "/images/defaulticon.png";
+  let iconUrl =
+    "https://firebasestorage.googleapis.com/v0/b/jourmie-181d8.appspot.com/o/group_icons%2FdefaultIcon.png?alt=media&token=ced5dd5a-f87f-4652-9643-76a8579f1249";
 
   // 添付ファイルが存在し、かつファイルサイズがある場合のみ Storage アップロード
   if (groupIcon && groupIcon.size > 0) {
