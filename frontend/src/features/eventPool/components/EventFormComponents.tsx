@@ -93,6 +93,7 @@ export default function EventFormComponents(props: EventFormComponentsProps) {
             locationTextFormRef(e);
             redirectInputRef.current = e;
           }}
+          onEnterKeyPress={handleClickSearchLocation}
           rightElement={
             <Button
               type="button"
