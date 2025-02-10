@@ -9,7 +9,7 @@ export type SharedInputsRefContextType = {
   mapWidgetInputRef: React.MutableRefObject<HTMLInputElement | null>;
   redirectInputRef: React.MutableRefObject<HTMLInputElement | null>;
   redirectHandler: React.MutableRefObject<
-    (options: Required<FocusRedirectSearchBoxOptions>) => void | null
+    ((options: Required<FocusRedirectSearchBoxOptions>) => void) | null
   >;
 };
 
