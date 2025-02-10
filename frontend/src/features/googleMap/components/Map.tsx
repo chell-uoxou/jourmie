@@ -20,6 +20,8 @@ interface MapProps {
 export default function Map({ currentLocation, defaultCenter }: MapProps) {
   const map = useRef<google.maps.Map | null>(null); // Google Mapsインスタンスを保持
   const [center, setCenter] = useState(defaultCenter); // 地図の中心を管理する状態
+  const [currentLocationDescription, setCurrentLocationDescription] =
+    useState<string>("");
 
   // currentLocationが変更されたときに地図の中心を更新
   useEffect(() => {
@@ -54,8 +56,13 @@ export default function Map({ currentLocation, defaultCenter }: MapProps) {
     position: currentLocation || defaultCenter,
   });
 
-  const handleAddressSelect = (lat: number, lng: number) => {
+  const handleAddressSelect = (
+    lat: number,
+    lng: number,
+    inputValue: string
+  ) => {
     setCenter({ lat, lng }); // 中心を更新
+    setCurrentLocationDescription(inputValue);
   };
 
   return (
@@ -72,7 +79,13 @@ export default function Map({ currentLocation, defaultCenter }: MapProps) {
           onUnmount={onUnmount}
           options={mapOptions}
         >
-          {map.current && <Marker map={map.current} center={center} />}
+          {map.current && (
+            <Marker
+              map={map.current}
+              center={center}
+              currentLocationDescription={currentLocationDescription}
+            />
+          )}
           <div className="flex w-full z-10 absolute top-4 px-3">
             <SearchBox onAddressSelect={handleAddressSelect} />
           </div>

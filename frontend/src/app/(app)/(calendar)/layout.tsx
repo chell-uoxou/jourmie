@@ -1,34 +1,35 @@
 "use client";
 
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren } from "react";
 import { SheetHandleButton } from "~/features/appLayout/components/SheetHandleButton";
 import MapDrawer from "~/features/googleMap/MapDrawer";
+import { useRightPanel } from "~/hooks/useRightPanel";
 
 export default function Layout({ children }: PropsWithChildren) {
-  const [showRightPanel, setShowRightPanel] = useState(false);
+  const { isRightPanelOpen, setIsRightPanelOpen } = useRightPanel();
 
   return (
     <div className="flex gap-0 w-full h-full">
       <div className="flex-1">{children}</div>
 
-      {!showRightPanel && (
+      {!isRightPanelOpen && (
         <div className="relative flex flex-row items-center ">
           <SheetHandleButton
             direction="left"
-            onClick={() => setShowRightPanel(true)}
+            onClick={() => setIsRightPanelOpen(true)}
           />
         </div>
       )}
 
       <div className="relative flex flex-row h-full items-center">
-        {showRightPanel && (
+        {isRightPanelOpen && (
           <SheetHandleButton
             direction="right"
-            onClick={() => setShowRightPanel(false)}
+            onClick={() => setIsRightPanelOpen(false)}
           />
         )}
         <div className="h-full bg-gray-200">
-          <MapDrawer show={showRightPanel} />
+          <MapDrawer show={isRightPanelOpen} />
         </div>
       </div>
     </div>
