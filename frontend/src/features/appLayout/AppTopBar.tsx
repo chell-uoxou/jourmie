@@ -63,7 +63,7 @@ export const AppTopBar = () => {
           <DropdownMenuContent>
             <DropdownMenuItem>
               <Settings />
-              設定
+              アカウント設定
             </DropdownMenuItem>
             <DropdownMenuItem >
               <LogOut />
