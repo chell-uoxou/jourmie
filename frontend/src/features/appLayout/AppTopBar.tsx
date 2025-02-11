@@ -5,18 +5,12 @@ import { GroupSwitcher } from "./components/GroupSwitcher";
 import { LogoIcon } from "~/components/common/LogoIcon";
 import useCurrentAccount from "~/hooks/useCurrentAccount";
 import { useEffect, useState } from "react";
-import MyAvatar from "./components/MyAvatar";
-import { Bell, LogOut, Settings } from "lucide-react";
+import { Bell} from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { DBGroup } from "~/lib/firestore/schemas";
 import useGroupRouter from "~/hooks/useGroupRouter";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { AccountMenuContent } from "./components/AccountMenuContent";
 
 export const AppTopBar = () => {
   const [groups, setGroups] = useState<DBGroup[] | null | "loading">("loading");
@@ -56,21 +50,7 @@ export const AppTopBar = () => {
         <LogoIcon />
       </div>
       <div className="flex flex-row-reverse w-[200px] items-center gap-3">
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <MyAvatar />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>
-              <Settings />
-              設定
-            </DropdownMenuItem>
-            <DropdownMenuItem >
-              <LogOut />
-              ログアウト
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AccountMenuContent/>
         <Button variant="ghost" size="icon" className="size-8">
           <Bell size={20} />
         </Button>
