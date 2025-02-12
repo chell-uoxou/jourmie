@@ -2,7 +2,7 @@ import { Card, CardContent } from "~/components/ui/card";
 import { PropsWithIcon } from "~/components/common/PropsWithIcon";
 import { Clock, Map } from "lucide-react";
 import clsx from "clsx";
-import { Schedule } from "~/models/types/schedule";
+import { ScheduledEvent } from "~/models/types/scheduled_event";
 import { EventPoolItem } from "~/models/types/event_pool_item";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 import { forwardRef, HTMLAttributes, useState } from "react";
@@ -10,7 +10,7 @@ import { Popover } from "@radix-ui/react-popover";
 import { PopoverTrigger } from "~/components/ui/popover";
 import DayTimelineScheduleDetails from "./DayTimelineScheduleDetails";
 
-export type ScheduleEvent = Schedule &
+export type ScheduleEvent = ScheduledEvent &
   EventPoolItem & {
     schedule_uid: string;
   };

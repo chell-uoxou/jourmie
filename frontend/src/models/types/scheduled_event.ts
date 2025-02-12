@@ -3,7 +3,7 @@ import { BudgetMode } from "./common";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 
 /**
- * ## Schedule
+ * ## ScheduledEvent
  * プロダクト内の予定にまつわる情報の共通の型。
  *
  * #### これを継承するモデル
@@ -14,7 +14,7 @@ import { DBEventPoolItem } from "~/lib/firestore/utils";
  * #### これを継承するDBスキーマ
  *   なし
  */
-export type Schedule = {
+export type ScheduledEvent = {
   event_reference: DocumentReference<DBEventPoolItem>;
   start_time: Timestamp;
   end_time: Timestamp;
