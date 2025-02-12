@@ -1,10 +1,10 @@
 import { useDraggable } from "@dnd-kit/core";
 import clsx from "clsx";
-import { DayTimelineSchedule, ScheduleEvent } from "./DayTimelineSchedule";
+import { DayTimelineSchedule, DraggableEventData } from "./DayTimelineSchedule";
 
 interface DraggableTimelineScheduleProps {
   id: string;
-  schedule: ScheduleEvent;
+  schedule: DraggableEventData;
 }
 
 const DraggableDayTimelineSchedule = (

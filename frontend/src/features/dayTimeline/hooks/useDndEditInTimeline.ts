@@ -9,13 +9,13 @@ import {
 } from "@dnd-kit/core";
 import { Props } from "@dnd-kit/core/dist/components/DndContext/DndContext";
 import { UIEventHandler, useCallback, useMemo, useRef, useState } from "react";
-import { ScheduleEvent } from "../components/DayTimelineSchedule";
+import { DraggableEventData } from "../components/DayTimelineSchedule";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 
 interface UseDndEditInTimelineOptions {
   onChangeStartTime?: (
     startMinute: number,
-    scheduleEvent: ScheduleEvent
+    scheduleEvent: DraggableEventData
   ) => void;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
 }
@@ -23,7 +23,7 @@ interface UseDndEditInTimelineOptions {
 export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeScheduleEvent, setActiveScheduleEvent] =
-    useState<ScheduleEvent | null>(null);
+    useState<DraggableEventData | null>(null);
   const { timelineSettings } = useTimelineSettings();
   const scrollAreaRect = useRef<ClientRect | null>(null);
   const scrollTopInDayTimeline = useRef<number | null>(null);

@@ -10,13 +10,13 @@ import { Popover } from "@radix-ui/react-popover";
 import { PopoverTrigger } from "~/components/ui/popover";
 import DayTimelineScheduleDetails from "./DayTimelineScheduleDetails";
 
-export type ScheduleEvent = ScheduledEvent &
+export type DraggableEventData = ScheduledEvent &
   EventPoolItem & {
     schedule_uid: string;
-  };
+  }; // TODO: ちゃんと複数の型を受け入れるモードの設計にできたら、isScheduledEvent、isEventPoolItemなどの判定関数を作って、適したインターフェースを作る
 
 interface DayTimelineEventProps {
-  schedule: ScheduleEvent;
+  schedule: DraggableEventData;
   isDragging?: boolean;
 }
 

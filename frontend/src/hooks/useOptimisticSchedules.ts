@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { ScheduleEvent } from "~/features/dayTimeline/components/DayTimelineSchedule";
+import { DraggableEventData } from "~/features/dayTimeline/components/DayTimelineSchedule";
 import { optimisticSchedulesAtom } from "~/stores/optimisticSchedules";
 
 export const useOptimisticSchedules = () => {
@@ -7,7 +7,10 @@ export const useOptimisticSchedules = () => {
     optimisticSchedulesAtom
   );
 
-  const setSchedulesFromDB = (schedules: ScheduleEvent[], groupId: string) => {
+  const setSchedulesFromDB = (
+    schedules: DraggableEventData[],
+    groupId: string
+  ) => {
     setOptimisticSchedules(
       schedules.map((schedule) => ({
         ...schedule,
@@ -17,7 +20,10 @@ export const useOptimisticSchedules = () => {
     );
   };
 
-  const addOptimisticSchedule = (schedule: ScheduleEvent, groupId: string) => {
+  const addOptimisticSchedule = (
+    schedule: DraggableEventData,
+    groupId: string
+  ) => {
     const optimisticSchedule = {
       ...schedule,
       groupId: groupId,
@@ -29,7 +35,7 @@ export const useOptimisticSchedules = () => {
 
   const updateOptimisticSchedule = (
     schedule_uid: string,
-    data: ScheduleEvent
+    data: DraggableEventData
   ) => {
     if (
       optimisticSchedules.some(

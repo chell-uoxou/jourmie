@@ -1,7 +1,7 @@
 import { atom } from "jotai";
-import { ScheduleEvent } from "~/features/dayTimeline/components/DayTimelineSchedule";
+import { DraggableEventData } from "~/features/dayTimeline/components/DayTimelineSchedule";
 
-export type OptimisticSchedule = ScheduleEvent & {
+export type OptimisticSchedule = DraggableEventData & {
   groupId: string;
   isSyncedWithDB: boolean; // DBと同期済みかどうか。追加中、Optimisticな状態ではfalse。
 };

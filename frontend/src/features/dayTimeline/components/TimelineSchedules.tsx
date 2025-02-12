@@ -1,4 +1,4 @@
-import { DayTimelineSchedule, ScheduleEvent } from "./DayTimelineSchedule";
+import { DayTimelineSchedule, DraggableEventData } from "./DayTimelineSchedule";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 import DraggableDayTimelineSchedule from "./DraggableDayTimelineSchedule";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
@@ -14,7 +14,7 @@ import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
 import { getEndDroppingDate } from "../utils/getEndDroppingDate";
 
 interface TimelineSchedulesProps {
-  schedules: ScheduleEvent[];
+  schedules: DraggableEventData[];
   currentDate: Date;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
   handleScrollStateForDndEditInTimeline: MutableRefObject<UIEventHandler<HTMLDivElement> | null>;
@@ -60,7 +60,7 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
     quantizedMinutesFromMidnight % 60
   );
 
-  const getTop = (schedule: ScheduleEvent) => {
+  const getTop = (schedule: DraggableEventData) => {
     const startDate = schedule.start_time.toDate();
     const minutesFromMidnight =
       startDate.getHours() * 60 + startDate.getMinutes();

@@ -1,12 +1,12 @@
 import SmallTitleWithIcon from "~/components/common/SmallTitleWithIcon";
 import { PopoverContent } from "~/components/ui/popover";
-import { ScheduleEvent } from "./DayTimelineSchedule";
+import { DraggableEventData } from "./DayTimelineSchedule";
 import SmallIconButton from "~/components/common/SmallIconButton";
 import { X, Map, Check, Text, PiggyBank, Clock } from "lucide-react";
 import formatTimes from "~/utils/timesformater";
 
 interface DayTimelineScheduleDetailsProps {
-  scheduleEvent: ScheduleEvent;
+  scheduleEvent: DraggableEventData;
   onClickEdit: () => void;
   onClickDelete: () => void;
   onClickAddToCalendar: () => void;
