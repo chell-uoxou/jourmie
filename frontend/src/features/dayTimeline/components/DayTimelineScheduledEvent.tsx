@@ -30,7 +30,7 @@ const formatTime = (date: Date) => {
 export const DayTimelineScheduledEvent = forwardRef<
   HTMLDivElement,
   DayTimelineScheduledEventProps
->(function DayTimelineSchedule(
+>(function DayTimelineScheduledEvent(
   {
     eventData,
     isDragging,
