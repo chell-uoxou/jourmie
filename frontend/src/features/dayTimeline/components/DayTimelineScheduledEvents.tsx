@@ -38,9 +38,9 @@ const DayTimelineScheduledEvents = (props: DayTimelineScheduledEvents) => {
     handleScroll,
   } = useDndEditInTimeline({
     scrollAreaRef: props.scrollAreaRef,
-    onChangeStartTime: (startMinute, scheduleEvent) => {
-      const newStartTime = new Date(scheduleEvent.start_time.toDate());
-      const newEndTime = new Date(scheduleEvent.end_time.toDate());
+    onChangeStartTime: (startMinute, scheduledEvent) => {
+      const newStartTime = new Date(scheduledEvent.start_time.toDate());
+      const newEndTime = new Date(scheduledEvent.end_time.toDate());
       const duration =
         newEndTime.getHours() * 60 +
         newEndTime.getMinutes() -
@@ -49,8 +49,8 @@ const DayTimelineScheduledEvents = (props: DayTimelineScheduledEvents) => {
       const endMinute = startMinute + duration;
       newStartTime.setHours(Math.floor(startMinute / 60), startMinute % 60);
       newEndTime.setHours(Math.floor(endMinute / 60), endMinute % 60);
-      updateOptimisticScheduledEvent(scheduleEvent.scheduled_event_uid, {
-        ...scheduleEvent,
+      updateOptimisticScheduledEvent(scheduledEvent.scheduled_event_uid, {
+        ...scheduledEvent,
         start_time: Timestamp.fromDate(newStartTime),
         end_time: Timestamp.fromDate(newEndTime),
       });

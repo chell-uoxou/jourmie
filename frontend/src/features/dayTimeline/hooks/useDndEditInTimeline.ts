@@ -15,7 +15,7 @@ import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 interface UseDndEditInTimelineOptions {
   onChangeStartTime?: (
     startMinute: number,
-    scheduleEvent: DraggableEventData
+    scheduledEvent: DraggableEventData
   ) => void;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
 }
