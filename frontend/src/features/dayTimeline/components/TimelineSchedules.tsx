@@ -3,7 +3,7 @@ import {
   DraggableEventData,
 } from "./DayTimelineScheduledEvent";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
-import DraggableDayTimelineSchedule from "./DraggableDayTimelineSchedule";
+import DraggableDayTimelineScheduledEvent from "./DraggableDayTimelineSchedule";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { useDndEditInTimeline } from "../hooks/useDndEditInTimeline";
 import { doc, Timestamp } from "firebase/firestore";
@@ -100,7 +100,7 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
                   width: "min(calc(100% - 76px), 400px)",
                 }}
               >
-                <DraggableDayTimelineSchedule
+                <DraggableDayTimelineScheduledEvent
                   eventData={eventData}
                   id={eventData.scheduled_event_uid}
                 />

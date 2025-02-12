@@ -5,13 +5,13 @@ import {
   DraggableEventData,
 } from "./DayTimelineScheduledEvent";
 
-interface DraggableTimelineScheduleProps {
+interface DraggableDayTimelineScheduledEventProps {
   id: string;
   eventData: DraggableEventData;
 }
 
-const DraggableDayTimelineSchedule = (
-  props: DraggableTimelineScheduleProps
+const DraggableDayTimelineScheduledEvent = (
+  props: DraggableDayTimelineScheduledEventProps
 ) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: props.id,
@@ -30,4 +30,4 @@ const DraggableDayTimelineSchedule = (
   );
 };
 
-export default DraggableDayTimelineSchedule;
+export default DraggableDayTimelineScheduledEvent;
