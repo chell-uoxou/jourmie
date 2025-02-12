@@ -1,6 +1,6 @@
 import SmallTitleWithIcon from "~/components/common/SmallTitleWithIcon";
 import { PopoverContent } from "~/components/ui/popover";
-import { DraggableEventData } from "./DayTimelineSchedule";
+import { DraggableEventData } from "./DayTimelineScheduledEvent";
 import SmallIconButton from "~/components/common/SmallIconButton";
 import { X, Map, Check, Text, PiggyBank, Clock } from "lucide-react";
 import formatTimes from "~/utils/timesformater";

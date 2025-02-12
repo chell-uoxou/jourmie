@@ -3,7 +3,7 @@ import clsx from "clsx";
 import {
   DayTimelineScheduledEvent,
   DraggableEventData,
-} from "./DayTimelineSchedule";
+} from "./DayTimelineScheduledEvent";
 
 interface DraggableTimelineScheduleProps {
   id: string;

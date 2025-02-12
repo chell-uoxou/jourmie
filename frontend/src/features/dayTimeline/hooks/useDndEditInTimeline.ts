@@ -9,7 +9,7 @@ import {
 } from "@dnd-kit/core";
 import { Props } from "@dnd-kit/core/dist/components/DndContext/DndContext";
 import { UIEventHandler, useCallback, useMemo, useRef, useState } from "react";
-import { DraggableEventData } from "../components/DayTimelineSchedule";
+import { DraggableEventData } from "../components/DayTimelineScheduledEvent";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 
 interface UseDndEditInTimelineOptions {

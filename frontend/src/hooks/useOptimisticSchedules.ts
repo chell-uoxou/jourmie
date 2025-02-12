@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { DraggableEventData } from "~/features/dayTimeline/components/DayTimelineSchedule";
+import { DraggableEventData } from "~/features/dayTimeline/components/DayTimelineScheduledEvent";
 import { optimisticSchedulesAtom } from "~/stores/optimisticSchedules";
 
 export const useOptimisticSchedules = () => {

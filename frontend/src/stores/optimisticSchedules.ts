@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { DraggableEventData } from "~/features/dayTimeline/components/DayTimelineSchedule";
+import { DraggableEventData } from "~/features/dayTimeline/components/DayTimelineScheduledEvent";
 
 export type OptimisticSchedule = DraggableEventData & {
   groupId: string;

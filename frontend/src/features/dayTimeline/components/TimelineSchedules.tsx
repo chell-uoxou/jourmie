@@ -1,7 +1,7 @@
 import {
   DayTimelineScheduledEvent,
   DraggableEventData,
-} from "./DayTimelineSchedule";
+} from "./DayTimelineScheduledEvent";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 import DraggableDayTimelineSchedule from "./DraggableDayTimelineSchedule";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
