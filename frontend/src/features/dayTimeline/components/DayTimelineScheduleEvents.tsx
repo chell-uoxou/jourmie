@@ -33,7 +33,7 @@ const DayTimelineScheduleEvents = (props: TimelineSchedulesProps) => {
   const {
     dndContextProps,
     activeId,
-    activeScheduleEvent,
+    activeScheduledEvent,
     quantizedMinutesFromMidnight,
     handleScroll,
   } = useDndEditInTimeline({
@@ -116,7 +116,7 @@ const DayTimelineScheduleEvents = (props: TimelineSchedulesProps) => {
           <DayTimelineScheduledEvent
             isDragging
             eventData={{
-              ...activeScheduleEvent!,
+              ...activeScheduledEvent!,
               event_reference: doc(
                 db,
                 "accounts",
@@ -129,16 +129,16 @@ const DayTimelineScheduleEvents = (props: TimelineSchedulesProps) => {
                 getEndDroppingDate(
                   calendarSession.currentDate,
                   quantizedMinutesFromMidnight,
-                  activeScheduleEvent!.default_duration
+                  activeScheduledEvent!.default_duration
                 )
               ),
               actual_budget:
-                activeScheduleEvent === null
+                activeScheduledEvent === null
                   ? { mode: "total", value: 0 }
-                  : activeScheduleEvent.default_budget,
+                  : activeScheduledEvent.default_budget,
               did_prepare: false,
               scheduled_event_uid:
-                activeScheduleEvent?.scheduled_event_uid ?? "",
+                activeScheduledEvent?.scheduled_event_uid ?? "",
             }}
           />
         ) : null}

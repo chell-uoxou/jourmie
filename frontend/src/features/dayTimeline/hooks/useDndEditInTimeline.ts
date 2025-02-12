@@ -22,7 +22,7 @@ interface UseDndEditInTimelineOptions {
 
 export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [activeScheduleEvent, setActiveScheduleEvent] =
+  const [activeScheduledEvent, setActiveScheduledEvent] =
     useState<DraggableEventData | null>(null);
   const { timelineSettings } = useTimelineSettings();
   const scrollAreaRect = useRef<ClientRect | null>(null);
@@ -53,15 +53,15 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
       event.active.data.current?.eventData
     );
     setActiveId(String(event.active.id));
-    setActiveScheduleEvent(event.active.data.current?.eventData);
+    setActiveScheduledEvent(event.active.data.current?.eventData);
   }, []);
 
   const handleDragEnd = useCallback(() => {
     const minute = quantizedMinutesFromMidnight;
-    if (activeScheduleEvent) {
-      options.onChangeStartTime?.(minute, activeScheduleEvent);
+    if (activeScheduledEvent) {
+      options.onChangeStartTime?.(minute, activeScheduledEvent);
     }
-  }, [activeScheduleEvent, options, quantizedMinutesFromMidnight]);
+  }, [activeScheduledEvent, options, quantizedMinutesFromMidnight]);
 
   const scheduleItemModifier: Modifier = useCallback(
     (args) => {
@@ -132,7 +132,7 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
   return {
     dndContextProps,
     activeId,
-    activeScheduleEvent,
+    activeScheduledEvent,
     quantizedMinutesFromMidnight,
     handleScroll,
   };
