@@ -10,12 +10,12 @@ import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 import TimelineSchedules from "./components/TimelineSchedules";
 import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
 
-interface PrivateScheduleDayTimelineProps {
+interface PrivateDayTimelineProps {
   onScroll?: UIEventHandler<HTMLDivElement>;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
 }
 
-const PrivateScheduleDayTimeline = (props: PrivateScheduleDayTimelineProps) => {
+const PrivateDayTimeline = (props: PrivateDayTimelineProps) => {
   const { calendarSession, updateCalendarSession } = useCalendarSession();
   const { setNodeRef } = useDroppable({ id: "droppable-timeline" });
   const { timelineSettings } = useTimelineSettings();
@@ -65,4 +65,4 @@ const PrivateScheduleDayTimeline = (props: PrivateScheduleDayTimelineProps) => {
   );
 };
 
-export default PrivateScheduleDayTimeline;
+export default PrivateDayTimeline;

@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { useDndTimeline } from "~/hooks/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
 import { DayTimelineScheduledEvent } from "~/features/dayTimeline/components/DayTimelineScheduledEvent";
-import PrivateScheduleDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
+import PrivateDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import useAuthUser from "~/hooks/useAuthUser";
 import { useCalendarSession } from "~/hooks/useCalendarSession";
@@ -79,7 +79,7 @@ export default function Page() {
   return (
     <DndContext {...dndContextProps}>
       <CardBodyWithLeftSidebar leftSidebar={<CalendarEditSidebar />}>
-        <PrivateScheduleDayTimeline
+        <PrivateDayTimeline
           onScroll={onScrollDroppableArea}
           scrollAreaRef={scrollAreaRef}
         />
