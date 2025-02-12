@@ -10,6 +10,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { getAuth, signOut } from "firebase/auth";
+import { Button } from "~/components/ui/button";
 
 export const AccountMenuContent = () => {
 
@@ -27,8 +28,10 @@ export const AccountMenuContent = () => {
 
   return (
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="size-8">
             <MyAvatar />
+          </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem>
