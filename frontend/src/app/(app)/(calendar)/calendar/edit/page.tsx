@@ -8,7 +8,7 @@ import { doc, Timestamp } from "firebase/firestore";
 import { useEffect } from "react";
 import { useDndTimeline } from "~/hooks/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
-import { DayTimelineSchedule } from "~/features/dayTimeline/components/DayTimelineSchedule";
+import { DayTimelineScheduledEvent } from "~/features/dayTimeline/components/DayTimelineSchedule";
 import PrivateScheduleDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import useAuthUser from "~/hooks/useAuthUser";
@@ -91,7 +91,7 @@ export default function Page() {
         }}
       >
         {activeId ? (
-          <DayTimelineSchedule
+          <DayTimelineScheduledEvent
             isDragging
             eventData={{
               ...activeEventPoolItem!,

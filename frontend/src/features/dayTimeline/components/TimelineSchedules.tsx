@@ -1,4 +1,7 @@
-import { DayTimelineSchedule, DraggableEventData } from "./DayTimelineSchedule";
+import {
+  DayTimelineScheduledEvent,
+  DraggableEventData,
+} from "./DayTimelineSchedule";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 import DraggableDayTimelineSchedule from "./DraggableDayTimelineSchedule";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
@@ -107,7 +110,7 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
       </div>
       <DragOverlay dropAnimation={null}>
         {activeId ? (
-          <DayTimelineSchedule
+          <DayTimelineScheduledEvent
             isDragging
             eventData={{
               ...activeScheduleEvent!,

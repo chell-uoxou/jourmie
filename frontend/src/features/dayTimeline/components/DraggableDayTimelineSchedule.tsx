@@ -1,6 +1,9 @@
 import { useDraggable } from "@dnd-kit/core";
 import clsx from "clsx";
-import { DayTimelineSchedule, DraggableEventData } from "./DayTimelineSchedule";
+import {
+  DayTimelineScheduledEvent,
+  DraggableEventData,
+} from "./DayTimelineSchedule";
 
 interface DraggableTimelineScheduleProps {
   id: string;
@@ -17,7 +20,7 @@ const DraggableDayTimelineSchedule = (
 
   return (
     <div className={clsx(isDragging && "opacity-50")}>
-      <DayTimelineSchedule
+      <DayTimelineScheduledEvent
         ref={setNodeRef}
         {...attributes}
         {...listeners}
