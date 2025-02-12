@@ -13,14 +13,14 @@ import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 
 interface UseDndTimeLineOptions {
-  onDropNewSchedule?: (
+  onDropNewEvent?: (
     startMinute: number,
     eventPoolItem: DBEventPoolItem
   ) => void;
 }
 
 export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
-  const { onDropNewSchedule } = options;
+  const { onDropNewEvent } = options;
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeEventPoolItem, setActiveEventPoolItem] =
@@ -84,8 +84,8 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
     const minute = quantizedMinutesFromMidnight;
     if (isOverDraggable && activeEventPoolItem) {
       console.log("Drag Ended: ", activeEventPoolItem?.title, minute, activeId);
-      if (onDropNewSchedule && minute !== null) {
-        onDropNewSchedule(minute, activeEventPoolItem);
+      if (onDropNewEvent && minute !== null) {
+        onDropNewEvent(minute, activeEventPoolItem);
       }
     } else {
       console.log("Drag Ended without drop: ", activeId);
@@ -95,7 +95,7 @@ export const useDndTimeline = (options: UseDndTimeLineOptions = {}) => {
     activeEventPoolItem,
     activeId,
     isOverDraggable,
-    onDropNewSchedule,
+    onDropNewEvent,
     quantizedMinutesFromMidnight,
   ]);
 

@@ -32,8 +32,7 @@ export default function Page() {
     activeEventPoolItem,
     quantizedMinutesFromMidnight,
   } = useDndTimeline({
-    onDropNewSchedule: (startMinute, eventPoolItem) => {
-      console.log("Drop new schedule!", startMinute, eventPoolItem);
+    onDropNewEvent: (startMinute, eventPoolItem) => {
       const currentDate = new Date(calendarSession.currentDate);
 
       if (authUser === "loading" || authUser === null) return;
