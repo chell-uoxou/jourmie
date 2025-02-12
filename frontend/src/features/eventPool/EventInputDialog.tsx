@@ -82,7 +82,7 @@ export const EventInputDialog = () => {
     max_participants: NaN, // 未入力
     notes: "",
     attached_image: "",
-    schedule_instances: [],
+    scheduled_event_instances: [],
     location_coordinate_lon: null,
     location_coordinate_lat: null,
   };
@@ -144,7 +144,7 @@ export const EventInputDialog = () => {
       preparation_task: data.needs_preparation ? data.preparation_task : "",
       max_participants: data.max_participants,
       notes: data.notes,
-      schedule_instances: [],
+      scheduled_event_instances: [],
     };
 
     try {

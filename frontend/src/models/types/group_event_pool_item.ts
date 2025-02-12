@@ -20,5 +20,5 @@ import { DBGroupSchedule } from "~/lib/firestore/utils";
 export type GroupEventPoolItem = EventPoolItem & {
   created_by_account: DocumentReference<DBAccount>;
   created_by_member: DocumentReference<DBGroupMember>;
-  schedule_instances: DocumentReference<DBGroupSchedule>[];
+  scheduled_event_instances: DocumentReference<DBGroupSchedule>[];
 };
