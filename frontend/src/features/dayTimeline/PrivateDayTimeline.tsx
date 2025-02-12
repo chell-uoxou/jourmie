@@ -8,7 +8,7 @@ import { UIEvent, UIEventHandler, useCallback, useRef } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 import TimelineSchedules from "./components/TimelineSchedules";
-import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticSchedules";
+import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticScheduledEvents";
 
 interface PrivateDayTimelineProps {
   onScroll?: UIEventHandler<HTMLDivElement>;
@@ -19,7 +19,7 @@ const PrivateDayTimeline = (props: PrivateDayTimelineProps) => {
   const { calendarSession, updateCalendarSession } = useCalendarSession();
   const { setNodeRef } = useDroppable({ id: "droppable-timeline" });
   const { timelineSettings } = useTimelineSettings();
-  const { optimisticSchedules } = useOptimisticScheduledEvents();
+  const { optimisticScheduledEvents } = useOptimisticScheduledEvents();
   const onScrollForDndEditInTimeline =
     useRef<UIEventHandler<HTMLDivElement> | null>(null);
 
@@ -44,7 +44,7 @@ const PrivateDayTimeline = (props: PrivateDayTimelineProps) => {
       >
         <div className="my-6 mr-3 relative" ref={setNodeRef}>
           <TimelineSchedules
-            eventDataArray={optimisticSchedules}
+            eventDataArray={optimisticScheduledEvents}
             currentDate={calendarSession.currentDate}
             scrollAreaRef={props.scrollAreaRef}
             handleScrollStateForDndEditInTimeline={onScrollForDndEditInTimeline}

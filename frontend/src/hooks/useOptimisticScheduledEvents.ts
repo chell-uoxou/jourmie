@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import { DraggableEventData } from "~/features/dayTimeline/components/DayTimelineScheduledEvent";
-import { optimisticScheduledEventsAtom } from "~/stores/optimisticSchedules";
+import { optimisticScheduledEventsAtom } from "~/stores/optimisticScheduledEvents";
 
 export const useOptimisticScheduledEvents = () => {
   const [optimisticScheduledEvents, setOptimisticScheduledEvents] = useAtom(
@@ -62,7 +62,7 @@ export const useOptimisticScheduledEvents = () => {
   };
 
   return {
-    optimisticSchedules: optimisticScheduledEvents,
+    optimisticScheduledEvents,
     setSchedulesFromDB,
     addOptimisticSchedule,
     updateOptimisticSchedule,

@@ -13,7 +13,7 @@ import PrivateDayTimeline from "~/features/dayTimeline/PrivateDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import useAuthUser from "~/hooks/useAuthUser";
 import { useCalendarSession } from "~/hooks/useCalendarSession";
-import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticSchedules";
+import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticScheduledEvents";
 import { db } from "~/lib/firebase";
 import { defaultConverter } from "~/lib/firestore/firestore";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
@@ -21,7 +21,7 @@ import { getEndDroppingDate } from "~/features/dayTimeline/utils/getEndDroppingD
 
 export default function Page() {
   const authUser = useAuthUser();
-  const { optimisticSchedules, addOptimisticSchedule } =
+  const { optimisticScheduledEvents, addOptimisticSchedule } =
     useOptimisticScheduledEvents();
   const { calendarSession } = useCalendarSession();
   const {
@@ -73,8 +73,8 @@ export default function Page() {
   );
 
   useEffect(() => {
-    console.log(optimisticSchedules);
-  }, [optimisticSchedules]);
+    console.log(optimisticScheduledEvents);
+  }, [optimisticScheduledEvents]);
 
   return (
     <DndContext {...dndContextProps}>
