@@ -93,7 +93,7 @@ export default function Page() {
         {activeId ? (
           <DayTimelineSchedule
             isDragging
-            schedule={{
+            eventData={{
               ...activeEventPoolItem!,
               event_reference: doc(
                 db,

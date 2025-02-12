@@ -8,12 +8,12 @@ export const useOptimisticSchedules = () => {
   );
 
   const setSchedulesFromDB = (
-    schedules: DraggableEventData[],
+    eventDataArray: DraggableEventData[],
     groupId: string
   ) => {
     setOptimisticSchedules(
-      schedules.map((schedule) => ({
-        ...schedule,
+      eventDataArray.map((eventData) => ({
+        ...eventData,
         groupId: groupId,
         isSyncedWithDB: true,
       }))
@@ -21,16 +21,16 @@ export const useOptimisticSchedules = () => {
   };
 
   const addOptimisticSchedule = (
-    schedule: DraggableEventData,
+    eventData: DraggableEventData,
     groupId: string
   ) => {
     const optimisticSchedule = {
-      ...schedule,
+      ...eventData,
       groupId: groupId,
       isSyncedWithDB: false,
     };
     setOptimisticSchedules([...optimisticSchedules, optimisticSchedule]);
-    return schedule;
+    return eventData;
   };
 
   const updateOptimisticSchedule = (

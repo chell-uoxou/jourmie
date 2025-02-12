@@ -44,7 +44,7 @@ const PrivateScheduleDayTimeline = (props: PrivateScheduleDayTimelineProps) => {
       >
         <div className="my-6 mr-3 relative" ref={setNodeRef}>
           <TimelineSchedules
-            schedules={optimisticSchedules}
+            eventDataArray={optimisticSchedules}
             currentDate={calendarSession.currentDate}
             scrollAreaRef={props.scrollAreaRef}
             handleScrollStateForDndEditInTimeline={onScrollForDndEditInTimeline}

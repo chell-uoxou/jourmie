@@ -16,7 +16,7 @@ export type DraggableEventData = ScheduledEvent &
   }; // TODO: ちゃんと複数の型を受け入れるモードの設計にできたら、isScheduledEvent、isEventPoolItemなどの判定関数を作って、適したインターフェースを作る
 
 interface DayTimelineEventProps {
-  schedule: DraggableEventData;
+  eventData: DraggableEventData;
   isDragging?: boolean;
 }
 
@@ -27,72 +27,71 @@ const formatTime = (date: Date) => {
   });
 };
 
-export const DayTimelineSchedule = forwardRef<
-  HTMLDivElement,
-  DayTimelineEventProps
->(function DayTimelineSchedule(
-  {
-    schedule,
-    isDragging,
-    ...rest
-  }: DayTimelineEventProps & HTMLAttributes<HTMLDivElement>,
-  ref
-) {
-  const { timelineSettings } = useTimelineSettings();
+export const DayTimelineSchedule = forwardRef<HTMLDivElement, DayTimelineEventProps>(
+  function DayTimelineSchedule(
+    {
+      eventData,
+      isDragging,
+      ...rest
+    }: DayTimelineEventProps & HTMLAttributes<HTMLDivElement>,
+    ref
+  ) {
+    const { timelineSettings } = useTimelineSettings();
 
-  const duration =
-    (schedule.end_time.toDate().getTime() -
-      schedule.start_time.toDate().getTime()) /
-    (1000 * 60);
-  const height =
-    (duration / (timelineSettings.gridInterval * 60)) *
-    timelineSettings.gridHeight;
+    const duration =
+      (eventData.end_time.toDate().getTime() -
+        eventData.start_time.toDate().getTime()) /
+      (1000 * 60);
+    const height =
+      (duration / (timelineSettings.gridInterval * 60)) *
+      timelineSettings.gridHeight;
 
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  return (
-    <div ref={ref} {...rest}>
-      <Popover onOpenChange={setIsDetailsOpen} open={isDetailsOpen}>
-        <PopoverTrigger className="w-full">
-          <Card
-            className={clsx(
-              isDragging && "shadow-lg",
-              "transition-all duration-100",
-              isDetailsOpen ? "shadow-lg" : "shadow-sm"
-            )}
-            style={{
-              height: `${height}px`,
-              minHeight: "16px",
-            }}
-          >
-            <CardContent className="py-4 px-5">
-              <div className="flex flex-col gap-2 items-start">
-                <h1 className="text-sm font-bold">{schedule.title}</h1>
+    return (
+      <div ref={ref} {...rest}>
+        <Popover onOpenChange={setIsDetailsOpen} open={isDetailsOpen}>
+          <PopoverTrigger className="w-full">
+            <Card
+              className={clsx(
+                isDragging && "shadow-lg",
+                "transition-all duration-100",
+                isDetailsOpen ? "shadow-lg" : "shadow-sm"
+              )}
+              style={{
+                height: `${height}px`,
+                minHeight: "16px",
+              }}
+            >
+              <CardContent className="py-4 px-5">
+                <div className="flex flex-col gap-2 items-start">
+                  <h1 className="text-sm font-bold">{eventData.title}</h1>
 
-                <div className="flex flex-col gap-1.5 ">
-                  {schedule.location_text !== "" && (
+                  <div className="flex flex-col gap-1.5 ">
+                    {eventData.location_text !== "" && (
+                      <PropsWithIcon
+                        icon={<Map size={14} />}
+                        value={eventData.location_text}
+                      />
+                    )}
                     <PropsWithIcon
-                      icon={<Map size={14} />}
-                      value={schedule.location_text}
+                      icon={<Clock size={14} />}
+                      value={formatTime(eventData.start_time.toDate())}
                     />
-                  )}
-                  <PropsWithIcon
-                    icon={<Clock size={14} />}
-                    value={formatTime(schedule.start_time.toDate())}
-                  />
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </PopoverTrigger>
-        <DayTimelineScheduleDetails
-          scheduleEvent={schedule}
-          onClickAddToCalendar={() => {}}
-          onClickClose={() => setIsDetailsOpen(false)}
-          onClickDelete={() => {}}
-          onClickEdit={() => {}}
-        />
-      </Popover>
-    </div>
-  );
-});
+              </CardContent>
+            </Card>
+          </PopoverTrigger>
+          <DayTimelineScheduleDetails
+            eventData={eventData}
+            onClickAddToCalendar={() => {}}
+            onClickClose={() => setIsDetailsOpen(false)}
+            onClickDelete={() => {}}
+            onClickEdit={() => {}}
+          />
+        </Popover>
+      </div>
+    );
+  }
+);

@@ -50,10 +50,10 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
   const handleStartDrag = useCallback((event: DragStartEvent) => {
     console.log(
       "Start dragging as edit in timeline: ",
-      event.active.data.current?.schedule
+      event.active.data.current?.eventData
     );
     setActiveId(String(event.active.id));
-    setActiveScheduleEvent(event.active.data.current?.schedule);
+    setActiveScheduleEvent(event.active.data.current?.eventData);
   }, []);
 
   const handleDragEnd = useCallback(() => {

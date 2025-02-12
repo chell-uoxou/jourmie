@@ -14,7 +14,7 @@ import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
 import { getEndDroppingDate } from "../utils/getEndDroppingDate";
 
 interface TimelineSchedulesProps {
-  schedules: DraggableEventData[];
+  eventDataArray: DraggableEventData[];
   currentDate: Date;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
   handleScrollStateForDndEditInTimeline: MutableRefObject<UIEventHandler<HTMLDivElement> | null>;
@@ -60,8 +60,8 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
     quantizedMinutesFromMidnight % 60
   );
 
-  const getTop = (schedule: DraggableEventData) => {
-    const startDate = schedule.start_time.toDate();
+  const getTop = (eventData: DraggableEventData) => {
+    const startDate = eventData.start_time.toDate();
     const minutesFromMidnight =
       startDate.getHours() * 60 + startDate.getMinutes();
     const top =
@@ -77,29 +77,29 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
   return (
     <DndContext {...dndContextProps}>
       <div className="relative w-full h-ful">
-        {props.schedules
-          .filter((schedule) => {
-            const startDate = schedule.start_time.toDate();
+        {props.eventDataArray
+          .filter((eventData) => {
+            const startDate = eventData.start_time.toDate();
             const condition =
               startDate.getDate() === props.currentDate.getDate() &&
               startDate.getMonth() === props.currentDate.getMonth() &&
               startDate.getFullYear() === props.currentDate.getFullYear();
             return condition;
           })
-          .map((schedule) => {
+          .map((eventData) => {
             return (
               <div
-                key={schedule.schedule_uid}
+                key={eventData.schedule_uid}
                 className="absolute"
                 style={{
-                  top: getTop(schedule),
+                  top: getTop(eventData),
                   left: 24 + 36,
                   width: "min(calc(100% - 76px), 400px)",
                 }}
               >
                 <DraggableDayTimelineSchedule
-                  schedule={schedule}
-                  id={schedule.schedule_uid}
+                  eventData={eventData}
+                  id={eventData.schedule_uid}
                 />
               </div>
             );
@@ -109,7 +109,7 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
         {activeId ? (
           <DayTimelineSchedule
             isDragging
-            schedule={{
+            eventData={{
               ...activeScheduleEvent!,
               event_reference: doc(
                 db,
