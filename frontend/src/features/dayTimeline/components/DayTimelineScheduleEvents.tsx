@@ -16,7 +16,7 @@ import { MutableRefObject, UIEventHandler, useEffect } from "react";
 import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticScheduledEvents";
 import { getEndDroppingDate } from "../utils/getEndDroppingDate";
 
-interface TimelineSchedulesProps {
+interface DayTimelineScheduleEvents {
   eventDataArray: DraggableEventData[];
   currentDate: Date;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
@@ -26,7 +26,7 @@ interface TimelineSchedulesProps {
 /**
  * 1日タイプのタイムライングリッド上にオーバーレイされる予定の一覧
  */
-const DayTimelineScheduleEvents = (props: TimelineSchedulesProps) => {
+const DayTimelineScheduleEvents = (props: DayTimelineScheduleEvents) => {
   const { timelineSettings } = useTimelineSettings();
   const { calendarSession } = useCalendarSession();
   const { updateOptimisticScheduledEvent } = useOptimisticScheduledEvents();
