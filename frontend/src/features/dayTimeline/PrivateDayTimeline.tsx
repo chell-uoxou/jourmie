@@ -7,7 +7,7 @@ import { useCalendarSession } from "~/hooks/useCalendarSession";
 import { UIEvent, UIEventHandler, useCallback, useRef } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
-import DayTimelineScheduleEvents from "./components/TimelineSchedules";
+import DayTimelineScheduleEvents from "./components/DayTimelineScheduleEvents";
 import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticScheduledEvents";
 
 interface PrivateDayTimelineProps {
