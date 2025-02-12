@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { useDndTimeline } from "~/hooks/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
 import { DayTimelineScheduledEvent } from "~/features/dayTimeline/components/DayTimelineScheduledEvent";
-import PrivateDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
+import PrivateDayTimeline from "~/features/dayTimeline/PrivateDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import useAuthUser from "~/hooks/useAuthUser";
 import { useCalendarSession } from "~/hooks/useCalendarSession";

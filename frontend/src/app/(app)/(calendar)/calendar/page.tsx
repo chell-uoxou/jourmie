@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
-import PrivateDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
+import PrivateDayTimeline from "~/features/dayTimeline/PrivateDayTimeline";
 import { ViewerLeftSideBar } from "~/features/leftSidebar/ViewerLeftSidebar";
 
 export default function Page() {
