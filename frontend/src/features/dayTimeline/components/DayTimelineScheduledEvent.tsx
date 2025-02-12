@@ -27,6 +27,9 @@ const formatTime = (date: Date) => {
   });
 };
 
+/**
+ * 1日タイプのタイムライン上に表示される予定
+ */
 export const DayTimelineScheduledEvent = forwardRef<
   HTMLDivElement,
   DayTimelineScheduledEventProps

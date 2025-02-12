@@ -7,7 +7,7 @@ import { useCalendarSession } from "~/hooks/useCalendarSession";
 import { UIEvent, UIEventHandler, useCallback, useRef } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
-import TimelineSchedules from "./components/TimelineSchedules";
+import DayTimelineScheduleEvents from "./components/TimelineSchedules";
 import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticScheduledEvents";
 
 interface PrivateDayTimelineProps {
@@ -43,7 +43,7 @@ const PrivateDayTimeline = (props: PrivateDayTimelineProps) => {
         ref={props.scrollAreaRef}
       >
         <div className="my-6 mr-3 relative" ref={setNodeRef}>
-          <TimelineSchedules
+          <DayTimelineScheduleEvents
             eventDataArray={optimisticScheduledEvents}
             currentDate={calendarSession.currentDate}
             scrollAreaRef={props.scrollAreaRef}

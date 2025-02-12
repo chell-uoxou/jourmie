@@ -23,7 +23,10 @@ interface TimelineSchedulesProps {
   handleScrollStateForDndEditInTimeline: MutableRefObject<UIEventHandler<HTMLDivElement> | null>;
 }
 
-const TimelineSchedules = (props: TimelineSchedulesProps) => {
+/**
+ * 1日タイプのタイムライングリッド上にオーバーレイされる予定の一覧
+ */
+const DayTimelineScheduleEvents = (props: TimelineSchedulesProps) => {
   const { timelineSettings } = useTimelineSettings();
   const { calendarSession } = useCalendarSession();
   const { updateOptimisticScheduledEvent } = useOptimisticScheduledEvents();
@@ -144,4 +147,4 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
   );
 };
 
-export default TimelineSchedules;
+export default DayTimelineScheduleEvents;
