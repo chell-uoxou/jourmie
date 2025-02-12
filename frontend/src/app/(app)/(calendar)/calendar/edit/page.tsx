@@ -13,7 +13,7 @@ import PrivateDayTimeline from "~/features/dayTimeline/PrivateDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import useAuthUser from "~/hooks/useAuthUser";
 import { useCalendarSession } from "~/hooks/useCalendarSession";
-import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
+import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticSchedules";
 import { db } from "~/lib/firebase";
 import { defaultConverter } from "~/lib/firestore/firestore";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
@@ -22,7 +22,7 @@ import { getEndDroppingDate } from "~/features/dayTimeline/utils/getEndDroppingD
 export default function Page() {
   const authUser = useAuthUser();
   const { optimisticSchedules, addOptimisticSchedule } =
-    useOptimisticSchedules();
+    useOptimisticScheduledEvents();
   const { calendarSession } = useCalendarSession();
   const {
     dndContextProps,

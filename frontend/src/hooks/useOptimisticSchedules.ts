@@ -1,17 +1,17 @@
 import { useAtom } from "jotai";
 import { DraggableEventData } from "~/features/dayTimeline/components/DayTimelineScheduledEvent";
-import { optimisticSchedulesAtom } from "~/stores/optimisticSchedules";
+import { optimisticScheduledEventsAtom } from "~/stores/optimisticSchedules";
 
-export const useOptimisticSchedules = () => {
-  const [optimisticSchedules, setOptimisticSchedules] = useAtom(
-    optimisticSchedulesAtom
+export const useOptimisticScheduledEvents = () => {
+  const [optimisticScheduledEvents, setOptimisticScheduledEvents] = useAtom(
+    optimisticScheduledEventsAtom
   );
 
   const setSchedulesFromDB = (
     eventDataArray: DraggableEventData[],
     groupId: string
   ) => {
-    setOptimisticSchedules(
+    setOptimisticScheduledEvents(
       eventDataArray.map((eventData) => ({
         ...eventData,
         groupId: groupId,
@@ -29,7 +29,10 @@ export const useOptimisticSchedules = () => {
       groupId: groupId,
       isSyncedWithDB: false,
     };
-    setOptimisticSchedules([...optimisticSchedules, optimisticSchedule]);
+    setOptimisticScheduledEvents([
+      ...optimisticScheduledEvents,
+      optimisticSchedule,
+    ]);
     return eventData;
   };
 
@@ -38,11 +41,11 @@ export const useOptimisticSchedules = () => {
     data: DraggableEventData
   ) => {
     if (
-      optimisticSchedules.some(
+      optimisticScheduledEvents.some(
         (prevSchedule) => prevSchedule.schedule_uid === schedule_uid
       )
     ) {
-      setOptimisticSchedules((prev) =>
+      setOptimisticScheduledEvents((prev) =>
         prev.map((prevSchedule) =>
           prevSchedule.schedule_uid === schedule_uid
             ? {
@@ -59,7 +62,7 @@ export const useOptimisticSchedules = () => {
   };
 
   return {
-    optimisticSchedules,
+    optimisticSchedules: optimisticScheduledEvents,
     setSchedulesFromDB,
     addOptimisticSchedule,
     updateOptimisticSchedule,

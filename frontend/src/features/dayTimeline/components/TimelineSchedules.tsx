@@ -13,7 +13,7 @@ import { defaultConverter } from "~/lib/firestore/firestore";
 import { useCalendarSession } from "~/hooks/useCalendarSession";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 import { MutableRefObject, UIEventHandler, useEffect } from "react";
-import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
+import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticSchedules";
 import { getEndDroppingDate } from "../utils/getEndDroppingDate";
 
 interface TimelineSchedulesProps {
@@ -26,7 +26,7 @@ interface TimelineSchedulesProps {
 const TimelineSchedules = (props: TimelineSchedulesProps) => {
   const { timelineSettings } = useTimelineSettings();
   const { calendarSession } = useCalendarSession();
-  const { updateOptimisticSchedule } = useOptimisticSchedules();
+  const { updateOptimisticSchedule } = useOptimisticScheduledEvents();
   const {
     dndContextProps,
     activeId,
