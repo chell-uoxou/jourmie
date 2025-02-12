@@ -37,17 +37,18 @@ export const useOptimisticScheduledEvents = () => {
   };
 
   const updateOptimisticScheduledEvent = (
-    schedule_uid: string,
+    scheduled_event_uid: string,
     data: DraggableEventData
   ) => {
     if (
       optimisticScheduledEvents.some(
-        (prevSchedule) => prevSchedule.schedule_uid === schedule_uid
+        (prevSchedule) =>
+          prevSchedule.scheduled_event_uid === scheduled_event_uid
       )
     ) {
       setOptimisticScheduledEvents((prev) =>
         prev.map((prevSchedule) =>
-          prevSchedule.schedule_uid === schedule_uid
+          prevSchedule.scheduled_event_uid === scheduled_event_uid
             ? {
                 ...data,
                 isSyncedWithDB: false,
@@ -57,7 +58,7 @@ export const useOptimisticScheduledEvents = () => {
         )
       );
     } else {
-      console.log("Schedule not found: ", schedule_uid);
+      console.log("Schedule not found: ", scheduled_event_uid);
     }
   };
 

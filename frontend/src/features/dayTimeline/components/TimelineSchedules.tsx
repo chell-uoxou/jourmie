@@ -46,7 +46,7 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
       const endMinute = startMinute + duration;
       newStartTime.setHours(Math.floor(startMinute / 60), startMinute % 60);
       newEndTime.setHours(Math.floor(endMinute / 60), endMinute % 60);
-      updateOptimisticScheduledEvent(scheduleEvent.schedule_uid, {
+      updateOptimisticScheduledEvent(scheduleEvent.scheduled_event_uid, {
         ...scheduleEvent,
         start_time: Timestamp.fromDate(newStartTime),
         end_time: Timestamp.fromDate(newEndTime),
@@ -92,7 +92,7 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
           .map((eventData) => {
             return (
               <div
-                key={eventData.schedule_uid}
+                key={eventData.scheduled_event_uid}
                 className="absolute"
                 style={{
                   top: getTop(eventData),
@@ -102,7 +102,7 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
               >
                 <DraggableDayTimelineSchedule
                   eventData={eventData}
-                  id={eventData.schedule_uid}
+                  id={eventData.scheduled_event_uid}
                 />
               </div>
             );
@@ -134,7 +134,8 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
                   ? { mode: "total", value: 0 }
                   : activeScheduleEvent.default_budget,
               did_prepare: false,
-              schedule_uid: activeScheduleEvent?.schedule_uid ?? "",
+              scheduled_event_uid:
+                activeScheduleEvent?.scheduled_event_uid ?? "",
             }}
           />
         ) : null}

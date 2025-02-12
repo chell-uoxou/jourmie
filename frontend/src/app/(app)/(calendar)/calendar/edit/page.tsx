@@ -58,7 +58,7 @@ export default function Page() {
           did_prepare: false,
           start_time: Timestamp.fromDate(startTime),
           end_time: Timestamp.fromDate(endTime),
-          schedule_uid: crypto.randomUUID(), // 一旦ランダムなUUIDを生成、DB保存後に上書き
+          scheduled_event_uid: crypto.randomUUID(), // 一旦ランダムなUUIDを生成、DB保存後に上書き
         },
         "personal"
       );
@@ -114,7 +114,7 @@ export default function Page() {
                   ? { mode: "total", value: 0 }
                   : activeEventPoolItem.default_budget,
               did_prepare: false,
-              schedule_uid: activeEventPoolItem?.uid ?? "",
+              scheduled_event_uid: activeEventPoolItem?.uid ?? "",
             }}
           />
         ) : null}
