@@ -26,7 +26,7 @@ interface TimelineSchedulesProps {
 const TimelineSchedules = (props: TimelineSchedulesProps) => {
   const { timelineSettings } = useTimelineSettings();
   const { calendarSession } = useCalendarSession();
-  const { updateOptimisticSchedule } = useOptimisticScheduledEvents();
+  const { updateOptimisticScheduledEvent } = useOptimisticScheduledEvents();
   const {
     dndContextProps,
     activeId,
@@ -46,7 +46,7 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
       const endMinute = startMinute + duration;
       newStartTime.setHours(Math.floor(startMinute / 60), startMinute % 60);
       newEndTime.setHours(Math.floor(endMinute / 60), endMinute % 60);
-      updateOptimisticSchedule(scheduleEvent.schedule_uid, {
+      updateOptimisticScheduledEvent(scheduleEvent.schedule_uid, {
         ...scheduleEvent,
         start_time: Timestamp.fromDate(newStartTime),
         end_time: Timestamp.fromDate(newEndTime),

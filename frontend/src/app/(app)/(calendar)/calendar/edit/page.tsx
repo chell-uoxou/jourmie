@@ -21,7 +21,7 @@ import { getEndDroppingDate } from "~/features/dayTimeline/utils/getEndDroppingD
 
 export default function Page() {
   const authUser = useAuthUser();
-  const { optimisticScheduledEvents, addOptimisticSchedule } =
+  const { optimisticScheduledEvents, addOptimisticScheduledEvent } =
     useOptimisticScheduledEvents();
   const { calendarSession } = useCalendarSession();
   const {
@@ -51,7 +51,7 @@ export default function Page() {
       const endTime = new Date(currentDate);
       endTime.setHours(Math.floor(endMinutes / 60), endMinutes % 60);
 
-      addOptimisticSchedule(
+      addOptimisticScheduledEvent(
         {
           ...eventPoolItem,
           event_reference: eventReference,

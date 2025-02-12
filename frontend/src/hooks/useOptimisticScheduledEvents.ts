@@ -20,23 +20,23 @@ export const useOptimisticScheduledEvents = () => {
     );
   };
 
-  const addOptimisticSchedule = (
+  const addOptimisticScheduledEvent = (
     eventData: DraggableEventData,
     groupId: string
   ) => {
-    const optimisticSchedule = {
+    const optimisticScheduledEvent = {
       ...eventData,
       groupId: groupId,
       isSyncedWithDB: false,
     };
     setOptimisticScheduledEvents([
       ...optimisticScheduledEvents,
-      optimisticSchedule,
+      optimisticScheduledEvent,
     ]);
     return eventData;
   };
 
-  const updateOptimisticSchedule = (
+  const updateOptimisticScheduledEvent = (
     schedule_uid: string,
     data: DraggableEventData
   ) => {
@@ -64,7 +64,7 @@ export const useOptimisticScheduledEvents = () => {
   return {
     optimisticScheduledEvents,
     setSchedulesFromDB,
-    addOptimisticSchedule,
-    updateOptimisticSchedule,
+    addOptimisticScheduledEvent,
+    updateOptimisticScheduledEvent,
   };
 };
