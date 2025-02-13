@@ -14,7 +14,7 @@ function Page() {
         </div>
         <GroupSearch />
       </div>
-      <div className="bg-brand-border-color p-6 rounded-lg flex-grow min-h-0 overflow-auto">
+      <div className="bg-gray-100 p-6 rounded-lg flex-grow min-h-0 overflow-auto">
         <GroupList />
       </div>
     </div>
