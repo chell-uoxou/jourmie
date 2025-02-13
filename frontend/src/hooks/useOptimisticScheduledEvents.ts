@@ -7,7 +7,7 @@ export const useOptimisticScheduledEvents = () => {
     optimisticScheduledEventsAtom
   );
 
-  const setSchedulesFromDB = (
+  const setScheduledEventsFromDB = (
     eventDataArray: DraggableEventData[],
     groupId: string
   ) => {
@@ -42,29 +42,28 @@ export const useOptimisticScheduledEvents = () => {
   ) => {
     if (
       optimisticScheduledEvents.some(
-        (prevSchedule) =>
-          prevSchedule.scheduled_event_uid === scheduled_event_uid
+        (prevEvent) => prevEvent.scheduled_event_uid === scheduled_event_uid
       )
     ) {
       setOptimisticScheduledEvents((prev) =>
-        prev.map((prevSchedule) =>
-          prevSchedule.scheduled_event_uid === scheduled_event_uid
+        prev.map((prevEvent) =>
+          prevEvent.scheduled_event_uid === scheduled_event_uid
             ? {
                 ...data,
                 isSyncedWithDB: false,
-                groupId: prevSchedule.groupId,
+                groupId: prevEvent.groupId,
               }
-            : prevSchedule
+            : prevEvent
         )
       );
     } else {
-      console.log("Schedule not found: ", scheduled_event_uid);
+      console.log("Scheduled Event not found: ", scheduled_event_uid);
     }
   };
 
   return {
     optimisticScheduledEvents,
-    setSchedulesFromDB,
+    setSchedulesFromDB: setScheduledEventsFromDB,
     addOptimisticScheduledEvent,
     updateOptimisticScheduledEvent,
   };
