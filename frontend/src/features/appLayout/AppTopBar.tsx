@@ -4,11 +4,11 @@ import { GroupSwitcher } from "./components/GroupSwitcher";
 import { LogoIcon } from "~/components/common/LogoIcon";
 import useCurrentAccount from "~/hooks/useCurrentAccount";
 import { useEffect, useState } from "react";
-import MyAvatar from "./components/MyAvatar";
 import { Bell } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { DBGroup } from "~/lib/firestore/schemas";
 import useGroupRouter from "~/hooks/useGroupRouter";
+import { AccountMenu } from "./components/AccountMenu";
 
 export const AppTopBar = () => {
   const [groups, setGroups] = useState<DBGroup[] | null | "loading">("loading");
@@ -36,7 +36,7 @@ export const AppTopBar = () => {
         <LogoIcon />
       </div>
       <div className="flex flex-row-reverse w-[200px] items-center gap-3">
-        <MyAvatar />
+          <AccountMenu />
         <Button variant="ghost" size="icon" className="size-8">
           <Bell size={20} />
         </Button>
