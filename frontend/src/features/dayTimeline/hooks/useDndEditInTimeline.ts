@@ -9,21 +9,21 @@ import {
 } from "@dnd-kit/core";
 import { Props } from "@dnd-kit/core/dist/components/DndContext/DndContext";
 import { UIEventHandler, useCallback, useMemo, useRef, useState } from "react";
-import { ScheduleEvent } from "../components/DayTimelineSchedule";
+import { DraggableEventData } from "../components/DayTimelineScheduledEvent";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 
 interface UseDndEditInTimelineOptions {
   onChangeStartTime?: (
     startMinute: number,
-    scheduleEvent: ScheduleEvent
+    scheduledEvent: DraggableEventData
   ) => void;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
 }
 
 export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [activeScheduleEvent, setActiveScheduleEvent] =
-    useState<ScheduleEvent | null>(null);
+  const [activeScheduledEvent, setActiveScheduledEvent] =
+    useState<DraggableEventData | null>(null);
   const { timelineSettings } = useTimelineSettings();
   const scrollAreaRect = useRef<ClientRect | null>(null);
   const scrollTopInDayTimeline = useRef<number | null>(null);
@@ -50,18 +50,18 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
   const handleStartDrag = useCallback((event: DragStartEvent) => {
     console.log(
       "Start dragging as edit in timeline: ",
-      event.active.data.current?.schedule
+      event.active.data.current?.eventData
     );
     setActiveId(String(event.active.id));
-    setActiveScheduleEvent(event.active.data.current?.schedule);
+    setActiveScheduledEvent(event.active.data.current?.eventData);
   }, []);
 
   const handleDragEnd = useCallback(() => {
     const minute = quantizedMinutesFromMidnight;
-    if (activeScheduleEvent) {
-      options.onChangeStartTime?.(minute, activeScheduleEvent);
+    if (activeScheduledEvent) {
+      options.onChangeStartTime?.(minute, activeScheduledEvent);
     }
-  }, [activeScheduleEvent, options, quantizedMinutesFromMidnight]);
+  }, [activeScheduledEvent, options, quantizedMinutesFromMidnight]);
 
   const scheduleItemModifier: Modifier = useCallback(
     (args) => {
@@ -132,7 +132,7 @@ export const useDndEditInTimeline = (options: UseDndEditInTimelineOptions) => {
   return {
     dndContextProps,
     activeId,
-    activeScheduleEvent,
+    activeScheduledEvent,
     quantizedMinutesFromMidnight,
     handleScroll,
   };

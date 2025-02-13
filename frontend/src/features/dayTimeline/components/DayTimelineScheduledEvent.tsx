@@ -2,7 +2,7 @@ import { Card, CardContent } from "~/components/ui/card";
 import { PropsWithIcon } from "~/components/common/PropsWithIcon";
 import { Clock, Map } from "lucide-react";
 import clsx from "clsx";
-import { Schedule } from "~/models/types/schedule";
+import { ScheduledEvent } from "~/models/types/scheduled_event";
 import { EventPoolItem } from "~/models/types/event_pool_item";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
 import { forwardRef, HTMLAttributes, useState } from "react";
@@ -10,13 +10,13 @@ import { Popover } from "@radix-ui/react-popover";
 import { PopoverTrigger } from "~/components/ui/popover";
 import DayTimelineScheduleDetails from "./DayTimelineScheduleDetails";
 
-export type ScheduleEvent = Schedule &
+export type DraggableEventData = ScheduledEvent &
   EventPoolItem & {
-    schedule_uid: string;
-  };
+    scheduled_event_uid: string;
+  }; // TODO: ちゃんと複数の型を受け入れるモードの設計にできたら、isScheduledEvent、isEventPoolItemなどの判定関数を作って、適したインターフェースを作る
 
-interface DayTimelineEventProps {
-  schedule: ScheduleEvent;
+interface DayTimelineScheduledEventProps {
+  eventData: DraggableEventData;
   isDragging?: boolean;
 }
 
@@ -27,22 +27,25 @@ const formatTime = (date: Date) => {
   });
 };
 
-export const DayTimelineSchedule = forwardRef<
+/**
+ * 1日タイプのタイムライン上に表示される予定
+ */
+export const DayTimelineScheduledEvent = forwardRef<
   HTMLDivElement,
-  DayTimelineEventProps
->(function DayTimelineSchedule(
+  DayTimelineScheduledEventProps
+>(function DayTimelineScheduledEvent(
   {
-    schedule,
+    eventData,
     isDragging,
     ...rest
-  }: DayTimelineEventProps & HTMLAttributes<HTMLDivElement>,
+  }: DayTimelineScheduledEventProps & HTMLAttributes<HTMLDivElement>,
   ref
 ) {
   const { timelineSettings } = useTimelineSettings();
 
   const duration =
-    (schedule.end_time.toDate().getTime() -
-      schedule.start_time.toDate().getTime()) /
+    (eventData.end_time.toDate().getTime() -
+      eventData.start_time.toDate().getTime()) /
     (1000 * 60);
   const height =
     (duration / (timelineSettings.gridInterval * 60)) *
@@ -67,18 +70,18 @@ export const DayTimelineSchedule = forwardRef<
           >
             <CardContent className="py-4 px-5">
               <div className="flex flex-col gap-2 items-start">
-                <h1 className="text-sm font-bold">{schedule.title}</h1>
+                <h1 className="text-sm font-bold">{eventData.title}</h1>
 
                 <div className="flex flex-col gap-1.5 ">
-                  {schedule.location_text !== "" && (
+                  {eventData.location_text !== "" && (
                     <PropsWithIcon
                       icon={<Map size={14} />}
-                      value={schedule.location_text}
+                      value={eventData.location_text}
                     />
                   )}
                   <PropsWithIcon
                     icon={<Clock size={14} />}
-                    value={formatTime(schedule.start_time.toDate())}
+                    value={formatTime(eventData.start_time.toDate())}
                   />
                 </div>
               </div>
@@ -86,7 +89,7 @@ export const DayTimelineSchedule = forwardRef<
           </Card>
         </PopoverTrigger>
         <DayTimelineScheduleDetails
-          scheduleEvent={schedule}
+          eventData={eventData}
           onClickAddToCalendar={() => {}}
           onClickClose={() => setIsDetailsOpen(false)}
           onClickDelete={() => {}}

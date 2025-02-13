@@ -1,6 +1,6 @@
 import { DocumentReference } from "firebase/firestore";
 import { Member } from "./member";
-import { Schedule } from "./schedule";
+import { ScheduledEvent } from "./scheduled_event";
 import { Account } from "./account";
 
 /**
@@ -16,7 +16,7 @@ import { Account } from "./account";
  * #### これを継承するDBスキーマ
  * - [DBGroupOpenSchedule](../../lib/firestore/schemas/group/open_schedules.ts)
  */
-export type GroupOpenSchedule = Schedule & {
+export type GroupOpenSchedule = ScheduledEvent & {
   members: DocumentReference<Member>[];
   created_by_member: DocumentReference<Member>;
   created_by_account: DocumentReference<Account>;

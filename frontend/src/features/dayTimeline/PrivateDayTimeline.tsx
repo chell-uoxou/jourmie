@@ -7,19 +7,19 @@ import { useCalendarSession } from "~/hooks/useCalendarSession";
 import { UIEvent, UIEventHandler, useCallback, useRef } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
-import TimelineSchedules from "./components/TimelineSchedules";
-import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
+import DayTimelineScheduledEvents from "./components/DayTimelineScheduledEvents";
+import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticScheduledEvents";
 
-interface PrivateScheduleDayTimelineProps {
+interface PrivateDayTimelineProps {
   onScroll?: UIEventHandler<HTMLDivElement>;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
 }
 
-const PrivateScheduleDayTimeline = (props: PrivateScheduleDayTimelineProps) => {
+const PrivateDayTimeline = (props: PrivateDayTimelineProps) => {
   const { calendarSession, updateCalendarSession } = useCalendarSession();
   const { setNodeRef } = useDroppable({ id: "droppable-timeline" });
   const { timelineSettings } = useTimelineSettings();
-  const { optimisticSchedules } = useOptimisticSchedules();
+  const { optimisticScheduledEvents } = useOptimisticScheduledEvents();
   const onScrollForDndEditInTimeline =
     useRef<UIEventHandler<HTMLDivElement> | null>(null);
 
@@ -43,8 +43,8 @@ const PrivateScheduleDayTimeline = (props: PrivateScheduleDayTimelineProps) => {
         ref={props.scrollAreaRef}
       >
         <div className="my-6 mr-3 relative" ref={setNodeRef}>
-          <TimelineSchedules
-            schedules={optimisticSchedules}
+          <DayTimelineScheduledEvents
+            eventDataArray={optimisticScheduledEvents}
             currentDate={calendarSession.currentDate}
             scrollAreaRef={props.scrollAreaRef}
             handleScrollStateForDndEditInTimeline={onScrollForDndEditInTimeline}
@@ -65,4 +65,4 @@ const PrivateScheduleDayTimeline = (props: PrivateScheduleDayTimelineProps) => {
   );
 };
 
-export default PrivateScheduleDayTimeline;
+export default PrivateDayTimeline;

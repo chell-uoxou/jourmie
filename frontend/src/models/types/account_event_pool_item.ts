@@ -17,5 +17,5 @@ import { DocumentReference } from "firebase/firestore";
  */
 
 export type AccountEventPoolItem = EventPoolItem & {
-  schedule_instances: DocumentReference<DBAccountSchedule>[];
+  scheduled_event_instances: DocumentReference<DBAccountSchedule>[];
 };

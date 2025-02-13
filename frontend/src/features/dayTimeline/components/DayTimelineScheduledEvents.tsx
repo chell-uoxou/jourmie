@@ -1,6 +1,9 @@
-import { DayTimelineSchedule, ScheduleEvent } from "./DayTimelineSchedule";
+import {
+  DayTimelineScheduledEvent,
+  DraggableEventData,
+} from "./DayTimelineScheduledEvent";
 import { useTimelineSettings } from "~/hooks/useTimelineSettings";
-import DraggableDayTimelineSchedule from "./DraggableDayTimelineSchedule";
+import DraggableDayTimelineScheduledEvent from "./DraggableDayTimelineScheduledEvent";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { useDndEditInTimeline } from "../hooks/useDndEditInTimeline";
 import { doc, Timestamp } from "firebase/firestore";
@@ -10,31 +13,34 @@ import { defaultConverter } from "~/lib/firestore/firestore";
 import { useCalendarSession } from "~/hooks/useCalendarSession";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
 import { MutableRefObject, UIEventHandler, useEffect } from "react";
-import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
+import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticScheduledEvents";
 import { getEndDroppingDate } from "../utils/getEndDroppingDate";
 
-interface TimelineSchedulesProps {
-  schedules: ScheduleEvent[];
+interface DayTimelineScheduledEvents {
+  eventDataArray: DraggableEventData[];
   currentDate: Date;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
   handleScrollStateForDndEditInTimeline: MutableRefObject<UIEventHandler<HTMLDivElement> | null>;
 }
 
-const TimelineSchedules = (props: TimelineSchedulesProps) => {
+/**
+ * 1日タイプのタイムライングリッド上にオーバーレイされる予定の一覧
+ */
+const DayTimelineScheduledEvents = (props: DayTimelineScheduledEvents) => {
   const { timelineSettings } = useTimelineSettings();
   const { calendarSession } = useCalendarSession();
-  const { updateOptimisticSchedule } = useOptimisticSchedules();
+  const { updateOptimisticScheduledEvent } = useOptimisticScheduledEvents();
   const {
     dndContextProps,
     activeId,
-    activeScheduleEvent,
+    activeScheduledEvent,
     quantizedMinutesFromMidnight,
     handleScroll,
   } = useDndEditInTimeline({
     scrollAreaRef: props.scrollAreaRef,
-    onChangeStartTime: (startMinute, scheduleEvent) => {
-      const newStartTime = new Date(scheduleEvent.start_time.toDate());
-      const newEndTime = new Date(scheduleEvent.end_time.toDate());
+    onChangeStartTime: (startMinute, scheduledEvent) => {
+      const newStartTime = new Date(scheduledEvent.start_time.toDate());
+      const newEndTime = new Date(scheduledEvent.end_time.toDate());
       const duration =
         newEndTime.getHours() * 60 +
         newEndTime.getMinutes() -
@@ -43,8 +49,8 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
       const endMinute = startMinute + duration;
       newStartTime.setHours(Math.floor(startMinute / 60), startMinute % 60);
       newEndTime.setHours(Math.floor(endMinute / 60), endMinute % 60);
-      updateOptimisticSchedule(scheduleEvent.schedule_uid, {
-        ...scheduleEvent,
+      updateOptimisticScheduledEvent(scheduledEvent.scheduled_event_uid, {
+        ...scheduledEvent,
         start_time: Timestamp.fromDate(newStartTime),
         end_time: Timestamp.fromDate(newEndTime),
       });
@@ -60,8 +66,8 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
     quantizedMinutesFromMidnight % 60
   );
 
-  const getTop = (schedule: ScheduleEvent) => {
-    const startDate = schedule.start_time.toDate();
+  const getTop = (eventData: DraggableEventData) => {
+    const startDate = eventData.start_time.toDate();
     const minutesFromMidnight =
       startDate.getHours() * 60 + startDate.getMinutes();
     const top =
@@ -77,29 +83,29 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
   return (
     <DndContext {...dndContextProps}>
       <div className="relative w-full h-ful">
-        {props.schedules
-          .filter((schedule) => {
-            const startDate = schedule.start_time.toDate();
+        {props.eventDataArray
+          .filter((eventData) => {
+            const startDate = eventData.start_time.toDate();
             const condition =
               startDate.getDate() === props.currentDate.getDate() &&
               startDate.getMonth() === props.currentDate.getMonth() &&
               startDate.getFullYear() === props.currentDate.getFullYear();
             return condition;
           })
-          .map((schedule) => {
+          .map((eventData) => {
             return (
               <div
-                key={schedule.schedule_uid}
+                key={eventData.scheduled_event_uid}
                 className="absolute"
                 style={{
-                  top: getTop(schedule),
+                  top: getTop(eventData),
                   left: 24 + 36,
                   width: "min(calc(100% - 76px), 400px)",
                 }}
               >
-                <DraggableDayTimelineSchedule
-                  schedule={schedule}
-                  id={schedule.schedule_uid}
+                <DraggableDayTimelineScheduledEvent
+                  eventData={eventData}
+                  id={eventData.scheduled_event_uid}
                 />
               </div>
             );
@@ -107,10 +113,10 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
       </div>
       <DragOverlay dropAnimation={null}>
         {activeId ? (
-          <DayTimelineSchedule
+          <DayTimelineScheduledEvent
             isDragging
-            schedule={{
-              ...activeScheduleEvent!,
+            eventData={{
+              ...activeScheduledEvent!,
               event_reference: doc(
                 db,
                 "accounts",
@@ -123,15 +129,16 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
                 getEndDroppingDate(
                   calendarSession.currentDate,
                   quantizedMinutesFromMidnight,
-                  activeScheduleEvent!.default_duration
+                  activeScheduledEvent!.default_duration
                 )
               ),
               actual_budget:
-                activeScheduleEvent === null
+                activeScheduledEvent === null
                   ? { mode: "total", value: 0 }
-                  : activeScheduleEvent.default_budget,
+                  : activeScheduledEvent.default_budget,
               did_prepare: false,
-              schedule_uid: activeScheduleEvent?.schedule_uid ?? "",
+              scheduled_event_uid:
+                activeScheduledEvent?.scheduled_event_uid ?? "",
             }}
           />
         ) : null}
@@ -140,4 +147,4 @@ const TimelineSchedules = (props: TimelineSchedulesProps) => {
   );
 };
 
-export default TimelineSchedules;
+export default DayTimelineScheduledEvents;

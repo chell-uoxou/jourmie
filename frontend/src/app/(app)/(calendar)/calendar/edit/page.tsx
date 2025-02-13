@@ -8,12 +8,12 @@ import { doc, Timestamp } from "firebase/firestore";
 import { useEffect } from "react";
 import { useDndTimeline } from "~/hooks/useDndTimeline";
 import { CardBodyWithLeftSidebar } from "~/features/appLayout/CardBodyWithLeftSidebar";
-import { DayTimelineSchedule } from "~/features/dayTimeline/components/DayTimelineSchedule";
-import PrivateScheduleDayTimeline from "~/features/dayTimeline/PrivateScheduleDayTimeline";
+import { DayTimelineScheduledEvent } from "~/features/dayTimeline/components/DayTimelineScheduledEvent";
+import PrivateDayTimeline from "~/features/dayTimeline/PrivateDayTimeline";
 import CalendarEditSidebar from "~/features/leftSidebar/CalendarEditSidebar";
 import useAuthUser from "~/hooks/useAuthUser";
 import { useCalendarSession } from "~/hooks/useCalendarSession";
-import { useOptimisticSchedules } from "~/hooks/useOptimisticSchedules";
+import { useOptimisticScheduledEvents } from "~/hooks/useOptimisticScheduledEvents";
 import { db } from "~/lib/firebase";
 import { defaultConverter } from "~/lib/firestore/firestore";
 import { DBEventPoolItem } from "~/lib/firestore/utils";
@@ -21,8 +21,8 @@ import { getEndDroppingDate } from "~/features/dayTimeline/utils/getEndDroppingD
 
 export default function Page() {
   const authUser = useAuthUser();
-  const { optimisticSchedules, addOptimisticSchedule } =
-    useOptimisticSchedules();
+  const { optimisticScheduledEvents, addOptimisticScheduledEvent } =
+    useOptimisticScheduledEvents();
   const { calendarSession } = useCalendarSession();
   const {
     dndContextProps,
@@ -32,8 +32,7 @@ export default function Page() {
     activeEventPoolItem,
     quantizedMinutesFromMidnight,
   } = useDndTimeline({
-    onDropNewSchedule: (startMinute, eventPoolItem) => {
-      console.log("Drop new schedule!", startMinute, eventPoolItem);
+    onDropNewEvent: (startMinute, eventPoolItem) => {
       const currentDate = new Date(calendarSession.currentDate);
 
       if (authUser === "loading" || authUser === null) return;
@@ -51,7 +50,7 @@ export default function Page() {
       const endTime = new Date(currentDate);
       endTime.setHours(Math.floor(endMinutes / 60), endMinutes % 60);
 
-      addOptimisticSchedule(
+      addOptimisticScheduledEvent(
         {
           ...eventPoolItem,
           event_reference: eventReference,
@@ -59,7 +58,7 @@ export default function Page() {
           did_prepare: false,
           start_time: Timestamp.fromDate(startTime),
           end_time: Timestamp.fromDate(endTime),
-          schedule_uid: crypto.randomUUID(), // 一旦ランダムなUUIDを生成、DB保存後に上書き
+          scheduled_event_uid: crypto.randomUUID(), // 一旦ランダムなUUIDを生成、DB保存後に上書き
         },
         "personal"
       );
@@ -73,13 +72,13 @@ export default function Page() {
   );
 
   useEffect(() => {
-    console.log(optimisticSchedules);
-  }, [optimisticSchedules]);
+    console.log(optimisticScheduledEvents);
+  }, [optimisticScheduledEvents]);
 
   return (
     <DndContext {...dndContextProps}>
       <CardBodyWithLeftSidebar leftSidebar={<CalendarEditSidebar />}>
-        <PrivateScheduleDayTimeline
+        <PrivateDayTimeline
           onScroll={onScrollDroppableArea}
           scrollAreaRef={scrollAreaRef}
         />
@@ -91,9 +90,9 @@ export default function Page() {
         }}
       >
         {activeId ? (
-          <DayTimelineSchedule
+          <DayTimelineScheduledEvent
             isDragging
-            schedule={{
+            eventData={{
               ...activeEventPoolItem!,
               event_reference: doc(
                 db,
@@ -115,7 +114,7 @@ export default function Page() {
                   ? { mode: "total", value: 0 }
                   : activeEventPoolItem.default_budget,
               did_prepare: false,
-              schedule_uid: activeEventPoolItem?.uid ?? "",
+              scheduled_event_uid: activeEventPoolItem?.uid ?? "",
             }}
           />
         ) : null}
