@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { getAuth, signOut } from "firebase/auth";
 import { Button } from "~/components/ui/button";
 
-export const AccountMenuContent = () => {
+export const AccountMenu = () => {
 
   const router = useRouter();
   const auth = getAuth();
