@@ -21,16 +21,14 @@ const GroupList = () => {
 
   return (
     <div className="flex flex-wrap gap-4">
-      <GroupNewCreateCard />
       {groups === "loading" ? (
         <LoadingSpinner />
       ) : groups === null ? (
-        <Card>
-          グループが見つかりませんでした。
-        </Card>
+        <GroupNewCreateCard />
       ) :
         (
           <>
+            <GroupNewCreateCard />
             {groups.map((group) => (
               <GroupListCard {...group} />
             ))

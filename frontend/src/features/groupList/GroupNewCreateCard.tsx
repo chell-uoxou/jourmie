@@ -15,13 +15,16 @@ const GroupNewCreateCard = () => {
   }
   return (
     <>
-      <Card className="flex-1 min-w-[250px] h-[200px] p-6 shadow">
-        <Button 
-          onClick={() => setIsCGOpen(true)}>
-          <CirclePlus size={20} />
-          <span>新しいグループを作成</span>
-        </Button>
-      </Card>
+      <Button
+        variant="ghost"
+        className="flex-1 min-w-[250px] min-h-[156px] shadow"
+        onClick={() => setIsCGOpen(true)}
+        asChild
+      >
+        <Card className="w-hull h-full p-6 ">
+          新しいグループを作成
+        </Card>
+      </Button>
       <CreateGroupDialog
         isDialogOpen={isCGOpen}
         setIsDialogOpen={setIsCGOpen}
