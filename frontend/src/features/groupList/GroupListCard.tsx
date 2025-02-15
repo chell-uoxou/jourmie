@@ -3,8 +3,10 @@ import { Card } from '~/components/ui/card'
 import Image from "next/image";
 import { Button } from '~/components/ui/button';
 import { DBGroup } from "~/lib/firestore/schemas";
+import { useRouter } from 'next/navigation';
 
 const GroupListCard = (prop: DBGroup) => {
+  const router = useRouter();
   const DEFAULT_ICON_URL =
     "https://firebasestorage.googleapis.com/v0/b/jourmie-181d8.appspot.com/o/group_icons%2FdefaultIcon.png?alt=media&token=ced5dd5a-f87f-4652-9643-76a8579f1249";
 
@@ -13,7 +15,7 @@ const GroupListCard = (prop: DBGroup) => {
       variant='ghost'
       className="flex-1 min-w-[250px] min-h-[156px] shadow whitespace-normal break-words"
       onClick={() => {
-        console.log('clicked');
+        router.push(`/g/${prop.uid}`);
       }}
       asChild
     >
