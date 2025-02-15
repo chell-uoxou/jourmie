@@ -164,6 +164,7 @@ export function GroupSwitcher({ currentGroupId, groups, onChange }: Props) {
           <MenuItemWithIcon
             icon={<List className="mr-2 h-4 w-4" />}
             title="グループ一覧"
+            url="/groups"
           />
           <DropdownMenuItem
             onSelect={() => setIsCGOpen(true)}
