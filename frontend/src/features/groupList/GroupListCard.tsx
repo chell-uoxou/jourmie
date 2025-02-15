@@ -26,7 +26,7 @@ const GroupListCard = (prop: DBGroup) => {
             height={32}
             className="mr-2 rounded-full w-8 h-8 object-cover"
           />
-          <h1 className='text-xl font-bold'>
+          <h1 className='text-xl font-semibold'>
             {prop.name}
           </h1>
         </div>

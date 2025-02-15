@@ -17,12 +17,15 @@ const GroupNewCreateCard = () => {
     <>
       <Button
         variant="ghost"
-        className="flex-1 min-w-[250px] min-h-[156px] shadow"
+        className="flex-1 min-w-[250px] min-h-[156px] shadow [&_svg]:w-12 [&_svg]:h-12"
         onClick={() => setIsCGOpen(true)}
         asChild
       >
-        <Card className="w-hull h-full p-6 ">
-          新しいグループを作成
+        <Card className="w-hull h-full p-6 text-xl font-semibold flex flex-col">
+          <CirclePlus/>
+          <div>
+            グループを新規作成
+          </div>
         </Card>
       </Button>
       <CreateGroupDialog
