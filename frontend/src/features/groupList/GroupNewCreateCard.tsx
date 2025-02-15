@@ -6,9 +6,10 @@ import CreateGroupDialog from "~/features/groupCreation/CreateGroupDialog";
 import useGroupRouter from "~/hooks/useGroupRouter";
 
 const GroupNewCreateCard = () => {
-  const [openGroupSwitcher, setOpenGroupSwitcher] = useState(false);
+  // 使用しない変数は _ で表記するか、空白で対応する。削除すると呼び出し可能じゃないって怒られる
+  const [, setOpenGroupSwitcher] = useState(false);
   const [isCGOpen, setIsCGOpen] = useState(false);
-  const { groupId, pushToChangeGroup } = useGroupRouter();
+  const { pushToChangeGroup } = useGroupRouter();
   const onChange = (groupId: string) => {
     setOpenGroupSwitcher(false);
     pushToChangeGroup(groupId);
