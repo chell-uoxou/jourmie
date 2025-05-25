@@ -6,12 +6,9 @@ import CreateGroupDialog from "~/features/groupCreation/CreateGroupDialog";
 import useGroupRouter from "~/hooks/useGroupRouter";
 
 const GroupNewCreateCard = () => {
-  // 使用しない変数は _ で表記するか、空白で対応する。削除すると呼び出し可能じゃないって怒られる
-  const [, setOpenGroupSwitcher] = useState(false);
   const [isCGOpen, setIsCGOpen] = useState(false);
   const { pushToChangeGroup } = useGroupRouter();
   const onChange = (groupId: string) => {
-    setOpenGroupSwitcher(false);
     pushToChangeGroup(groupId);
   }
   return (
@@ -23,7 +20,7 @@ const GroupNewCreateCard = () => {
         asChild
       >
         <Card className="w-hull h-full p-6 text-xl font-semibold flex flex-col">
-          <CirclePlus/>
+          <CirclePlus />
           <div>
             グループを新規作成
           </div>
